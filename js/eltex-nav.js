@@ -4,12 +4,12 @@
 
   var page = mount.getAttribute('data-page') || '';
   var links = [
-    { id: 'index', href: 'index.html', label: 'Home' },
-    { id: 'produkte', href: 'produkte.html', label: 'Produkte' },
-    { id: 'about-us', href: 'about-us.html', label: 'Për Ne' },
-    { id: 'blogs', href: 'blogs.html', label: 'Blog' },
-    { id: 'contact-us', href: 'contact-us.html', label: 'Kontakt' },
-    { id: 'cart', href: 'cart.html', label: 'Shporta', cart: true },
+    { id: 'index', href: '/', label: 'Home' },
+    { id: 'produkte', href: '/produkte', label: 'Produkte' },
+    { id: 'about-us', href: '/about-us', label: 'Për Ne' },
+    { id: 'blogs', href: '/blogs', label: 'Blog' },
+    { id: 'contact-us', href: '/contact-us', label: 'Kontakt' },
+    { id: 'cart', href: '/cart', label: 'Shporta', cart: true },
   ];
 
   function linkHtml(link) {
@@ -36,7 +36,7 @@
   var html =
     '<div data-collapse="medium" data-animation="default" data-duration="400" fs-scrolldisable-element="smart-nav" data-easing="ease" data-easing2="ease" role="banner" class="navbar_component w-nav">' +
     '<div class="navbar_container">' +
-    '<a href="index.html"' +
+    '<a href="/"' +
     brandAria +
     ' class="navbar_logo-link w-nav-brand' +
     brandCurrent +

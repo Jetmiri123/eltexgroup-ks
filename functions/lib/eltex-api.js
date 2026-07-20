@@ -12,6 +12,7 @@ import {
   getKv,
 } from '../lib/eltex-store.js';
 import { sendOrderEmail, sendContactEmail } from '../lib/eltex-email.js';
+import { storeUploadedImage } from '../lib/eltex-media.js';
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -287,6 +288,15 @@ export async function handleApiRequest(context) {
       }
       await writePosts(env, body);
       return json({ ok: true, count: body.length });
+    }
+  }
+
+  if (pathname === '/api/upload' && method === 'POST') {
+    try {
+      const result = await storeUploadedImage(env, body);
+      return json(result);
+    } catch (e) {
+      return json({ error: e.message || 'Ngarkimi dështoi' }, 400);
     }
   }
 

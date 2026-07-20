@@ -7,12 +7,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet">
   <link rel="stylesheet" href="/admin/admin.css">
 </head>
 <body>
   <div id="login-screen" class="login-screen">
     <div class="login-card">
-      <img src="/images/eltex-logo.svg" alt="Eltex Group" class="login-logo">
       <h1>Admin Portal</h1>
       <p class="login-subtitle">Menaxho produktet, blogun dhe porositë B2B</p>
       <form id="login-form" class="login-form">
@@ -27,7 +27,6 @@
   <div id="app" class="app" hidden>
     <aside class="sidebar">
       <div class="sidebar-brand">
-        <img src="/images/eltex-logo-white.svg" alt="" class="sidebar-logo">
         <div>
           <strong>Eltex Admin</strong>
           <span>Paneli i menaxhimit</span>
@@ -56,7 +55,6 @@
     <div class="app-shell">
       <header class="page-header">
         <div>
-          <p class="page-eyebrow">Eltex Group</p>
           <h1 id="page-title" class="page-title">Produktet</h1>
         </div>
       </header>
@@ -71,10 +69,10 @@
             <table class="data-table">
               <thead>
                 <tr>
+                  <th></th>
                   <th>Emri</th>
                   <th>Kategoria</th>
                   <th>Çmimi</th>
-                  <th>Slug</th>
                   <th></th>
                 </tr>
               </thead>
@@ -92,10 +90,10 @@
             <table class="data-table">
               <thead>
                 <tr>
+                  <th></th>
                   <th>Titulli</th>
                   <th>Kategoria</th>
                   <th>Data</th>
-                  <th>Slug</th>
                   <th></th>
                 </tr>
               </thead>
@@ -153,6 +151,7 @@
 
   <div id="toast" class="toast" hidden></div>
 
+  <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
   <script src="/admin/admin.js"></script>
 </body>
 </html>

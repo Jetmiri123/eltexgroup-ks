@@ -199,7 +199,7 @@
   loadProducts()
     .then((products) => {
       if (!params.get('slug') && !params.get('id')) {
-        window.location.replace('/produkte.html');
+        window.location.replace('/produkte');
         return;
       }
       const product = findProduct(products, params);

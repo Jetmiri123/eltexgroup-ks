@@ -4,26 +4,26 @@
   <div class="eltex-footer-inner">
     <div class="eltex-footer-grid">
       <div class="eltex-footer-brand">
-        <a href="index.html"><img src="images/brand/eltex-mark-white.svg" alt="Eltex Group" class="eltex-footer-logo"></a>
+        <a href="/"><img src="images/brand/eltex-mark-white.svg" alt="Eltex Group" class="eltex-footer-logo"></a>
         <h4>Kompania Jonë</h4>
         <p>Eltex Group ofron furnizime elektrike me cilësi të lartë për instalime profesionale dhe shtëpiake. Fokusohemi në cilësi, besueshmëri dhe çmime konkurruese.</p>
       </div>
       <div>
         <h4>Kujdesi ndaj Klientit</h4>
         <ul class="eltex-footer-links">
-          <li><a href="produkte.html">Produktet</a></li>
-          <li><a href="about-us.html">Rreth nesh</a></li>
-          <li><a href="contact-us.html">Kontakti</a></li>
-          <li><a href="cart.html">Shporta</a></li>
+          <li><a href="/produkte">Produktet</a></li>
+          <li><a href="/about-us">Rreth nesh</a></li>
+          <li><a href="/contact-us">Kontakti</a></li>
+          <li><a href="/cart">Shporta</a></li>
         </ul>
       </div>
       <div>
         <h4>Lidhje të Dobishme</h4>
         <ul class="eltex-footer-links">
-          <li><a href="blogs.html">Blog</a></li>
-          <li><a href="contact-us.html">Dërgesa dhe Kthime</a></li>
-          <li><a href="contact-us.html">Kushtet e Përdorimit</a></li>
-          <li><a href="contact-us.html">Politika e Privatësisë</a></li>
+          <li><a href="/blogs">Blog</a></li>
+          <li><a href="/contact-us">Dërgesa dhe Kthime</a></li>
+          <li><a href="/contact-us">Kushtet e Përdorimit</a></li>
+          <li><a href="/contact-us">Politika e Privatësisë</a></li>
         </ul>
       </div>
       <div>

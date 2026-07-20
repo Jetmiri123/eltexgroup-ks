@@ -14,6 +14,7 @@ const ADMIN_PASSWORD = process.env.ELTEX_ADMIN_PASSWORD || 'Eltex2026!';
 const PRODUCTS_PATH = path.join(ROOT, 'data/live-products.json');
 const POSTS_PATH = path.join(ROOT, 'data/live-posts.json');
 const ORDERS_PATH = path.join(ROOT, 'data/live-orders.json');
+const UPLOADS_DIR = path.join(ROOT, 'images/uploads');
 
 const ORDER_EMAIL = process.env.ELTEX_ORDER_EMAIL || process.env.ELTEX_SMTP_USER || '';
 const SMTP_HOST = process.env.ELTEX_SMTP_HOST || '';
@@ -51,6 +52,32 @@ function readJson(filePath) {
 
 function writeJson(filePath, data) {
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2) + '\n', 'utf8');
+}
+
+function ensureUploadsDir() {
+  if (!fs.existsSync(UPLOADS_DIR)) {
+    fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+  }
+}
+
+function saveUploadedImage({ data, filename, contentType }) {
+  if (!data || !String(contentType || '').startsWith('image/')) {
+    throw new Error('Imazh i pavlefshëm');
+  }
+  const buffer = Buffer.from(data, 'base64');
+  if (buffer.length > 2 * 1024 * 1024) {
+    throw new Error('Imazhi shumë i madh (max 2MB)');
+  }
+  ensureUploadsDir();
+  const ext = String(filename || '')
+    .split('.')
+    .pop()
+    ?.toLowerCase()
+    .replace(/[^a-z0-9]/g, '') || contentType.split('/')[1] || 'jpg';
+  const safeExt = ext === 'jpeg' ? 'jpg' : ext;
+  const name = `${Date.now()}-${crypto.randomBytes(3).toString('hex')}.${safeExt}`;
+  fs.writeFileSync(path.join(UPLOADS_DIR, name), buffer);
+  return { url: `/images/uploads/${name}` };
 }
 
 function slugify(text) {
@@ -108,7 +135,7 @@ function readBody(req) {
 
 function routeRequest(pathname) {
   if (pathname === '/produkt' || pathname === '/produkt/') {
-    return { redirect: '/produkte.html' };
+    return { redirect: '/produkte' };
   }
   const productMatch = pathname.match(/^\/produkt\/([^/]+)\/?$/);
   if (productMatch) {
@@ -121,6 +148,37 @@ function routeRequest(pathname) {
   if (pathname === '/admin' || pathname === '/admin/') {
     return { file: 'admin/index.html' };
   }
+  return null;
+}
+
+function getCleanUrlRedirect(pathname) {
+  if (!pathname) return null;
+  if (pathname === '/produkt' || pathname === '/produkt/') return '/produkte';
+  if (pathname === '/admin/') return '/admin';
+
+  const aliases = {
+    '/index.html': '/',
+    '/produkt.html': '/produkte',
+    '/blog-post.html': '/blogs',
+    '/admin/index.html': '/admin',
+  };
+  if (aliases[pathname]) return aliases[pathname];
+
+  if (pathname.endsWith('/index.html')) {
+    const base = pathname.slice(0, -'/index.html'.length);
+    return base || '/';
+  }
+
+  if (pathname.endsWith('.html')) {
+    if (pathname.startsWith('/admin/')) return null;
+    const clean = pathname.slice(0, -5);
+    return clean || '/';
+  }
+
+  if (pathname.length > 1 && pathname.endsWith('/')) {
+    return pathname.slice(0, -1);
+  }
+
   return null;
 }
 
@@ -573,6 +631,16 @@ async function handleApi(req, res, pathname) {
     }
   }
 
+  if (pathname === '/api/upload' && req.method === 'POST') {
+    try {
+      const body = await readBody(req);
+      sendJson(res, 200, saveUploadedImage(body));
+    } catch (e) {
+      sendJson(res, 400, { error: e.message || 'Ngarkimi dështoi' });
+    }
+    return;
+  }
+
   sendJson(res, 404, { error: 'Not found' });
 }
 
@@ -580,12 +648,40 @@ const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
   let pathname = decodeURIComponent(url.pathname);
 
+  const clean = getCleanUrlRedirect(pathname);
+  if (clean && clean !== pathname) {
+    res.writeHead(301, { Location: clean + url.search });
+    res.end();
+    return;
+  }
+
   if (pathname.startsWith('/api/')) {
     try {
       await handleApi(req, res, pathname);
     } catch (e) {
       sendJson(res, 500, { error: e.message || 'Server error' });
     }
+    return;
+  }
+
+  if (pathname.startsWith('/media/')) {
+    const rel = pathname.replace(/^\/media\//, '');
+    if (!rel || rel.includes('..')) {
+      send(res, 404, 'Not found');
+      return;
+    }
+    const filePath = path.join(UPLOADS_DIR, rel.replace(/^uploads\//, ''));
+    if (!filePath.startsWith(UPLOADS_DIR)) {
+      send(res, 403, 'Forbidden');
+      return;
+    }
+    fs.stat(filePath, (err, stat) => {
+      if (err || !stat.isFile()) {
+        send(res, 404, 'Not found');
+        return;
+      }
+      serveFile(res, filePath);
+    });
     return;
   }
 

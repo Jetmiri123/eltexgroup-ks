@@ -44,9 +44,9 @@
 
   function fixContentLinks(html) {
     return html
-      .replace(/href="\/kontakt\/?"/gi, 'href="contact-us.html"')
-      .replace(/href="https:\/\/eltexgroup-ks\.com\/kontakt\/?"/gi, 'href="contact-us.html"')
-      .replace(/href="https:\/\/eltexgroup-ks\.com\/\?page_id=2197"/gi, 'href="contact-us.html"')
+      .replace(/href="\/kontakt\/?"/gi, 'href="/contact-us"')
+      .replace(/href="https:\/\/eltexgroup-ks\.com\/kontakt\/?"/gi, 'href="/contact-us"')
+      .replace(/href="https:\/\/eltexgroup-ks\.com\/\?page_id=2197"/gi, 'href="/contact-us"')
       .replace(/href="https:\/\/eltexgroup-ks\.com\/pse-[^"]+"/gi, (match) => {
         const slug = match.match(/pse-[^"/]+/)?.[0];
         return slug ? `href="/blog/${slug}"` : match;
