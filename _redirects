@@ -1,0 +1,6 @@
+/produkt/:slug    /produkt.html   200
+/blog/:slug       /blog-post.html 200
+/admin            /admin/index.html 200
+/admin/           /admin/index.html 200
+/produkt          /produkte.html  301
+/produkt/         /produkte.html  301

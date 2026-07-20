@@ -1,0 +1,10 @@
+name = "eltexgroup-ks"
+compatibility_date = "2024-09-01"
+pages_build_output_dir = "."
+
+[[kv_namespaces]]
+binding = "ELTEX_DATA"
+id = "REPLACE_WITH_KV_NAMESPACE_ID"
+
+[vars]
+# Set secrets in Cloudflare dashboard: ELTEX_ADMIN_PASSWORD, ELTEX_SMTP_*, ELTEX_ORDER_EMAIL
