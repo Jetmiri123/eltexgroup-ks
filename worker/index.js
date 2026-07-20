@@ -32,12 +32,13 @@ async function serveStatic(request, env) {
   const url = new URL(request.url);
   const path = url.pathname;
 
-  let response = await env.ASSETS.fetch(request);
-  if (response.status !== 404) return response;
-
+  // Serve homepage directly — avoid _redirects loop (/ -> index.html -> /)
   if (path === '/' || path === '') {
     return env.ASSETS.fetch(new Request(new URL('/index.html', url), request));
   }
+
+  let response = await env.ASSETS.fetch(request);
+  if (response.status !== 404) return response;
 
   if (!path.endsWith('/') && !/\.[a-z0-9]+$/i.test(path)) {
     response = await env.ASSETS.fetch(new Request(new URL(path + '.html', url), request));
@@ -67,6 +68,15 @@ export default {
 
     if (path.startsWith('/media/')) {
       return serveMedia(env, path.slice(7));
+    }
+
+    if (path === '/robots.txt') {
+      return new Response(ROBOTS_TXT, {
+        headers: {
+          'Content-Type': 'text/plain; charset=utf-8',
+          'Cache-Control': 'public, max-age=3600',
+        },
+      });
     }
 
     const clean = getCleanUrlRedirect(path);
