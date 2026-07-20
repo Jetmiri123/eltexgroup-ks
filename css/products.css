@@ -43,18 +43,19 @@
 }
 
 .products-toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem;
+  display: grid;
+  grid-template-columns: 1fr min(300px, 34%);
+  grid-template-areas: "filters search";
+  gap: 0.75rem 1.25rem;
+  align-items: start;
   margin-bottom: 2rem;
   padding-top: 1.25rem;
   border-top: 0.5px solid #636363;
 }
 
 .products-filter {
+  grid-area: filters;
   display: flex;
-  flex: 1 1 auto;
   flex-wrap: wrap;
   gap: 0.5rem;
   min-width: 0;
@@ -79,12 +80,14 @@
 }
 
 .products-search {
+  grid-area: search;
   position: relative;
   display: flex;
   align-items: center;
-  flex: 0 1 280px;
-  max-width: 100%;
-  margin-left: auto;
+  width: 100%;
+  max-width: none;
+  margin-left: 0;
+  align-self: start;
 }
 
 .products-search-icon {
@@ -841,10 +844,12 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .products-search {
-    flex: 1 1 100%;
-    margin-left: 0;
-    order: -1;
+  .products-toolbar {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "search"
+      "filters";
+    gap: 1rem;
   }
 
   .products-hero-section {
