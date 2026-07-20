@@ -5,6 +5,15 @@ import { getCleanUrlRedirect, redirectResponse } from '../functions/lib/eltex-ur
 
 const NOINDEX = 'noindex, nofollow, noarchive';
 
+const ROBOTS_TXT = `User-agent: *
+Allow: /
+
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/
+Disallow: /data/
+`;
+
 function withNoIndex(response) {
   const headers = new Headers(response.headers);
   headers.set('X-Robots-Tag', NOINDEX);
