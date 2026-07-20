@@ -42,6 +42,11 @@
     var items = wrap.querySelectorAll('.faqs_materials');
     if (!items.length) return;
 
+    /* Stop Webflow IX2 fighting our hover (causes blurry/ghost text) */
+    wrap.querySelectorAll('[data-w-id]').forEach(function (el) {
+      el.removeAttribute('data-w-id');
+    });
+
     var canHover = window.matchMedia('(hover: hover)').matches;
 
     items.forEach(function (item) {

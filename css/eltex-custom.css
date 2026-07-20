@@ -1298,7 +1298,7 @@ body > section.main_section:first-of-type {
   }
 
   .faq_holder .answer_div > .paragraph,
-  .faqs_materials .about_pharagraph .paragraph {
+  .about-faq-drop-down .about_pharagraph .paragraph {
     transform: none;
     transition: none;
   }
@@ -1342,7 +1342,12 @@ section.main_section:has(.about-faq) {
   flex: 1;
   margin: 0;
   line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: #636363 !important;
+  overflow: visible;
   transition: color 0.3s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .about-faq-drop-down .about_pharagraph {
@@ -1351,22 +1356,22 @@ section.main_section:has(.about-faq) {
   padding-left: calc(1.25rem + 1.75rem);
   margin: 0;
   overflow: hidden;
-  transition: grid-template-rows 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: grid-template-rows 0.45s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .about-faq-drop-down .about_pharagraph .paragraph {
   overflow: hidden;
   min-height: 0;
-  margin: 0;
+  margin: 0.75rem 0 0;
   padding-right: 1rem;
   color: #636363;
   line-height: 1.65;
-  opacity: 0;
-  transform: translateY(6px);
-  transition:
-    opacity 0.35s ease 0.08s,
-    transform 0.35s ease 0.08s,
-    margin 0.35s ease 0.08s;
+  opacity: 1;
+  transform: none !important;
+  filter: none !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 .about-faq-drop-down .about-faq-image {
@@ -1390,12 +1395,6 @@ section.main_section:has(.about-faq) {
     grid-template-rows: 1fr;
   }
 
-  .about-faq-drop-down .faqs_materials:hover .about_pharagraph .paragraph {
-    opacity: 1;
-    transform: translateY(0);
-    margin: 0.75rem 0 0;
-  }
-
   .about-faq-drop-down .faqs_materials:hover .about_heading .project-text {
     color: var(--orange, #f97316) !important;
   }
@@ -1410,12 +1409,6 @@ section.main_section:has(.about-faq) {
 
 .about-faq-drop-down .faqs_materials.is-open .about_pharagraph {
   grid-template-rows: 1fr;
-}
-
-.about-faq-drop-down .faqs_materials.is-open .about_pharagraph .paragraph {
-  opacity: 1;
-  transform: translateY(0);
-  margin: 0.75rem 0 0;
 }
 
 .about-faq-drop-down .faqs_materials.is-open .about_heading .project-text {
