@@ -8,34 +8,39 @@ function sessionKey(token) {
   return 'session:' + token;
 }
 
-export async function readProducts(env) {
-  return (await readJson(env, KEYS.products)) || { products: [], categories: [] };
-}
-
-export async function writeProducts(env, data) {
-  await writeJson(env, KEYS.products, data);
-}
-
-export async function readPosts(env) {
-  const data = await readJson(env, KEYS.posts);
-  return Array.isArray(data) ? data : [];
-}
-
-export async function writePosts(env, data) {
-  await writeJson(env, KEYS.posts, data);
-}
-
-export async function readOrders(env) {
-  const data = await readJson(env, KEYS.orders);
-  return Array.isArray(data) ? data : [];
-}
-
-export async function writeOrders(env, data) {
-  await writeJson(env, KEYS.orders, data);
-}
-
 function getKv(env) {
   return env.ELTEX_DATA || env.KV || null;
+}
+
+async function fetchAssetJson(env, request, assetPath) {
+  if (!env.ASSETS || !request) return null;
+  const res = await env.ASSETS.fetch(new URL(assetPath, request.url).toString());
+  if (!res.ok) return null;
+  return res.json();
+}
+
+export async function ensureKvSeeded(env, request) {
+  const kv = getKv(env);
+  if (!kv || !request) return;
+
+  const flag = await kv.get('_kv_seeded');
+  if (flag === '1') return;
+
+  const products = await fetchAssetJson(env, request, '/data/live-products.json');
+  const posts = await fetchAssetJson(env, request, '/data/live-posts.json');
+  const orders = await fetchAssetJson(env, request, '/data/live-orders.json');
+
+  if (!(await kv.get(KEYS.products)) && products) {
+    await kv.put(KEYS.products, JSON.stringify(products, null, 2));
+  }
+  if (!(await kv.get(KEYS.posts)) && posts) {
+    await kv.put(KEYS.posts, JSON.stringify(posts, null, 2));
+  }
+  if (!(await kv.get(KEYS.orders)) && orders) {
+    await kv.put(KEYS.orders, JSON.stringify(orders, null, 2));
+  }
+
+  await kv.put('_kv_seeded', '1');
 }
 
 export async function readJson(env, key) {
@@ -48,6 +53,42 @@ export async function writeJson(env, key, data) {
   const kv = getKv(env);
   if (!kv) throw new Error('Storage not configured');
   await kv.put(key, JSON.stringify(data, null, 2));
+}
+
+export async function readProducts(env, request) {
+  const fromKv = await readJson(env, KEYS.products);
+  if (fromKv && Array.isArray(fromKv.products) && fromKv.products.length) return fromKv;
+
+  const fromAssets = await fetchAssetJson(env, request, '/data/live-products.json');
+  return fromAssets || fromKv || { products: [], categories: [] };
+}
+
+export async function writeProducts(env, data) {
+  await writeJson(env, KEYS.products, data);
+}
+
+export async function readPosts(env, request) {
+  const fromKv = await readJson(env, KEYS.posts);
+  if (Array.isArray(fromKv) && fromKv.length) return fromKv;
+
+  const fromAssets = await fetchAssetJson(env, request, '/data/live-posts.json');
+  return fromAssets || (Array.isArray(fromKv) ? fromKv : []);
+}
+
+export async function writePosts(env, data) {
+  await writeJson(env, KEYS.posts, data);
+}
+
+export async function readOrders(env, request) {
+  const fromKv = await readJson(env, KEYS.orders);
+  if (Array.isArray(fromKv)) return fromKv;
+
+  const fromAssets = await fetchAssetJson(env, request, '/data/live-orders.json');
+  return fromAssets || [];
+}
+
+export async function writeOrders(env, data) {
+  await writeJson(env, KEYS.orders, data);
 }
 
 export async function createSession(env, token) {

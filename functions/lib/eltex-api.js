@@ -1,4 +1,5 @@
 import {
+  ensureKvSeeded,
   readProducts,
   writeProducts,
   readPosts,
@@ -8,8 +9,8 @@ import {
   createSession,
   isAuthed,
   deleteSession,
-  getToken,
 } from '../lib/eltex-store.js';
+import { sendOrderEmail, sendContactEmail } from '../lib/eltex-email.js';
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -36,6 +37,12 @@ function sanitizeText(value, maxLen) {
 
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function getAdminPassword(env) {
+  const value = String(env.ELTEX_ADMIN_PASSWORD || '').trim();
+  if (value.length < 8) return null;
+  return value;
 }
 
 function rebuildCategories(products) {
@@ -81,7 +88,7 @@ function randomOrderId() {
   return 'ord_' + Date.now().toString(36) + hex;
 }
 
-async function buildOrderFromRequest(env, body) {
+async function buildOrderFromRequest(env, request, body) {
   const customer = body.customer || {};
   const name = sanitizeText(customer.name, 120);
   const email = sanitizeText(customer.email, 160).toLowerCase();
@@ -96,7 +103,7 @@ async function buildOrderFromRequest(env, body) {
   const rawItems = Array.isArray(body.items) ? body.items : [];
   if (!rawItems.length) throw new Error('Shporta është bosh');
 
-  const catalog = (await readProducts(env)).products || [];
+  const catalog = (await readProducts(env, request)).products || [];
   const orderItems = [];
   let total = 0;
 
@@ -132,56 +139,10 @@ async function buildOrderFromRequest(env, body) {
   };
 }
 
-async function sendOrderEmail(env, order) {
-  const apiKey = env.RESEND_API_KEY;
-  const orderEmail = env.ELTEX_ORDER_EMAIL;
-  if (!apiKey || !orderEmail) return { sent: false, reason: 'Email not configured' };
-
-  const ref = orderRef(order);
-  const from = env.ELTEX_EMAIL_FROM || 'orders@eltexgroup-ks.com';
-  const lines = order.items.map((i) => `${i.qty} x ${i.name} — €${i.lineTotal.toFixed(2)}`).join('\n');
-
-  const payload = {
-    from,
-    to: [orderEmail],
-    reply_to: order.customer.email,
-    subject: `Porosi e Reja #${ref} — Eltex Group`,
-    text: `Porosi e re\n\nKlienti: ${order.customer.name}\nEmail: ${order.customer.email}\nTelefon: ${order.customer.phone}\n\n${lines}\n\nTotali: €${order.total.toFixed(2)}`,
-  };
-
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(payload),
-  });
-
-  if (!res.ok) {
-    const err = await res.text();
-    return { sent: false, reason: err };
-  }
-
-  await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      from,
-      to: [order.customer.email],
-      subject: `Faleminderit! Porosia juaj #${ref} u pranua — Eltex Group`,
-      text: `Përshëndetje ${order.customer.name},\n\nFaleminderit për porosinë tuaj. Referenca: #${ref}\nTotali: €${order.total.toFixed(2)}\n\nMe respekt,\nEltex Group`,
-    }),
-  });
-
-  return { sent: true };
-}
-
 export async function handleApiRequest(context) {
   const { request, env, params } = context;
+  await ensureKvSeeded(env, request);
+
   const segments = (params.path || []).filter(Boolean);
   const pathname = '/api/' + segments.join('/');
   const method = request.method;
@@ -195,9 +156,17 @@ export async function handleApiRequest(context) {
     }
   }
 
-  const adminPassword = env.ELTEX_ADMIN_PASSWORD || 'admin';
-
   if (pathname === '/api/login' && method === 'POST') {
+    const adminPassword = getAdminPassword(env);
+    if (!adminPassword) {
+      return json(
+        {
+          error:
+            'Admin nuk është konfiguruar. Vendosni ELTEX_ADMIN_PASSWORD (min. 8 karaktere) në Cloudflare Settings.',
+        },
+        503
+      );
+    }
     if (body.password !== adminPassword) return json({ error: 'Fjalëkalimi i gabuar' }, 401);
     const token = randomToken();
     await createSession(env, token);
@@ -209,10 +178,29 @@ export async function handleApiRequest(context) {
     return json({ ok: true });
   }
 
+  if (pathname === '/api/contact' && method === 'POST') {
+    const name = sanitizeText(body.name, 120);
+    const email = sanitizeText(body.email, 160).toLowerCase();
+    const phone = sanitizeText(body.phone, 40);
+    const message = sanitizeText(body.message, 2000);
+
+    if (!name) return json({ error: 'Emri është i detyrueshëm' }, 400);
+    if (!isValidEmail(email)) return json({ error: 'Email i pavlefshëm' }, 400);
+
+    let emailResult = { sent: false };
+    try {
+      emailResult = await sendContactEmail(env, { name, email, phone, message });
+    } catch (e) {
+      emailResult = { sent: false, reason: e.message };
+    }
+
+    return json({ ok: true, emailSent: emailResult.sent });
+  }
+
   if (pathname === '/api/orders' && method === 'POST') {
     try {
-      const order = await buildOrderFromRequest(env, body);
-      const orders = await readOrders(env);
+      const order = await buildOrderFromRequest(env, request, body);
+      const orders = await readOrders(env, request);
       orders.unshift(order);
       await writeOrders(env, orders);
 
@@ -249,11 +237,11 @@ export async function handleApiRequest(context) {
   const orderMatch = pathname.match(/^\/api\/orders\/([^/]+)$/);
 
   if (pathname === '/api/orders' && method === 'GET') {
-    return json(await readOrders(env));
+    return json(await readOrders(env, request));
   }
 
   if (orderMatch && method === 'PATCH') {
-    const orders = await readOrders(env);
+    const orders = await readOrders(env, request);
     const order = orders.find((entry) => entry.id === orderMatch[1]);
     if (!order) return json({ error: 'Porosia nuk u gjet' }, 404);
     const allowed = ['new', 'processing', 'done', 'cancelled'];
@@ -266,7 +254,7 @@ export async function handleApiRequest(context) {
   }
 
   if (pathname === '/api/products') {
-    if (method === 'GET') return json(await readProducts(env));
+    if (method === 'GET') return json(await readProducts(env, request));
     if (method === 'PUT') {
       if (!Array.isArray(body.products)) return json({ error: 'products array required' }, 400);
       const slugs = new Set();
@@ -288,7 +276,7 @@ export async function handleApiRequest(context) {
   }
 
   if (pathname === '/api/posts') {
-    if (method === 'GET') return json(await readPosts(env));
+    if (method === 'GET') return json(await readPosts(env, request));
     if (method === 'PUT') {
       if (!Array.isArray(body)) return json({ error: 'posts array required' }, 400);
       const slugs = new Set();
