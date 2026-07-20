@@ -39,7 +39,7 @@
       <div>
         <h4>Adresa</h4>
         <div class="footer-map">
-          <iframe src="https://maps.google.com/maps?q=Eltex+group+shpk+Llapnaselle+Qagllavic&t=&z=15&ie=UTF8&iwloc=&output=embed" allowfullscreen loading="lazy" title="Harta Eltex Group"></iframe>
+          <iframe src="https://maps.google.com/maps?q=Eltex+Group+shpk,+Llapnasell%C3%AB,+Qagllavic,+Kosovo&amp;z=16&amp;hl=sq&amp;ie=UTF8&amp;iwloc=&amp;output=embed" allowfullscreen loading="lazy" title="Harta Eltex Group"></iframe>
         </div>
         <p class="eltex-footer-address">Eltex group shpk, Llapnasellë, Qagllavic 10000</p>
       </div>
