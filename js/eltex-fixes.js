@@ -37,18 +37,19 @@
     });
   }
 
-  /* About-us FAQ accordion */
+  /* About-us FAQ — hover on desktop, tap to toggle on touch */
   document.querySelectorAll('.about-faq-drop-down').forEach(function (wrap) {
     var items = wrap.querySelectorAll('.faqs_materials');
     if (!items.length) return;
 
-    setupExclusiveAccordion(
-      items,
-      function (item) {
-        return item.querySelector('.about_heading');
-      },
-      0
-    );
+    items.forEach(function (item) {
+      item.addEventListener('click', function () {
+        var isOpen = item.classList.contains('is-open');
+        items.forEach(function (other) {
+          other.classList.toggle('is-open', other === item ? !isOpen : false);
+        });
+      });
+    });
   });
 
   /* Homepage FAQ accordion */

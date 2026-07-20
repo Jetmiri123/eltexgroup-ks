@@ -1299,7 +1299,7 @@ body > section.main_section:first-of-type {
   }
 }
 
-/* About FAQ accordion */
+/* About FAQ — hover to expand (original behavior), click on touch */
 .about-faq {
   width: 100%;
 }
@@ -1308,73 +1308,80 @@ section.main_section:has(.about-faq) {
   padding-top: var(--section-pad) !important;
 }
 
+.about-faq-drop-down .faqs_materials {
+  align-items: flex-start;
+}
+
 .about_heading {
-  cursor: pointer;
+  cursor: default;
   user-select: none;
 }
 
 .about-faq-drop-down .about_pharagraph {
-  display: grid !important;
-  grid-template-rows: 0fr;
+  max-height: 0;
   overflow: hidden;
-  transition: grid-template-rows 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0;
   padding-left: 50px;
   margin: 0;
-}
-
-.faqs_materials.is-open .about_pharagraph {
-  grid-template-rows: 1fr;
+  transition:
+    max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.3s ease,
+    margin 0.3s ease;
 }
 
 .about-faq-drop-down .about_pharagraph .paragraph {
-  min-height: 0;
-  overflow: hidden;
-  opacity: 0;
-  transform: translateY(-6px);
-  transition: opacity 0.25s ease, transform 0.25s ease;
   margin: 0;
   padding-right: 1rem;
   color: #636363;
   line-height: 1.65;
 }
 
-.faqs_materials.is-open .about_pharagraph .paragraph {
-  opacity: 1;
-  transform: none;
-  margin: 0.85rem 0 0;
-}
-
-.faqs_materials {
-  align-items: flex-start;
-}
-
-.faqs_materials:not(.is-open) .answer-question {
-  flex: 1;
-  min-width: 0;
-}
-
-.faqs_materials.is-open .about_heading .project-text {
-  color: var(--orange, #f97316) !important;
-}
-
 .faqs_materials .about-faq-image {
-  display: grid !important;
-  grid-template-rows: 0fr;
-  overflow: hidden;
-  transition: grid-template-rows 0.38s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.faqs_materials.is-open .about-faq-image {
-  grid-template-rows: 1fr;
-}
-
-.faqs_materials:not(.is-open) .about-faq-image {
   width: 0;
   min-width: 0;
   margin: 0;
   padding: 0;
   opacity: 0;
+  overflow: hidden;
   pointer-events: none;
+  transition:
+    width 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.3s ease,
+    margin 0.3s ease;
+}
+
+@media (hover: hover) {
+  .faqs_materials:hover .about_pharagraph {
+    max-height: 220px;
+    opacity: 1;
+  }
+
+  .faqs_materials:hover .about_pharagraph .paragraph {
+    margin: 0.85rem 0 0;
+  }
+
+  .faqs_materials:hover .about_heading .project-text {
+    color: var(--orange, #f97316) !important;
+  }
+
+  .faqs_materials:hover .about-faq-image {
+    width: auto;
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.faqs_materials.is-open .about_pharagraph {
+  max-height: 220px;
+  opacity: 1;
+}
+
+.faqs_materials.is-open .about_pharagraph .paragraph {
+  margin: 0.85rem 0 0;
+}
+
+.faqs_materials.is-open .about_heading .project-text {
+  color: var(--orange, #f97316) !important;
 }
 
 .faqs_materials.is-open .about-faq-image {
