@@ -15,6 +15,11 @@
       var open = index === defaultOpenIndex;
       setItemOpen(item, open);
 
+      if (!trigger.getAttribute('role')) {
+        trigger.setAttribute('role', 'button');
+        trigger.setAttribute('tabindex', '0');
+      }
+
       function toggleItem() {
         var isOpen = item.classList.contains('is-open');
         items.forEach(function (other) {

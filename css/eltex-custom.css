@@ -1314,18 +1314,43 @@ section.main_section:has(.about-faq) {
 }
 
 .about-faq-drop-down .about_pharagraph {
-  display: block !important;
-  grid-template-rows: none !important;
-  overflow: visible !important;
+  display: grid !important;
+  grid-template-rows: 0fr;
+  overflow: hidden;
+  transition: grid-template-rows 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+  padding-left: 50px;
+  margin: 0;
+}
+
+.faqs_materials.is-open .about_pharagraph {
+  grid-template-rows: 1fr;
 }
 
 .about-faq-drop-down .about_pharagraph .paragraph {
-  opacity: 1 !important;
-  transform: none !important;
-  margin: 0.85rem 0 0;
+  min-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  margin: 0;
   padding-right: 1rem;
   color: #636363;
   line-height: 1.65;
+}
+
+.faqs_materials.is-open .about_pharagraph .paragraph {
+  opacity: 1;
+  transform: none;
+  margin: 0.85rem 0 0;
+}
+
+.faqs_materials {
+  align-items: flex-start;
+}
+
+.faqs_materials:not(.is-open) .answer-question {
+  flex: 1;
+  min-width: 0;
 }
 
 .faqs_materials.is-open .about_heading .project-text {
@@ -1386,6 +1411,10 @@ section.main_section:has(.about-faq) {
   .blog-section-home {
     padding-top: var(--section-pad) !important;
     padding-bottom: var(--section-pad) !important;
+  }
+
+  .about-faq-drop-down .about_pharagraph {
+    padding-left: 31px;
   }
 
   body > section.main_section:first-of-type {
