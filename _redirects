@@ -3,3 +3,8 @@
 /admin            /admin/index.html 200
 /produkt          /produkte.html  301
 /produkt/         /produkte.html  301
+/produkte         /produkte.html  200
+/cart             /cart.html      200
+/blogs            /blogs.html     200
+/about-us         /about-us.html  200
+/contact-us       /contact-us.html 200
