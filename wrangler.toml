@@ -7,4 +7,6 @@ directory = "."
 binding = "ASSETS"
 run_worker_first = true
 
-# KV: bind ELTEX_DATA in Cloudflare dashboard → Settings → Bindings
+[[kv_namespaces]]
+binding = "KV"
+id = "b9e70c0bec494769bde7d8ff6bd65cdd"
