@@ -34,37 +34,47 @@ export async function writeOrders(env, data) {
   await writeJson(env, KEYS.orders, data);
 }
 
+function getKv(env) {
+  return env.ELTEX_DATA || env.KV || null;
+}
+
 export async function readJson(env, key) {
-  if (!env.ELTEX_DATA) return null;
-  return env.ELTEX_DATA.get(key, 'json');
+  const kv = getKv(env);
+  if (!kv) return null;
+  return kv.get(key, 'json');
 }
 
 export async function writeJson(env, key, data) {
-  if (!env.ELTEX_DATA) throw new Error('Storage not configured');
-  await env.ELTEX_DATA.put(key, JSON.stringify(data, null, 2));
+  const kv = getKv(env);
+  if (!kv) throw new Error('Storage not configured');
+  await kv.put(key, JSON.stringify(data, null, 2));
 }
 
 export async function createSession(env, token) {
+  const kv = getKv(env);
+  if (!kv) return;
   const expires = Date.now() + 24 * 60 * 60 * 1000;
-  await env.ELTEX_DATA.put(sessionKey(token), String(expires), {
+  await kv.put(sessionKey(token), String(expires), {
     expirationTtl: 86400,
   });
 }
 
 export async function isAuthed(env, req) {
+  const kv = getKv(env);
   const token = getToken(req);
-  if (!token || !env.ELTEX_DATA) return false;
-  const expires = Number(await env.ELTEX_DATA.get(sessionKey(token)));
+  if (!token || !kv) return false;
+  const expires = Number(await kv.get(sessionKey(token)));
   if (!expires || expires < Date.now()) {
-    if (expires) await env.ELTEX_DATA.delete(sessionKey(token));
+    if (expires) await kv.delete(sessionKey(token));
     return false;
   }
   return true;
 }
 
 export async function deleteSession(env, req) {
+  const kv = getKv(env);
   const token = getToken(req);
-  if (token && env.ELTEX_DATA) await env.ELTEX_DATA.delete(sessionKey(token));
+  if (token && kv) await kv.delete(sessionKey(token));
 }
 
 function getToken(req) {
