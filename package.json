@@ -6,7 +6,7 @@
     "dev": "node server.js",
     "start": "node server.js",
     "export:products": "python3 scripts/export-live-products.py",
-    "deploy:cf": "wrangler pages deploy . --project-name=eltexgroup-ks --commit-dirty=true"
+    "deploy:cf": "wrangler deploy"
   },
   "dependencies": {
     "nodemailer": "^6.10.1"

@@ -1,0 +1,14 @@
+node_modules/
+.git/
+.wrangler/
+worker/
+functions/
+scripts/
+server.js
+render.yaml
+package.json
+package-lock.json
+wrangler.toml
+.assetsignore
+.gitignore
+README.md
