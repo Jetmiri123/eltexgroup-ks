@@ -9,6 +9,7 @@ import {
   createSession,
   isAuthed,
   deleteSession,
+  getKv,
 } from '../lib/eltex-store.js';
 import { sendOrderEmail, sendContactEmail } from '../lib/eltex-email.js';
 
@@ -190,6 +191,9 @@ export async function handleApiRequest(context) {
 
   if (pathname === '/api/orders' && method === 'POST') {
     try {
+      if (!getKv(env)) {
+        return json({ error: 'Storage nuk është i disponueshëm. Porosia nuk u ruajt.' }, 503);
+      }
       const order = await buildOrderFromRequest(env, request, body);
       const orders = await readOrders(env, request);
       orders.unshift(order);

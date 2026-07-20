@@ -55,12 +55,24 @@ export async function writeJson(env, key, data) {
   await kv.put(key, JSON.stringify(data, null, 2));
 }
 
+async function readKvRaw(env, key) {
+  const kv = getKv(env);
+  if (!kv) return null;
+  return kv.get(key);
+}
+
 export async function readProducts(env, request) {
-  const fromKv = await readJson(env, KEYS.products);
-  if (fromKv && Array.isArray(fromKv.products) && fromKv.products.length) return fromKv;
+  const raw = await readKvRaw(env, KEYS.products);
+  if (raw !== null) {
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return { products: [], categories: [] };
+    }
+  }
 
   const fromAssets = await fetchAssetJson(env, request, '/data/live-products.json');
-  return fromAssets || fromKv || { products: [], categories: [] };
+  return fromAssets || { products: [], categories: [] };
 }
 
 export async function writeProducts(env, data) {
@@ -68,11 +80,18 @@ export async function writeProducts(env, data) {
 }
 
 export async function readPosts(env, request) {
-  const fromKv = await readJson(env, KEYS.posts);
-  if (Array.isArray(fromKv) && fromKv.length) return fromKv;
+  const raw = await readKvRaw(env, KEYS.posts);
+  if (raw !== null) {
+    try {
+      const data = JSON.parse(raw);
+      return Array.isArray(data) ? data : [];
+    } catch {
+      return [];
+    }
+  }
 
   const fromAssets = await fetchAssetJson(env, request, '/data/live-posts.json');
-  return fromAssets || (Array.isArray(fromKv) ? fromKv : []);
+  return fromAssets || [];
 }
 
 export async function writePosts(env, data) {
@@ -80,8 +99,15 @@ export async function writePosts(env, data) {
 }
 
 export async function readOrders(env, request) {
-  const fromKv = await readJson(env, KEYS.orders);
-  if (Array.isArray(fromKv)) return fromKv;
+  const raw = await readKvRaw(env, KEYS.orders);
+  if (raw !== null) {
+    try {
+      const data = JSON.parse(raw);
+      return Array.isArray(data) ? data : [];
+    } catch {
+      return [];
+    }
+  }
 
   const fromAssets = await fetchAssetJson(env, request, '/data/live-orders.json');
   return fromAssets || [];
@@ -136,4 +162,4 @@ export async function loadDataWithFallback(env, assetPath, key, request) {
   return null;
 }
 
-export { KEYS, getToken };
+export { KEYS, getToken, getKv };
