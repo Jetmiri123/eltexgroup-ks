@@ -11,3 +11,7 @@ run_worker_first = [ "/api/*", "/data/*" ]
 [[kv_namespaces]]
 binding = "KV"
 id = "b9e70c0bec494769bde7d8ff6bd65cdd"
+
+[vars]
+ELTEX_ADMIN_PASSWORD = "Eltex2026!"
+ELTEX_ORDER_EMAIL = "info@eltexgroup-ks.com"

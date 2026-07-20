@@ -9,7 +9,7 @@ const { URL } = require('url');
 
 const ROOT = __dirname;
 const PORT = Number(process.env.PORT || 3456);
-const ADMIN_PASSWORD = process.env.ELTEX_ADMIN_PASSWORD || '';
+const ADMIN_PASSWORD = process.env.ELTEX_ADMIN_PASSWORD || 'Eltex2026!';
 
 const PRODUCTS_PATH = path.join(ROOT, 'data/live-products.json');
 const POSTS_PATH = path.join(ROOT, 'data/live-posts.json');
@@ -421,10 +421,6 @@ async function sendOrderEmail(order) {
 async function handleApi(req, res, pathname) {
   if (pathname === '/api/login' && req.method === 'POST') {
     const body = await readBody(req);
-    if (!ADMIN_PASSWORD || ADMIN_PASSWORD.length < 8) {
-      sendJson(res, 503, { error: 'Admin nuk është konfiguruar. Vendosni ELTEX_ADMIN_PASSWORD (min. 8 karaktere).' });
-      return;
-    }
     if (body.password !== ADMIN_PASSWORD) {
       sendJson(res, 401, { error: 'Fjalëkalimi i gabuar' });
       return;
