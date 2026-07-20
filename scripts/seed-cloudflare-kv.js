@@ -31,7 +31,7 @@ for (const [key, rel] of files) {
   const filePath = path.join(ROOT, rel);
   const json = fs.readFileSync(filePath, 'utf8');
   JSON.parse(json);
-  execSync(`npx wrangler kv key put --namespace-id=${NS} ${key} --path=${filePath}`, {
+  execSync(`npx wrangler kv key put --namespace-id=${NS} --remote ${key} --path=${filePath}`, {
     stdio: 'inherit',
     cwd: ROOT,
   });
