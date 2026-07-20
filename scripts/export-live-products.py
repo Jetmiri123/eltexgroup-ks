@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Export products from live eltexgroup-ks.com WooCommerce store API."""
+"""Export products from live eltexgroup-rks.com WooCommerce store API."""
 import json
 import os
 import re
 import urllib.request
 from pathlib import Path
 
-SITE = os.environ.get('ELTEX_SITE', 'https://eltexgroup-ks.com')
+SITE = os.environ.get('ELTEX_SITE', 'https://eltexgroup-rks.com')
 OUT = Path(__file__).resolve().parents[1] / 'data' / 'live-products.json'
 
 

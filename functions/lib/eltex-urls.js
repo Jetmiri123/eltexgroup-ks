@@ -5,8 +5,17 @@ const HTML_ALIASES = {
   '/admin/index.html': '/admin',
 };
 
+const SLUG_REDIRECTS = {
+  '/blog/pse-te-zgjidhni-eltexgrop-ks-per-nevojat-tuaja-b2b-te-pajisjeve-elektrike':
+    '/blog/pse-te-zgjidhni-eltexgrop-rks-per-nevojat-tuaja-b2b-te-pajisjeve-elektrike',
+};
+
 export function getCleanUrlRedirect(pathname) {
   if (!pathname) return null;
+
+  if (SLUG_REDIRECTS[pathname]) {
+    return SLUG_REDIRECTS[pathname];
+  }
 
   if (pathname === '/produkt' || pathname === '/produkt/') {
     return '/produkte';

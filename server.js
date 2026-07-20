@@ -21,7 +21,7 @@ const SMTP_HOST = process.env.ELTEX_SMTP_HOST || '';
 const SMTP_PORT = Number(process.env.ELTEX_SMTP_PORT || 587);
 const SMTP_USER = process.env.ELTEX_SMTP_USER || '';
 const SMTP_PASS = process.env.ELTEX_SMTP_PASS || '';
-const SMTP_FROM = process.env.ELTEX_SMTP_FROM || SMTP_USER || 'orders@eltexgroup-ks.com';
+const SMTP_FROM = process.env.ELTEX_SMTP_FROM || SMTP_USER || 'orders@eltexgroup-rks.com';
 
 let mailer = null;
 try {

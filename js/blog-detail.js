@@ -44,11 +44,12 @@
 
   function fixContentLinks(html) {
     return html
+      .replace(/EltexGroup-ks/g, 'EltexGroup-rks')
       .replace(/href="\/kontakt\/?"/gi, 'href="/contact-us"')
-      .replace(/href="https:\/\/eltexgroup-ks\.com\/kontakt\/?"/gi, 'href="/contact-us"')
-      .replace(/href="https:\/\/eltexgroup-ks\.com\/\?page_id=2197"/gi, 'href="/contact-us"')
-      .replace(/href="https:\/\/eltexgroup-ks\.com\/pse-[^"]+"/gi, (match) => {
-        const slug = match.match(/pse-[^"/]+/)?.[0];
+      .replace(/href="https:\/\/eltexgroup-(?:ks|rks)\.com\/kontakt\/?"/gi, 'href="/contact-us"')
+      .replace(/href="https:\/\/eltexgroup-(?:ks|rks)\.com\/\?page_id=2197"/gi, 'href="/contact-us"')
+      .replace(/href="https:\/\/eltexgroup-(?:ks|rks)\.com\/pse-[^"]+"/gi, (match) => {
+        const slug = match.match(/pse-[^"/]+/)?.[0]?.replace('-eltexgrop-ks-', '-eltexgrop-rks-');
         return slug ? `href="/blog/${slug}"` : match;
       });
   }

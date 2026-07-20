@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: eltexgroup-ks
+    name: eltexgroup-rks
     runtime: node
     plan: free
     buildCommand: npm install

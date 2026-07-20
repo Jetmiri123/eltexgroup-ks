@@ -35,7 +35,7 @@ async function sendViaMailchannels({ from, to, subject, text, replyTo }) {
 }
 
 function emailFrom(env) {
-  return String(env.ELTEX_EMAIL_FROM || env.ELTEX_ORDER_EMAIL || 'orders@eltexgroup-ks.com').trim();
+  return String(env.ELTEX_EMAIL_FROM || env.ELTEX_ORDER_EMAIL || 'orders@eltexgroup-rks.com').trim();
 }
 
 function emailTo(env) {
