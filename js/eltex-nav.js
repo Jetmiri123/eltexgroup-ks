@@ -43,10 +43,10 @@
     '">' +
     '<img src="images/brand/eltex-logo.png" loading="eager" alt="Eltex Group" class="navbar_logo">' +
     '</a>' +
-    '<nav role="navigation" class="navbar_menu is-page-height-tablet w-nav-menu">' +
+    '<nav id="eltex-nav-menu" role="navigation" class="navbar_menu is-page-height-tablet w-nav-menu">' +
     navParts +
     '</nav>' +
-    '<div data-w-id="70e4924a-7764-1076-0797-649b20cd147e" class="navbar_menu-button w-nav-button">' +
+    '<div data-w-id="70e4924a-7764-1076-0797-649b20cd147e" class="navbar_menu-button w-nav-button" aria-label="Hap menynë" aria-expanded="false" aria-controls="eltex-nav-menu">' +
     '<div class="menu-icon">' +
     '<div data-is-ix2-target="1" class="lottie-animation" data-w-id="70e4924a-7764-1076-0797-649b20cd1480" data-animation-type="lottie" data-src="documents/burger-menu.json" data-loop="0" data-direction="1" data-autoplay="0" data-renderer="svg" data-duration="0" data-loading="eager" data-ix2-initial-state="9"></div>' +
     '</div></div></div></div>';

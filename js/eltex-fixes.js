@@ -49,16 +49,15 @@
 
     var canHover = window.matchMedia('(hover: hover)').matches;
 
-    items.forEach(function (item) {
-      if (canHover) return;
-
-      item.addEventListener('click', function () {
-        var isOpen = item.classList.contains('is-open');
-        items.forEach(function (other) {
-          other.classList.toggle('is-open', other === item ? !isOpen : false);
-        });
-      });
-    });
+    if (!canHover) {
+      setupExclusiveAccordion(
+        items,
+        function (item) {
+          return item.querySelector('.about_heading');
+        },
+        0
+      );
+    }
   });
 
   /* Homepage FAQ accordion */
