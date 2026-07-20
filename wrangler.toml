@@ -2,5 +2,4 @@ name = "eltexgroup-ks"
 compatibility_date = "2024-09-01"
 pages_build_output_dir = "."
 
-# KV binding: add in Cloudflare dashboard after first deploy
-# Pages → Settings → Functions → KV namespace bindings → ELTEX_DATA
+# KV: bind ELTEX_DATA in dashboard → Pages → Settings → Functions → KV bindings
