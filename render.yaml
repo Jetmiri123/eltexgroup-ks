@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: eltexgroup-ks
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: ELTEX_ADMIN_PASSWORD
+        generateValue: true
+      - key: PORT
+        value: "3456"

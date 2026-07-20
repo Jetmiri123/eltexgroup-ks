@@ -1,0 +1,27 @@
+/* Site-wide scroll reveal (Webflow-style fallback) */
+
+.eltex-reveal {
+  opacity: 0;
+  transform: translate3d(0, 28px, 0);
+  transition: opacity 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    transform 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.eltex-reveal.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.eltex-reveal-delay-1 { transition-delay: 0.08s; }
+.eltex-reveal-delay-2 { transition-delay: 0.16s; }
+.eltex-reveal-delay-3 { transition-delay: 0.24s; }
+.eltex-reveal-delay-4 { transition-delay: 0.32s; }
+.eltex-reveal-delay-5 { transition-delay: 0.4s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .eltex-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Eltex Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body>
+  <div id="login-screen" class="login-screen">
+    <div class="login-card">
+      <img src="/images/eltex-logo.svg" alt="Eltex Group" class="login-logo">
+      <h1>Admin Portal</h1>
+      <p class="login-subtitle">Menaxho produktet, blogun dhe porositë B2B</p>
+      <form id="login-form" class="login-form">
+        <label for="password">Fjalëkalimi</label>
+        <input type="password" id="password" autocomplete="current-password" placeholder="Shkruani fjalëkalimin" required>
+        <button type="submit" class="btn primary btn-block">Hyr në panel</button>
+      </form>
+      <p id="login-error" class="error" hidden></p>
+    </div>
+  </div>
+
+  <div id="app" class="app" hidden>
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <img src="/images/eltex-logo-white.svg" alt="" class="sidebar-logo">
+        <div>
+          <strong>Eltex Admin</strong>
+          <span>Paneli i menaxhimit</span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <button type="button" class="sidebar-link active" data-tab="products">
+          <span class="sidebar-link-label">Produktet</span>
+          <span id="products-count" class="sidebar-badge"></span>
+        </button>
+        <button type="button" class="sidebar-link" data-tab="posts">
+          <span class="sidebar-link-label">Blog B2B</span>
+          <span id="posts-count" class="sidebar-badge"></span>
+        </button>
+        <button type="button" class="sidebar-link" data-tab="orders">
+          <span class="sidebar-link-label">Porositë</span>
+          <span id="orders-count" class="sidebar-badge"></span>
+        </button>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="/" target="_blank" class="btn ghost btn-block">Shiko faqen</a>
+        <button type="button" id="logout-btn" class="btn ghost btn-block">Dil</button>
+      </div>
+    </aside>
+
+    <div class="app-shell">
+      <header class="page-header">
+        <div>
+          <p class="page-eyebrow">Eltex Group</p>
+          <h1 id="page-title" class="page-title">Produktet</h1>
+        </div>
+      </header>
+
+      <main class="main">
+        <section id="panel-products" class="panel">
+          <div class="panel-toolbar">
+            <input type="search" id="product-search" placeholder="Kërko produkt..." class="search">
+            <button type="button" id="add-product-btn" class="btn primary">+ Produkt i Ri</button>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Emri</th>
+                  <th>Kategoria</th>
+                  <th>Çmimi</th>
+                  <th>Slug</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="products-table"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="panel-posts" class="panel" hidden>
+          <div class="panel-toolbar">
+            <input type="search" id="post-search" placeholder="Kërko artikull..." class="search">
+            <button type="button" id="add-post-btn" class="btn primary">+ Artikull i Ri</button>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Titulli</th>
+                  <th>Kategoria</th>
+                  <th>Data</th>
+                  <th>Slug</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="posts-table"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="panel-orders" class="panel" hidden>
+          <div class="panel-toolbar">
+            <input type="search" id="order-search" placeholder="Kërko porosi..." class="search">
+            <select id="order-status-filter" class="search order-filter">
+              <option value="">Të gjitha statuset</option>
+              <option value="new">Të reja</option>
+              <option value="processing">Në përpunim</option>
+              <option value="done">Përfunduar</option>
+              <option value="cancelled">Anuluar</option>
+            </select>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Klienti</th>
+                  <th>Produkte</th>
+                  <th>Totali</th>
+                  <th>Statusi</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="orders-table"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <dialog id="editor-dialog" class="editor-dialog">
+    <form id="editor-form" method="dialog">
+      <header class="dialog-header">
+        <h2 id="editor-title">Ndrysho</h2>
+        <button type="button" id="close-dialog" class="icon-btn" aria-label="Mbyll">×</button>
+      </header>
+      <div id="editor-fields" class="dialog-body"></div>
+      <footer class="dialog-footer">
+        <button type="button" id="delete-item-btn" class="btn danger" hidden>Fshi</button>
+        <div class="spacer"></div>
+        <button type="button" id="cancel-dialog" class="btn ghost">Anulo</button>
+        <button type="submit" class="btn primary">Ruaj</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="/admin/admin.js"></script>
+</body>
+</html>

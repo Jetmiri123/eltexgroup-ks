@@ -1,0 +1,157 @@
+[
+  {
+    "id": "ord_mrs6qlno5010cf",
+    "createdAt": "2026-07-19T19:25:04.933Z",
+    "status": "new",
+    "customer": {
+      "name": "Test B2B",
+      "email": "test@example.com",
+      "phone": "+38344123456",
+      "company": "Test Co",
+      "notes": ""
+    },
+    "items": [
+      {
+        "id": "6024",
+        "slug": "izolator-cilindrik-1n-500-m10",
+        "name": "Izolator cilindrik 1N 500 M10",
+        "cat": "Izolator elektrik për zbarra / Bus‑bar Insulator ",
+        "price": 2.5,
+        "qty": 1,
+        "lineTotal": 2.5
+      }
+    ],
+    "total": 2.5,
+    "currency": "EUR"
+  },
+  {
+    "id": "ord_mrs6pje9e869ae",
+    "createdAt": "2026-07-19T19:24:15.349Z",
+    "status": "new",
+    "customer": {
+      "name": "Test B2B",
+      "email": "test@example.com",
+      "phone": "+38344123456",
+      "company": "Test Co",
+      "notes": ""
+    },
+    "items": [
+      {
+        "id": "6024",
+        "slug": "izolator-cilindrik-1n-500-m10",
+        "name": "Izolator cilindrik 1N 500 M10",
+        "cat": "Izolator elektrik për zbarra / Bus‑bar Insulator ",
+        "price": 2.5,
+        "qty": 1,
+        "lineTotal": 2.5
+      }
+    ],
+    "total": 2.5,
+    "currency": "EUR"
+  },
+  {
+    "id": "ord_mrs6nv8j09e653",
+    "createdAt": "2026-07-19T19:22:57.385Z",
+    "status": "cancelled",
+    "customer": {
+      "name": "Jetmir Kojqiqi",
+      "email": "jetmirkojqiqi12@gmail.com",
+      "phone": "+383 45908565",
+      "company": "Jetmir Test",
+      "notes": "erfkdsjcn"
+    },
+    "items": [
+      {
+        "id": "3704",
+        "slug": "nderpres-og-multusan-10",
+        "name": "Nderpres-OG-Multusan",
+        "cat": "Nderpres",
+        "price": 4,
+        "qty": 1,
+        "lineTotal": 4
+      },
+      {
+        "id": "3705",
+        "slug": "nderpres-og-multusan-11",
+        "name": "Nderpres-OG-Multusan",
+        "cat": "Nderpres",
+        "price": 4,
+        "qty": 1,
+        "lineTotal": 4
+      },
+      {
+        "id": "4084",
+        "slug": "buton-komandues",
+        "name": "Buton komandues",
+        "cat": "Buton komandues",
+        "price": 4,
+        "qty": 1,
+        "lineTotal": 4
+      },
+      {
+        "id": "5320",
+        "slug": "kleme-per-tela-wago",
+        "name": "Kleme për Tela WAGO",
+        "cat": "Kleme WAGO",
+        "price": 0.2,
+        "qty": 1,
+        "lineTotal": 0.2
+      }
+    ],
+    "total": 12.2,
+    "currency": "EUR",
+    "updatedAt": "2026-07-19T19:33:45.375Z"
+  },
+  {
+    "id": "ord_mrs4vvwd413347",
+    "createdAt": "2026-07-19T18:33:12.253Z",
+    "status": "new",
+    "customer": {
+      "name": "Test",
+      "email": "a@b.com",
+      "phone": "123",
+      "company": "",
+      "notes": ""
+    },
+    "items": [
+      {
+        "id": "6024",
+        "slug": "izolator-cilindrik-1n-500-m10",
+        "name": "Izolator cilindrik 1N 500 M10",
+        "cat": "Izolator elektrik për zbarra / Bus‑bar Insulator ",
+        "price": 2.5,
+        "qty": 1,
+        "lineTotal": 2.5
+      }
+    ],
+    "total": 2.5,
+    "currency": "EUR",
+    "updatedAt": "2026-07-19T19:05:48.131Z"
+  },
+  {
+    "id": "ord_mrs4vlbo52da49",
+    "createdAt": "2026-07-19T18:32:58.549Z",
+    "status": "done",
+    "customer": {
+      "name": "Test User",
+      "email": "test@example.com",
+      "phone": "+38344123456",
+      "company": "Test Co",
+      "notes": "Test order"
+    },
+    "items": [
+      {
+        "id": "6024",
+        "slug": "izolator-cilindrik-1n-500-m10",
+        "name": "Izolator cilindrik 1N 500 M10",
+        "cat": "Izolator elektrik për zbarra / Bus‑bar Insulator ",
+        "price": 2.5,
+        "qty": 2,
+        "lineTotal": 5
+      }
+    ],
+    "total": 5,
+    "currency": "EUR",
+    "updatedAt": "2026-07-19T19:05:51.027Z"
+  }
+]

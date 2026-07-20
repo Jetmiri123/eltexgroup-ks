@@ -1,0 +1,47 @@
+{
+  "source": "https://eltexgroup-ks.com",
+  "fetched": "2026-07-19",
+  "pages": {
+    "home": "https://eltexgroup-ks.com/",
+    "produkte": "https://eltexgroup-ks.com/produkte/",
+    "per-ne": "https://eltexgroup-ks.com/per-ne/",
+    "kontakt": "https://eltexgroup-ks.com/kontakt/",
+    "blog": "https://eltexgroup-ks.com/blog/",
+    "faqs": "https://eltexgroup-ks.com/faqs/"
+  },
+  "posts": [
+    {
+      "slug": "pse-bizneset-serioze-ne-kosove-po-zgjedhin-eltexgroup-per-cdo-projekt-elektrik",
+      "image": "images/blog/post-1.webp"
+    },
+    {
+      "slug": "pse-eltextgroup-eshte-partneri-ideal-per-furnizime-elektrike-b2b",
+      "image": "images/blog/post-2.webp"
+    },
+    {
+      "slug": "pse-te-zgjidhni-eltexgrop-ks-per-nevojat-tuaja-b2b-te-pajisjeve-elektrike",
+      "image": "images/blog/post-3.webp"
+    }
+  ],
+  "partners": [
+    "images/partners/logo-chnt.png",
+    "images/partners/logo-marel.png",
+    "images/partners/logo-solmazsan.png",
+    "images/partners/logo-schneider.svg",
+    "images/partners/logo-pro-zdenka.png",
+    "images/partners/logo-abb.png",
+    "images/partners/logo-bla-cables.png",
+    "images/partners/logo-mexan.png"
+  ],
+  "certs": "images/iso.png",
+  "heroes": {
+    "home": "images/hero-banner.jpg",
+    "contact": "images/pages/contact-hero.jpg",
+    "produkte": "images/pages/bg-products.webp"
+  },
+  "about": [
+    "images/pages/about-1.png",
+    "images/pages/about-2.png"
+  ],
+  "products": "data/live-products.json"
+}
