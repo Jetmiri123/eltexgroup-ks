@@ -107,14 +107,17 @@ function isAuthed(req) {
   return true;
 }
 
-function send(res, status, body, type) {
-  const headers = { 'Content-Type': type || 'text/plain; charset=utf-8' };
+function send(res, status, body, type, extraHeaders) {
+  const headers = {
+    'Content-Type': type || 'text/plain; charset=utf-8',
+    ...(extraHeaders || {}),
+  };
   res.writeHead(status, headers);
   res.end(body);
 }
 
-function sendJson(res, status, obj) {
-  send(res, status, JSON.stringify(obj), 'application/json; charset=utf-8');
+function sendJson(res, status, obj, extraHeaders) {
+  send(res, status, JSON.stringify(obj), 'application/json; charset=utf-8', extraHeaders);
 }
 
 function readBody(req) {
@@ -182,16 +185,18 @@ function getCleanUrlRedirect(pathname) {
   return null;
 }
 
-function serveFile(res, filePath) {
+function serveFile(res, filePath, extraHeaders) {
   const ext = path.extname(filePath).toLowerCase();
   fs.readFile(filePath, (err, data) => {
     if (err) {
       send(res, 404, 'Not found');
       return;
     }
-    send(res, 200, data, MIME[ext] || 'application/octet-stream');
+    send(res, 200, data, MIME[ext] || 'application/octet-stream', extraHeaders);
   });
 }
+
+const NOINDEX_HEADERS = { 'X-Robots-Tag': 'noindex, nofollow, noarchive' };
 
 function rebuildCategories(products) {
   const counts = {};
@@ -707,7 +712,8 @@ const server = http.createServer(async (req, res) => {
       send(res, 404, 'Not found');
       return;
     }
-    serveFile(res, filePath);
+    const isAdmin = pathname === '/admin' || pathname.startsWith('/admin/');
+    serveFile(res, filePath, isAdmin ? NOINDEX_HEADERS : undefined);
   });
 });
 

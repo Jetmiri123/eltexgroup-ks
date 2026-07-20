@@ -3,6 +3,22 @@ import { handleDataRequest } from '../functions/lib/eltex-data.js';
 import { serveMedia } from '../functions/lib/eltex-media.js';
 import { getCleanUrlRedirect, redirectResponse } from '../functions/lib/eltex-urls.js';
 
+const NOINDEX = 'noindex, nofollow, noarchive';
+
+function withNoIndex(response) {
+  const headers = new Headers(response.headers);
+  headers.set('X-Robots-Tag', NOINDEX);
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
+function isPrivatePath(path) {
+  return path === '/admin' || path.startsWith('/admin/') || path.startsWith('/api/');
+}
+
 async function serveStatic(request, env) {
   const url = new URL(request.url);
   const path = url.pathname;
@@ -33,7 +49,7 @@ export default {
 
     if (path.startsWith('/api/')) {
       const segments = path.slice(5).split('/').filter(Boolean);
-      return handleApiRequest({ request, env, params: { path: segments } });
+      return withNoIndex(await handleApiRequest({ request, env, params: { path: segments } }));
     }
 
     if (path.startsWith('/data/')) {
@@ -49,6 +65,10 @@ export default {
       return redirectResponse(request, clean);
     }
 
-    return serveStatic(request, env);
+    const response = await serveStatic(request, env);
+    if (isPrivatePath(path)) {
+      return withNoIndex(response);
+    }
+    return response;
   },
 };
