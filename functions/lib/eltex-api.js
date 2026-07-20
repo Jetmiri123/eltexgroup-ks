@@ -41,8 +41,9 @@ function isValidEmail(email) {
 
 function getAdminPassword(env) {
   const value = String(env.ELTEX_ADMIN_PASSWORD || '').trim();
-  if (value.length < 8) return null;
-  return value;
+  if (!value) return { error: 'missing', password: null };
+  if (value.length < 8) return { error: 'short', password: null };
+  return { error: null, password: value };
 }
 
 function rebuildCategories(products) {
@@ -157,17 +158,20 @@ export async function handleApiRequest(context) {
   }
 
   if (pathname === '/api/login' && method === 'POST') {
-    const adminPassword = getAdminPassword(env);
-    if (!adminPassword) {
+    const admin = getAdminPassword(env);
+    if (admin.error === 'missing') {
       return json(
         {
           error:
-            'Admin nuk është konfiguruar. Vendosni ELTEX_ADMIN_PASSWORD (min. 8 karaktere) në Cloudflare Settings.',
+            'ELTEX_ADMIN_PASSWORD nuk u gjet. Shtoje te Settings → Variables, pastaj Deployments → Retry deployment.',
         },
         503
       );
     }
-    if (body.password !== adminPassword) return json({ error: 'Fjalëkalimi i gabuar' }, 401);
+    if (admin.error === 'short') {
+      return json({ error: 'Fjalëkalimi duhet të ketë të paktën 8 karaktere.' }, 503);
+    }
+    if (body.password !== admin.password) return json({ error: 'Fjalëkalimi i gabuar' }, 401);
     const token = randomToken();
     await createSession(env, token);
     return json({ token });
