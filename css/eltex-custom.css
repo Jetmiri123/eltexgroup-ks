@@ -1167,10 +1167,15 @@ body > section.main_section:first-of-type {
 
 .about-faq-image img,
 .about-faq-img {
-  width: 100%;
-  max-height: 280px;
   object-fit: cover;
   display: block;
+}
+
+.about-faq-drop-down .about-faq-img {
+  width: 250px;
+  height: 150px;
+  max-height: none;
+  border-radius: 2px;
 }
 
 /* ========== Homepage — Webflow native fixes ========== */
@@ -1299,7 +1304,7 @@ body > section.main_section:first-of-type {
   }
 }
 
-/* About FAQ — hover to expand (original behavior), click on touch */
+/* About FAQ — hover expand, smooth layout */
 .about-faq {
   width: 100%;
 }
@@ -1309,83 +1314,117 @@ section.main_section:has(.about-faq) {
 }
 
 .about-faq-drop-down .faqs_materials {
-  align-items: flex-start;
+  align-items: center;
+  padding-top: 36px;
+  padding-bottom: 36px;
+  transition: padding 0.35s ease;
 }
 
-.about_heading {
-  cursor: default;
-  user-select: none;
+.about-faq-drop-down .answer-question {
+  flex: 1;
+  min-width: 0;
+  margin-right: 2rem;
+}
+
+.about-faq-drop-down .about_heading {
+  align-items: baseline;
+  gap: 1.75rem;
+  width: 100%;
+}
+
+.about-faq-drop-down .about_heading .xs-text {
+  flex: 0 0 auto;
+  min-width: 1.25rem;
+  line-height: 1.2;
+}
+
+.about-faq-drop-down .about_heading .project-text {
+  flex: 1;
+  margin: 0;
+  line-height: 1.15;
+  transition: color 0.3s ease;
 }
 
 .about-faq-drop-down .about_pharagraph {
-  max-height: 0;
-  overflow: hidden;
-  opacity: 0;
-  padding-left: 50px;
+  display: grid;
+  grid-template-rows: 0fr;
+  padding-left: calc(1.25rem + 1.75rem);
   margin: 0;
-  transition:
-    max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1),
-    opacity 0.3s ease,
-    margin 0.3s ease;
+  overflow: hidden;
+  transition: grid-template-rows 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .about-faq-drop-down .about_pharagraph .paragraph {
+  overflow: hidden;
+  min-height: 0;
   margin: 0;
   padding-right: 1rem;
   color: #636363;
   line-height: 1.65;
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 0.35s ease 0.08s,
+    transform 0.35s ease 0.08s,
+    margin 0.35s ease 0.08s;
 }
 
-.faqs_materials .about-faq-image {
+.about-faq-drop-down .about-faq-image {
+  flex: 0 0 0;
   width: 0;
   min-width: 0;
   margin: 0;
   padding: 0;
   opacity: 0;
   overflow: hidden;
+  align-self: center;
   pointer-events: none;
   transition:
-    width 0.45s cubic-bezier(0.4, 0, 0.2, 1),
-    opacity 0.3s ease,
-    margin 0.3s ease;
+    flex-basis 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.35s ease 0.06s;
 }
 
 @media (hover: hover) {
-  .faqs_materials:hover .about_pharagraph {
-    max-height: 220px;
+  .about-faq-drop-down .faqs_materials:hover .about_pharagraph {
+    grid-template-rows: 1fr;
+  }
+
+  .about-faq-drop-down .faqs_materials:hover .about_pharagraph .paragraph {
     opacity: 1;
+    transform: translateY(0);
+    margin: 0.75rem 0 0;
   }
 
-  .faqs_materials:hover .about_pharagraph .paragraph {
-    margin: 0.85rem 0 0;
-  }
-
-  .faqs_materials:hover .about_heading .project-text {
+  .about-faq-drop-down .faqs_materials:hover .about_heading .project-text {
     color: var(--orange, #f97316) !important;
   }
 
-  .faqs_materials:hover .about-faq-image {
-    width: auto;
+  .about-faq-drop-down .faqs_materials:hover .about-faq-image {
+    flex: 0 0 250px;
+    width: 250px;
     opacity: 1;
     pointer-events: auto;
   }
 }
 
-.faqs_materials.is-open .about_pharagraph {
-  max-height: 220px;
+.about-faq-drop-down .faqs_materials.is-open .about_pharagraph {
+  grid-template-rows: 1fr;
+}
+
+.about-faq-drop-down .faqs_materials.is-open .about_pharagraph .paragraph {
   opacity: 1;
+  transform: translateY(0);
+  margin: 0.75rem 0 0;
 }
 
-.faqs_materials.is-open .about_pharagraph .paragraph {
-  margin: 0.85rem 0 0;
-}
-
-.faqs_materials.is-open .about_heading .project-text {
+.about-faq-drop-down .faqs_materials.is-open .about_heading .project-text {
   color: var(--orange, #f97316) !important;
 }
 
-.faqs_materials.is-open .about-faq-image {
-  width: auto;
+.about-faq-drop-down .faqs_materials.is-open .about-faq-image {
+  flex: 0 0 250px;
+  width: 250px;
   opacity: 1;
   pointer-events: auto;
 }
@@ -1421,7 +1460,24 @@ section.main_section:has(.about-faq) {
   }
 
   .about-faq-drop-down .about_pharagraph {
-    padding-left: 31px;
+    padding-left: calc(1.25rem + 1rem);
+  }
+
+  .about-faq-drop-down .faqs_materials {
+    align-items: flex-start;
+  }
+
+  .about-faq-drop-down .about-faq-img {
+    width: 100%;
+    height: 220px;
+  }
+
+  .about-faq-drop-down .faqs_materials.is-open .about-faq-image,
+  .about-faq-drop-down .faqs_materials:hover .about-faq-image {
+    flex: 0 0 100%;
+    width: 100%;
+    margin-top: 1rem;
+    padding-left: 0;
   }
 
   body > section.main_section:first-of-type {

@@ -42,7 +42,11 @@
     var items = wrap.querySelectorAll('.faqs_materials');
     if (!items.length) return;
 
+    var canHover = window.matchMedia('(hover: hover)').matches;
+
     items.forEach(function (item) {
+      if (canHover) return;
+
       item.addEventListener('click', function () {
         var isOpen = item.classList.contains('is-open');
         items.forEach(function (other) {
