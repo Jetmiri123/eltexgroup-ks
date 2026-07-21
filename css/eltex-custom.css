@@ -120,6 +120,10 @@ body > section.main_section:first-of-type {
 .main_section.bg_background {
   padding-top: var(--section-pad) !important;
   padding-bottom: var(--section-pad) !important;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)), url('../images/electrical/hero-electrician.jpg') !important;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .main_section.bg_background + .eltex-footer,
