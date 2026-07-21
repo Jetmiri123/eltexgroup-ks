@@ -249,6 +249,15 @@ export async function handleApiRequest(context) {
     return json({ ok: true, order });
   }
 
+  if (orderMatch && method === 'DELETE') {
+    const orders = await readOrders(env, request);
+    const index = orders.findIndex((entry) => entry.id === orderMatch[1]);
+    if (index === -1) return json({ error: 'Porosia nuk u gjet' }, 404);
+    orders.splice(index, 1);
+    await writeOrders(env, orders);
+    return json({ ok: true });
+  }
+
   if (pathname === '/api/products') {
     if (method === 'GET') return json(await readProducts(env, request));
     if (method === 'PUT') {

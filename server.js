@@ -21,7 +21,7 @@ const SMTP_HOST = process.env.ELTEX_SMTP_HOST || '';
 const SMTP_PORT = Number(process.env.ELTEX_SMTP_PORT || 587);
 const SMTP_USER = process.env.ELTEX_SMTP_USER || '';
 const SMTP_PASS = process.env.ELTEX_SMTP_PASS || '';
-const SMTP_FROM = process.env.ELTEX_SMTP_FROM || SMTP_USER || 'orders@eltexgroup-rks.com';
+const SMTP_FROM = process.env.ELTEX_SMTP_FROM || SMTP_USER || 'orders@eltexgroup-ks.com';
 
 let mailer = null;
 try {
@@ -561,6 +561,19 @@ async function handleApi(req, res, pathname) {
     }
     writeOrders(orders);
     sendJson(res, 200, { ok: true, order });
+    return;
+  }
+
+  if (orderMatch && req.method === 'DELETE') {
+    const orders = readOrders();
+    const index = orders.findIndex((entry) => entry.id === orderMatch[1]);
+    if (index === -1) {
+      sendJson(res, 404, { error: 'Porosia nuk u gjet' });
+      return;
+    }
+    orders.splice(index, 1);
+    writeOrders(orders);
+    sendJson(res, 200, { ok: true });
     return;
   }
 

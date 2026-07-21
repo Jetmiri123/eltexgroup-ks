@@ -425,7 +425,10 @@
           <td>${itemCount} copë</td>
           <td>€${Number(order.total || 0).toFixed(2)}</td>
           <td><span class="status-badge status-${escapeHtml(order.status || 'new')}">${escapeHtml(orderStatusLabel(order.status))}</span></td>
-          <td><button type="button" class="btn ghost small" data-view-order="${escapeHtml(order.id)}">Shiko</button></td>
+          <td class="table-actions">
+            <button type="button" class="btn ghost small" data-view-order="${escapeHtml(order.id)}">Shiko</button>
+            <button type="button" class="btn danger small" data-delete-order="${escapeHtml(order.id)}">Fshi</button>
+          </td>
         </tr>`;
           })
           .join('')
@@ -439,7 +442,7 @@
     editorMode = 'order';
     editorIndex = ordersData.indexOf(order);
     editorTitle.textContent = 'Porosia ' + order.id.slice(-8).toUpperCase();
-    deleteItemBtn.hidden = true;
+    deleteItemBtn.hidden = false;
 
     const itemsHtml = (order.items || [])
       .map(
@@ -497,6 +500,13 @@
       body: JSON.stringify({ status }),
     });
     showToast('Statusi u përditësua');
+    ordersData = await api('/api/orders');
+    renderOrders();
+  }
+
+  async function deleteOrder(orderId) {
+    await api('/api/orders/' + encodeURIComponent(orderId), { method: 'DELETE' });
+    showToast('Porosia u fshi');
     ordersData = await api('/api/orders');
     renderOrders();
   }
@@ -751,9 +761,15 @@
   });
 
   deleteItemBtn.addEventListener('click', async () => {
-    if (!confirm('Je i sigurt që do ta fshish?')) return;
+    const confirmMessage =
+      editorMode === 'order'
+        ? 'Je i sigurt që do ta fshish këtë porosi?'
+        : 'Je i sigurt që do ta fshish?';
+    if (!confirm(confirmMessage)) return;
     try {
-      if (editorMode === 'product' && editorIndex >= 0) {
+      if (editorMode === 'order' && editorIndex >= 0) {
+        await deleteOrder(ordersData[editorIndex].id);
+      } else if (editorMode === 'product' && editorIndex >= 0) {
         productsData.products.splice(editorIndex, 1);
         await saveProducts();
       } else if (editorMode === 'post' && editorIndex >= 0) {
@@ -777,8 +793,17 @@
   });
 
   ordersTable.addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-view-order]');
-    if (btn) openOrderViewer(btn.dataset.viewOrder);
+    const viewBtn = e.target.closest('[data-view-order]');
+    if (viewBtn) {
+      openOrderViewer(viewBtn.dataset.viewOrder);
+      return;
+    }
+
+    const deleteBtn = e.target.closest('[data-delete-order]');
+    if (deleteBtn) {
+      if (!confirm('Je i sigurt që do ta fshish këtë porosi?')) return;
+      deleteOrder(deleteBtn.dataset.deleteOrder).catch((err) => showToast(err.message));
+    }
   });
 
   orderSearch.addEventListener('input', renderOrders);

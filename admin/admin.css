@@ -409,6 +409,13 @@ textarea {
   font-size: 0.8125rem;
 }
 
+.table-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+}
+
 /* Dialog */
 .editor-dialog {
   border: none;
