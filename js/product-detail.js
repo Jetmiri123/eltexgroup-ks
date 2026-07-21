@@ -1,5 +1,5 @@
 (function () {
-  const { loadProducts, findProduct, formatPrice, productUrl, cartPayload, getProductParams } =
+  const { loadProducts, findProduct, formatPrice, productUrl, cartPayload, getProductParams, formatRichContent } =
     window.EltexProducts;
 
   const params = getProductParams();
@@ -32,21 +32,17 @@
       .trim();
   }
 
-  function textToParagraphs(text) {
-    return escapeHtml(text)
-      .split(/\n{2,}/)
-      .map((block) => block.trim())
-      .filter(Boolean)
-      .map((block) => `<p>${block.replace(/\n/g, '<br>')}</p>`)
-      .join('');
+  function renderDescriptionHtml(product) {
+    const fullHtml = formatRichContent(product.description_html, product.description);
+    const shortHtml = formatRichContent(product.short_description_html, product.short_description);
+    if (fullHtml && stripHtml(fullHtml) !== stripHtml(shortHtml)) {
+      return fullHtml;
+    }
+    return shortHtml || fullHtml;
   }
 
-  function renderDescriptionHtml(product) {
-    const html = product.description_html || product.short_description_html;
-    if (html && /<[^>]+>/.test(html)) {
-      return html;
-    }
-    return textToParagraphs(product.description || product.short_description || '');
+  function renderSummaryHtml(product) {
+    return formatRichContent(product.short_description_html, product.short_description);
   }
 
   function renderGallery(product) {
@@ -97,11 +93,8 @@
   function renderDescription(product) {
     const descriptionHtml = renderDescriptionHtml(product);
     const plainDescription = stripHtml(descriptionHtml);
-    const plainShort = stripHtml(
-      product.short_description_html || product.short_description || product.description || ''
-    );
 
-    if (!plainDescription || (plainShort && plainDescription === plainShort)) {
+    if (!plainDescription) {
       descriptionWrap.hidden = true;
       document.getElementById('product-description').innerHTML = '';
       return false;
@@ -110,6 +103,24 @@
     descriptionWrap.hidden = false;
     document.getElementById('product-description').innerHTML = descriptionHtml;
     return true;
+  }
+
+  function renderSummary(product) {
+    const summaryEl = document.getElementById('product-summary');
+    if (!summaryEl) return;
+
+    const summaryHtml = renderSummaryHtml(product);
+    const plainSummary = stripHtml(summaryHtml);
+    const plainDescription = stripHtml(renderDescriptionHtml(product));
+
+    if (!plainSummary || plainSummary === plainDescription) {
+      summaryEl.hidden = true;
+      summaryEl.innerHTML = '';
+      return;
+    }
+
+    summaryEl.hidden = false;
+    summaryEl.innerHTML = summaryHtml;
   }
 
   function renderRelated(all, product) {
@@ -174,6 +185,7 @@
     addBtn.textContent = product.in_stock === false ? 'Nuk ka stok' : 'Shto në Shportë';
 
     renderGallery(product);
+    renderSummary(product);
     const hasSpecs = renderSpecs(product);
     const hasDescription = renderDescription(product);
     detailsBlock.hidden = !(hasSpecs || hasDescription);

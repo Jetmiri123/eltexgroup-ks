@@ -6,6 +6,8 @@ import {
   writePosts,
   readOrders,
   writeOrders,
+  readSubmissions,
+  writeSubmissions,
   createSession,
   isAuthed,
   deleteSession,
@@ -87,6 +89,23 @@ function randomOrderId() {
   crypto.getRandomValues(arr);
   const hex = Array.from(arr, (b) => b.toString(16).padStart(2, '0')).join('');
   return 'ord_' + Date.now().toString(36) + hex;
+}
+
+function randomSubmissionId() {
+  const arr = new Uint8Array(3);
+  crypto.getRandomValues(arr);
+  const hex = Array.from(arr, (b) => b.toString(16).padStart(2, '0')).join('');
+  return 'sub_' + Date.now().toString(36) + hex;
+}
+
+async function storeSubmission(env, request, submission) {
+  if (!getKv(env)) {
+    throw new Error('Storage nuk është i disponueshëm');
+  }
+  const submissions = await readSubmissions(env, request);
+  submissions.unshift(submission);
+  await writeSubmissions(env, submissions);
+  return submission;
 }
 
 async function buildOrderFromRequest(env, request, body) {
@@ -180,6 +199,22 @@ export async function handleApiRequest(context) {
     if (!name) return json({ error: 'Emri është i detyrueshëm' }, 400);
     if (!isValidEmail(email)) return json({ error: 'Email i pavlefshëm' }, 400);
 
+    let submission = null;
+    try {
+      submission = await storeSubmission(env, request, {
+        id: randomSubmissionId(),
+        type: 'contact',
+        createdAt: new Date().toISOString(),
+        status: 'new',
+        name,
+        email,
+        phone,
+        message,
+      });
+    } catch (e) {
+      return json({ error: e.message || 'Mesazhi nuk u ruajt' }, 503);
+    }
+
     let emailResult = { sent: false };
     try {
       emailResult = await sendContactEmail(env, { name, email, phone, message });
@@ -187,7 +222,29 @@ export async function handleApiRequest(context) {
       emailResult = { sent: false, reason: e.message };
     }
 
-    return json({ ok: true, emailSent: emailResult.sent });
+    return json({ ok: true, emailSent: emailResult.sent, submissionId: submission.id });
+  }
+
+  if (pathname === '/api/newsletter' && method === 'POST') {
+    const email = sanitizeText(body.email, 160).toLowerCase();
+
+    if (!isValidEmail(email)) return json({ error: 'Email i pavlefshëm' }, 400);
+
+    try {
+      const submission = await storeSubmission(env, request, {
+        id: randomSubmissionId(),
+        type: 'newsletter',
+        createdAt: new Date().toISOString(),
+        status: 'new',
+        name: '',
+        email,
+        phone: '',
+        message: '',
+      });
+      return json({ ok: true, submissionId: submission.id }, 201);
+    } catch (e) {
+      return json({ error: e.message || 'Regjistrimi nuk u ruajt' }, 503);
+    }
   }
 
   if (pathname === '/api/orders' && method === 'POST') {
@@ -231,9 +288,36 @@ export async function handleApiRequest(context) {
   }
 
   const orderMatch = pathname.match(/^\/api\/orders\/([^/]+)$/);
+  const submissionMatch = pathname.match(/^\/api\/submissions\/([^/]+)$/);
 
   if (pathname === '/api/orders' && method === 'GET') {
     return json(await readOrders(env, request));
+  }
+
+  if (pathname === '/api/submissions' && method === 'GET') {
+    return json(await readSubmissions(env, request));
+  }
+
+  if (submissionMatch && method === 'PATCH') {
+    const submissions = await readSubmissions(env, request);
+    const submission = submissions.find((entry) => entry.id === submissionMatch[1]);
+    if (!submission) return json({ error: 'Mesazhi nuk u gjet' }, 404);
+    const allowed = ['new', 'read', 'archived'];
+    if (body.status && allowed.includes(body.status)) {
+      submission.status = body.status;
+      submission.updatedAt = new Date().toISOString();
+    }
+    await writeSubmissions(env, submissions);
+    return json({ ok: true, submission });
+  }
+
+  if (submissionMatch && method === 'DELETE') {
+    const submissions = await readSubmissions(env, request);
+    const index = submissions.findIndex((entry) => entry.id === submissionMatch[1]);
+    if (index === -1) return json({ error: 'Mesazhi nuk u gjet' }, 404);
+    submissions.splice(index, 1);
+    await writeSubmissions(env, submissions);
+    return json({ ok: true });
   }
 
   if (orderMatch && method === 'PATCH') {

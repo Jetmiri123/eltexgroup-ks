@@ -1032,6 +1032,16 @@ body > section.main_section:first-of-type {
   white-space: nowrap;
 }
 
+.newsletter-feedback {
+  margin: 0.65rem 0 0;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.newsletter-feedback.error {
+  color: #fecaca;
+}
+
 .eltex-footer-bottom {
   display: grid;
   grid-template-columns: 1.2fr 1fr 1fr;

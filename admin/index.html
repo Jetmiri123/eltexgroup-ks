@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow, noarchive">
   <meta name="googlebot" content="noindex, nofollow, noarchive">
+  <link rel="icon" href="/images/favicon.ico" sizes="48x48">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
   <title>Eltex Admin</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,7 +19,7 @@
   <div id="login-screen" class="login-screen">
     <div class="login-card">
       <h1>Admin Portal</h1>
-      <p class="login-subtitle">Menaxho produktet, blogun dhe porositë B2B</p>
+      <p class="login-subtitle">Menaxho produktet, blogun, porositë dhe mesazhet</p>
       <form id="login-form" class="login-form">
         <label for="password">Fjalëkalimi</label>
         <input type="password" id="password" autocomplete="current-password" placeholder="Shkruani fjalëkalimin" required>
@@ -47,6 +50,10 @@
           <span class="sidebar-link-label">Porositë</span>
           <span id="orders-count" class="sidebar-badge"></span>
         </button>
+        <button type="button" class="sidebar-link" data-tab="submissions">
+          <span class="sidebar-link-label">Mesazhet</span>
+          <span id="submissions-count" class="sidebar-badge"></span>
+        </button>
       </nav>
       <div class="sidebar-footer">
         <a href="/" target="_blank" class="btn ghost btn-block">Shiko faqen</a>
@@ -64,9 +71,14 @@
       <main class="main">
         <section id="panel-products" class="panel">
           <div class="panel-toolbar">
-            <input type="search" id="product-search" placeholder="Kërko produkt..." class="search">
+            <input type="search" id="product-search" placeholder="Kërko produkt, kategori, SKU..." class="search">
+            <select id="product-category-filter" class="search order-filter" aria-label="Filtro sipas kategorisë">
+              <option value="">Të gjitha kategoritë</option>
+            </select>
             <button type="button" id="add-product-btn" class="btn primary">+ Produkt i Ri</button>
           </div>
+          <div id="product-category-tags" class="filter-tags" aria-label="Filtra kategorie"></div>
+          <p id="product-filter-meta" class="filter-meta" hidden></p>
           <div class="table-wrap">
             <table class="data-table">
               <thead>
@@ -128,6 +140,38 @@
                 </tr>
               </thead>
               <tbody id="orders-table"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="panel-submissions" class="panel" hidden>
+          <div class="panel-toolbar">
+            <input type="search" id="submission-search" placeholder="Kërko mesazh..." class="search">
+            <select id="submission-type-filter" class="search order-filter">
+              <option value="">Të gjitha llojet</option>
+              <option value="contact">Kontakt</option>
+              <option value="newsletter">Newsletter</option>
+            </select>
+            <select id="submission-status-filter" class="search order-filter">
+              <option value="">Të gjitha statuset</option>
+              <option value="new">Të reja</option>
+              <option value="read">Të lexuara</option>
+              <option value="archived">Arkivuar</option>
+            </select>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Lloji</th>
+                  <th>Emri</th>
+                  <th>Email</th>
+                  <th>Statusi</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="submissions-table"></tbody>
             </table>
           </div>
         </section>

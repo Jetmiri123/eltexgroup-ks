@@ -29,10 +29,12 @@
       <div>
         <h4>Abonohu</h4>
         <p class="eltex-footer-note">Do të përdoret në përputhje me Politikën tonë të Privatësisë.</p>
-        <form class="newsletter-form" onsubmit="return false;">
-          <input type="email" placeholder="Email" aria-label="Email">
+        <form class="newsletter-form" data-newsletter-form>
+          <input type="email" name="email" placeholder="Email" aria-label="Email" required>
           <button type="submit">Regjistrohu</button>
         </form>
+        <p class="newsletter-feedback" data-newsletter-success hidden>U regjistruat me sukses!</p>
+        <p class="newsletter-feedback error" data-newsletter-error hidden>Gabim gjatë regjistrimit.</p>
       </div>
     </div>
     <div class="eltex-footer-bottom">
@@ -81,5 +83,40 @@
 
   document.querySelectorAll('[data-eltex-footer]').forEach((mount) => {
     mount.outerHTML = footerHtml;
+  });
+
+  document.querySelectorAll('[data-newsletter-form]').forEach((form) => {
+    const success = form.parentElement.querySelector('[data-newsletter-success]');
+    const error = form.parentElement.querySelector('[data-newsletter-error]');
+    const submitBtn = form.querySelector('[type="submit"]');
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (success) success.hidden = true;
+      if (error) error.hidden = true;
+
+      const email = String(new FormData(form).get('email') || '').trim();
+      if (submitBtn) submitBtn.disabled = true;
+
+      try {
+        const res = await fetch('/api/newsletter', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || 'Regjistrimi dështoi');
+
+        form.reset();
+        if (success) success.hidden = false;
+      } catch (err) {
+        if (error) {
+          error.textContent = err.message || 'Gabim gjatë regjistrimit.';
+          error.hidden = false;
+        }
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
+      }
+    });
   });
 })();

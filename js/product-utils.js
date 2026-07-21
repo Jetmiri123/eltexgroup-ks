@@ -5,6 +5,14 @@
     return el.value;
   }
 
+  function escapeHtml(text) {
+    return String(text || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
   function formatPrice(value) {
     return '€' + Number(value || 0).toFixed(2);
   }
@@ -80,6 +88,51 @@
     return null;
   }
 
+  function plainTextToRichHtml(text) {
+    if (!text) return '';
+    if (/<[^>]+>/.test(text)) return text;
+
+    const lines = String(text).split('\n').map((line) => line.trim());
+    const parts = [];
+    let index = 0;
+
+    while (index < lines.length) {
+      while (index < lines.length && !lines[index]) index += 1;
+      if (index >= lines.length) break;
+
+      if (/^[•\-–*]\s/.test(lines[index])) {
+        const items = [];
+        while (index < lines.length) {
+          while (index < lines.length && !lines[index]) index += 1;
+          if (index >= lines.length || !/^[•\-–*]\s/.test(lines[index])) break;
+          items.push(lines[index].replace(/^[•\-–*]\s*/, ''));
+          index += 1;
+        }
+        parts.push(
+          '<ul>' +
+            items.map((item) => '<li>' + escapeHtml(item) + '</li>').join('') +
+            '</ul>'
+        );
+        continue;
+      }
+
+      const paragraph = [];
+      while (index < lines.length && lines[index] && !/^[•\-–*]\s/.test(lines[index])) {
+        paragraph.push(lines[index]);
+        index += 1;
+      }
+      parts.push('<p>' + escapeHtml(paragraph.join(' ')) + '</p>');
+    }
+
+    return parts.join('');
+  }
+
+  function formatRichContent(html, plain) {
+    if (html && /<[^>]+>/.test(html)) return html;
+    if (plain && /<[^>]+>/.test(plain)) return plain;
+    return plainTextToRichHtml(plain || '');
+  }
+
   root.EltexProducts = {
     decodeHtml,
     formatPrice,
@@ -89,5 +142,7 @@
     cartPayload,
     loadProducts,
     findProduct,
+    plainTextToRichHtml,
+    formatRichContent,
   };
 })(window);

@@ -228,8 +228,81 @@ body {
 .panel-toolbar {
   display: flex;
   gap: 0.75rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
   flex-wrap: wrap;
+}
+
+.filter-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-bottom: 0.85rem;
+  max-height: 9.5rem;
+  overflow: auto;
+  padding: 0.15rem 0.1rem 0.25rem;
+}
+
+.filter-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid var(--gray-300);
+  background: var(--white);
+  color: var(--gray-700);
+  border-radius: 999px;
+  padding: 0.38rem 0.72rem;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.filter-tag:hover {
+  border-color: rgba(248, 136, 55, 0.45);
+  color: var(--orange);
+}
+
+.filter-tag.is-active {
+  background: rgba(248, 136, 55, 0.12);
+  border-color: rgba(248, 136, 55, 0.55);
+  color: #b45309;
+}
+
+.filter-tag-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  padding: 0.08rem 0.35rem;
+  border-radius: 999px;
+  background: var(--gray-100);
+  color: var(--gray-600);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.filter-tag.is-active .filter-tag-count {
+  background: rgba(248, 136, 55, 0.18);
+  color: #b45309;
+}
+
+.filter-meta {
+  margin: -0.35rem 0 0.85rem;
+  font-size: 0.8125rem;
+  color: var(--gray-500);
+}
+
+.table-tag {
+  display: inline-block;
+  max-width: 16rem;
+  padding: 0.22rem 0.55rem;
+  border-radius: 999px;
+  background: var(--gray-100);
+  color: var(--gray-700);
+  font-size: 0.78rem;
+  line-height: 1.35;
+  vertical-align: middle;
 }
 
 .search {
@@ -610,7 +683,29 @@ textarea {
 
 .rich-field .ql-editor {
   min-height: 120px;
-  line-height: 1.6;
+  line-height: 1.65;
+}
+
+.rich-field .ql-editor p {
+  margin: 0 0 0.75rem;
+}
+
+.rich-field .ql-editor p:last-child {
+  margin-bottom: 0;
+}
+
+.rich-field .ql-editor ul,
+.rich-field .ql-editor ol {
+  margin: 0 0 0.75rem;
+  padding-left: 1.35rem;
+}
+
+.rich-field .ql-editor li {
+  margin-bottom: 0.35rem;
+}
+
+.rich-field .ql-editor li:last-child {
+  margin-bottom: 0;
 }
 
 .rich-field.rich-tall .ql-editor {
@@ -689,8 +784,10 @@ textarea {
 
 .status-new { background: #fff3e8; color: #b45309; }
 .status-processing { background: #eef4ff; color: #1d4ed8; }
+.status-read { background: #eef4ff; color: #1d4ed8; }
 .status-done { background: #ecfdf3; color: #047857; }
 .status-cancelled { background: var(--danger-soft); color: #b91c1c; }
+.status-archived { background: #f3f4f6; color: #6b7280; }
 
 .data-table.compact td,
 .data-table.compact th {

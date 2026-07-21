@@ -14,6 +14,7 @@ const ADMIN_PASSWORD = process.env.ELTEX_ADMIN_PASSWORD || 'Eltex2026!';
 const PRODUCTS_PATH = path.join(ROOT, 'data/live-products.json');
 const POSTS_PATH = path.join(ROOT, 'data/live-posts.json');
 const ORDERS_PATH = path.join(ROOT, 'data/live-orders.json');
+const SUBMISSIONS_PATH = path.join(ROOT, 'data/live-submissions.json');
 const UPLOADS_DIR = path.join(ROOT, 'images/uploads');
 
 const ORDER_EMAIL = process.env.ELTEX_ORDER_EMAIL || process.env.ELTEX_SMTP_USER || '';
@@ -224,6 +225,23 @@ function readOrders() {
 
 function writeOrders(orders) {
   writeJson(ORDERS_PATH, orders);
+}
+
+function readSubmissions() {
+  try {
+    const data = readJson(SUBMISSIONS_PATH);
+    return Array.isArray(data) ? data : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeSubmissions(submissions) {
+  writeJson(SUBMISSIONS_PATH, submissions);
+}
+
+function randomSubmissionId() {
+  return 'sub_' + Date.now().toString(36) + crypto.randomBytes(3).toString('hex');
 }
 
 function sanitizeText(value, maxLen) {
@@ -481,6 +499,41 @@ async function sendOrderEmail(order) {
   return { sent: true };
 }
 
+function formatContactText(contact) {
+  return [
+    'Mesazh i ri nga forma e kontaktit',
+    '',
+    'Emri: ' + contact.name,
+    'Email: ' + contact.email,
+    'Telefoni: ' + (contact.phone || '—'),
+    '',
+    contact.message || '(pa mesazh)',
+  ].join('\n');
+}
+
+async function sendContactEmail(contact) {
+  if (!mailer || !SMTP_HOST || !ORDER_EMAIL) {
+    return { sent: false, reason: 'SMTP not configured' };
+  }
+
+  const transporter = mailer.createTransport({
+    host: SMTP_HOST,
+    port: SMTP_PORT,
+    secure: SMTP_PORT === 465,
+    auth: SMTP_USER && SMTP_PASS ? { user: SMTP_USER, pass: SMTP_PASS } : undefined,
+  });
+
+  await transporter.sendMail({
+    from: SMTP_FROM,
+    to: ORDER_EMAIL,
+    replyTo: contact.email,
+    subject: 'Kontakt i ri — ' + contact.name,
+    text: formatContactText(contact),
+  });
+
+  return { sent: true };
+}
+
 async function handleApi(req, res, pathname) {
   if (pathname === '/api/login' && req.method === 'POST') {
     const body = await readBody(req);
@@ -498,6 +551,83 @@ async function handleApi(req, res, pathname) {
     const token = getToken(req);
     if (token) sessions.delete(token);
     sendJson(res, 200, { ok: true });
+    return;
+  }
+
+  if (pathname === '/api/contact' && req.method === 'POST') {
+    try {
+      const body = await readBody(req);
+      const name = sanitizeText(body.name, 120);
+      const email = sanitizeText(body.email, 160).toLowerCase();
+      const phone = sanitizeText(body.phone, 40);
+      const message = sanitizeText(body.message, 2000);
+
+      if (!name) {
+        sendJson(res, 400, { error: 'Emri është i detyrueshëm' });
+        return;
+      }
+      if (!isValidEmail(email)) {
+        sendJson(res, 400, { error: 'Email i pavlefshëm' });
+        return;
+      }
+
+      const submission = {
+        id: randomSubmissionId(),
+        type: 'contact',
+        createdAt: new Date().toISOString(),
+        status: 'new',
+        name,
+        email,
+        phone,
+        message,
+      };
+      const submissions = readSubmissions();
+      submissions.unshift(submission);
+      writeSubmissions(submissions);
+
+      let emailResult = { sent: false };
+      try {
+        emailResult = await sendContactEmail({ name, email, phone, message });
+      } catch (emailErr) {
+        console.error('Contact email failed:', emailErr.message);
+        emailResult = { sent: false, reason: emailErr.message };
+      }
+
+      sendJson(res, 200, { ok: true, emailSent: emailResult.sent, submissionId: submission.id });
+    } catch (e) {
+      sendJson(res, 400, { error: e.message || 'Mesazhi i pavlefshëm' });
+    }
+    return;
+  }
+
+  if (pathname === '/api/newsletter' && req.method === 'POST') {
+    try {
+      const body = await readBody(req);
+      const email = sanitizeText(body.email, 160).toLowerCase();
+
+      if (!isValidEmail(email)) {
+        sendJson(res, 400, { error: 'Email i pavlefshëm' });
+        return;
+      }
+
+      const submission = {
+        id: randomSubmissionId(),
+        type: 'newsletter',
+        createdAt: new Date().toISOString(),
+        status: 'new',
+        name: '',
+        email,
+        phone: '',
+        message: '',
+      };
+      const submissions = readSubmissions();
+      submissions.unshift(submission);
+      writeSubmissions(submissions);
+
+      sendJson(res, 201, { ok: true, submissionId: submission.id });
+    } catch (e) {
+      sendJson(res, 400, { error: e.message || 'Regjistrimi i pavlefshëm' });
+    }
     return;
   }
 
@@ -540,9 +670,46 @@ async function handleApi(req, res, pathname) {
   }
 
   const orderMatch = pathname.match(/^\/api\/orders\/([^/]+)$/);
+  const submissionMatch = pathname.match(/^\/api\/submissions\/([^/]+)$/);
 
   if (pathname === '/api/orders' && req.method === 'GET') {
     sendJson(res, 200, readOrders());
+    return;
+  }
+
+  if (pathname === '/api/submissions' && req.method === 'GET') {
+    sendJson(res, 200, readSubmissions());
+    return;
+  }
+
+  if (submissionMatch && req.method === 'PATCH') {
+    const body = await readBody(req);
+    const submissions = readSubmissions();
+    const submission = submissions.find((entry) => entry.id === submissionMatch[1]);
+    if (!submission) {
+      sendJson(res, 404, { error: 'Mesazhi nuk u gjet' });
+      return;
+    }
+    const allowed = ['new', 'read', 'archived'];
+    if (body.status && allowed.includes(body.status)) {
+      submission.status = body.status;
+      submission.updatedAt = new Date().toISOString();
+    }
+    writeSubmissions(submissions);
+    sendJson(res, 200, { ok: true, submission });
+    return;
+  }
+
+  if (submissionMatch && req.method === 'DELETE') {
+    const submissions = readSubmissions();
+    const index = submissions.findIndex((entry) => entry.id === submissionMatch[1]);
+    if (index === -1) {
+      sendJson(res, 404, { error: 'Mesazhi nuk u gjet' });
+      return;
+    }
+    submissions.splice(index, 1);
+    writeSubmissions(submissions);
+    sendJson(res, 200, { ok: true });
     return;
   }
 

@@ -9,10 +9,17 @@
   const productsTable = document.getElementById('products-table');
   const postsTable = document.getElementById('posts-table');
   const productSearch = document.getElementById('product-search');
+  const productCategoryFilter = document.getElementById('product-category-filter');
+  const productCategoryTags = document.getElementById('product-category-tags');
+  const productFilterMeta = document.getElementById('product-filter-meta');
   const postSearch = document.getElementById('post-search');
   const orderSearch = document.getElementById('order-search');
   const orderStatusFilter = document.getElementById('order-status-filter');
   const ordersTable = document.getElementById('orders-table');
+  const submissionSearch = document.getElementById('submission-search');
+  const submissionTypeFilter = document.getElementById('submission-type-filter');
+  const submissionStatusFilter = document.getElementById('submission-status-filter');
+  const submissionsTable = document.getElementById('submissions-table');
   const editorDialog = document.getElementById('editor-dialog');
   const editorForm = document.getElementById('editor-form');
   const editorTitle = document.getElementById('editor-title');
@@ -25,9 +32,11 @@
   let productsData = { products: [], categories: [] };
   let postsData = [];
   let ordersData = [];
+  let submissionsData = [];
   let editorMode = null;
   let editorIndex = -1;
   let richEditors = {};
+  let selectedProductCategorySlug = '';
 
   function token() {
     return localStorage.getItem(TOKEN_KEY) || '';
@@ -66,12 +75,69 @@
     }, 2800);
   }
 
+  function decodeHtml(text) {
+    const el = document.createElement('textarea');
+    el.innerHTML = text || '';
+    return el.value;
+  }
+
   function escapeHtml(text) {
     return String(text || '')
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;');
+  }
+
+  function htmlToPlainText(html) {
+    const div = document.createElement('div');
+    div.innerHTML = html || '';
+    return div.textContent.replace(/\u00a0/g, ' ').replace(/\s+\n/g, '\n').trim();
+  }
+
+  function plainTextToRichHtml(text) {
+    if (!text) return '';
+    if (/<[^>]+>/.test(text)) return text;
+
+    const lines = String(text).split('\n').map((line) => line.trim());
+    const parts = [];
+    let index = 0;
+
+    while (index < lines.length) {
+      while (index < lines.length && !lines[index]) index += 1;
+      if (index >= lines.length) break;
+
+      if (/^[•\-–*]\s/.test(lines[index])) {
+        const items = [];
+        while (index < lines.length) {
+          while (index < lines.length && !lines[index]) index += 1;
+          if (index >= lines.length || !/^[•\-–*]\s/.test(lines[index])) break;
+          items.push(lines[index].replace(/^[•\-–*]\s*/, ''));
+          index += 1;
+        }
+        parts.push(
+          '<ul>' +
+            items.map((item) => '<li>' + escapeHtml(item) + '</li>').join('') +
+            '</ul>'
+        );
+        continue;
+      }
+
+      const paragraph = [];
+      while (index < lines.length && lines[index] && !/^[•\-–*]\s/.test(lines[index])) {
+        paragraph.push(lines[index]);
+        index += 1;
+      }
+      parts.push('<p>' + escapeHtml(paragraph.join(' ')) + '</p>');
+    }
+
+    return parts.join('');
+  }
+
+  function richContentForEditor(item, field) {
+    const htmlValue = item[field + '_html'] || '';
+    if (htmlValue && /<[^>]+>/.test(htmlValue)) return htmlValue;
+    return plainTextToRichHtml(item[field] || '');
   }
 
   function emptyRow(colspan, message) {
@@ -260,7 +326,7 @@
     const tallClass = opts.tall ? ' rich-tall' : '';
     const hint = opts.hint
       ? `<p class="field-hint">${escapeHtml(opts.hint)}</p>`
-      : '<p class="field-hint">Përdorni butonat e sipërme për të formatuar tekstin — nuk nevojitet kod.</p>';
+      : '<p class="field-hint">Përdorni Enter për rreshta të rinj dhe butonin e listës për pikat (•).</p>';
     return `<div class="full rich-field${tallClass}">
       <label>${escapeHtml(label)}</label>
       <div data-rich-editor="${escapeHtml(name)}"></div>
@@ -352,6 +418,7 @@
     products: 'Produktet',
     posts: 'Blog B2B',
     orders: 'Porositë',
+    submissions: 'Mesazhet',
   };
 
   function setBadge(id, value) {
@@ -367,6 +434,7 @@
     document.getElementById('panel-products').hidden = name !== 'products';
     document.getElementById('panel-posts').hidden = name !== 'posts';
     document.getElementById('panel-orders').hidden = name !== 'orders';
+    document.getElementById('panel-submissions').hidden = name !== 'submissions';
     if (pageTitle) pageTitle.textContent = TAB_LABELS[name] || 'Admin';
   }
 
@@ -511,17 +579,250 @@
     renderOrders();
   }
 
-  function renderProducts() {
-    const q = productSearch.value.trim().toLowerCase();
-    const rows = productsData.products.filter((p) => {
+  function submissionTypeLabel(type) {
+    const map = {
+      contact: 'Kontakt',
+      newsletter: 'Newsletter',
+    };
+    return map[type] || type;
+  }
+
+  function submissionStatusLabel(status) {
+    const map = {
+      new: 'E re',
+      read: 'E lexuar',
+      archived: 'Arkivuar',
+    };
+    return map[status] || status;
+  }
+
+  function renderSubmissions() {
+    const q = submissionSearch.value.trim().toLowerCase();
+    const type = submissionTypeFilter.value;
+    const status = submissionStatusFilter.value;
+    const rows = submissionsData.filter((entry) => {
+      if (type && entry.type !== type) return false;
+      if (status && entry.status !== status) return false;
       if (!q) return true;
-      return (
-        (p.name || '').toLowerCase().includes(q) ||
-        (p.cat || '').toLowerCase().includes(q) ||
-        (p.slug || '').toLowerCase().includes(q)
-      );
+      const hay = [entry.id, entry.name, entry.email, entry.phone, entry.message, entry.type]
+        .join(' ')
+        .toLowerCase();
+      return hay.includes(q);
     });
 
+    const newCount = submissionsData.filter((entry) => entry.status === 'new').length;
+    setBadge('submissions-count', newCount || submissionsData.length);
+
+    submissionsTable.innerHTML = rows.length
+      ? rows
+          .map((entry) => {
+            return `
+        <tr>
+          <td>${escapeHtml(formatOrderDate(entry.createdAt))}</td>
+          <td>${escapeHtml(submissionTypeLabel(entry.type))}</td>
+          <td><strong>${escapeHtml(entry.name || '—')}</strong></td>
+          <td><span class="muted-inline">${escapeHtml(entry.email)}</span></td>
+          <td><span class="status-badge status-${escapeHtml(entry.status || 'new')}">${escapeHtml(submissionStatusLabel(entry.status))}</span></td>
+          <td class="table-actions">
+            <button type="button" class="btn ghost small" data-view-submission="${escapeHtml(entry.id)}">Shiko</button>
+            <button type="button" class="btn danger small" data-delete-submission="${escapeHtml(entry.id)}">Fshi</button>
+          </td>
+        </tr>`;
+          })
+          .join('')
+      : emptyRow(
+          6,
+          submissionsData.length ? 'Asnjë mesazh nuk përputhet me kërkimin.' : 'Ende nuk ka mesazhe.'
+        );
+  }
+
+  function openSubmissionViewer(submissionId) {
+    const entry = submissionsData.find((item) => item.id === submissionId);
+    if (!entry) return;
+
+    editorMode = 'submission';
+    editorIndex = submissionsData.indexOf(entry);
+    editorTitle.textContent = submissionTypeLabel(entry.type) + ' — ' + entry.id.slice(-8).toUpperCase();
+    deleteItemBtn.hidden = false;
+
+    editorFields.innerHTML = `
+      <div class="order-detail">
+        <p><strong>Lloji:</strong> ${escapeHtml(submissionTypeLabel(entry.type))}<br>
+        <strong>Data:</strong> ${escapeHtml(formatOrderDate(entry.createdAt))}<br>
+        <strong>Emri:</strong> ${escapeHtml(entry.name || '—')}<br>
+        <strong>Email:</strong> ${escapeHtml(entry.email)}${
+          entry.phone ? '<br><strong>Telefoni:</strong> ' + escapeHtml(entry.phone) : ''
+        }</p>
+        ${
+          entry.message
+            ? '<p><strong>Mesazhi:</strong><br>' + escapeHtml(entry.message).replace(/\n/g, '<br>') + '</p>'
+            : ''
+        }
+        <div class="field-grid">
+          <div>
+            <label for="submission-status">Statusi</label>
+            <select name="status" id="submission-status">
+              <option value="new"${entry.status === 'new' ? ' selected' : ''}>E re</option>
+              <option value="read"${entry.status === 'read' ? ' selected' : ''}>E lexuar</option>
+              <option value="archived"${entry.status === 'archived' ? ' selected' : ''}>Arkivuar</option>
+            </select>
+          </div>
+        </div>
+      </div>`;
+    editorDialog.showModal();
+  }
+
+  async function saveSubmissionStatus(submissionId, status) {
+    await api('/api/submissions/' + encodeURIComponent(submissionId), {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    });
+    showToast('Statusi u përditësua');
+    submissionsData = await api('/api/submissions');
+    renderSubmissions();
+  }
+
+  async function deleteSubmission(submissionId) {
+    await api('/api/submissions/' + encodeURIComponent(submissionId), { method: 'DELETE' });
+    showToast('Mesazhi u fshi');
+    submissionsData = await api('/api/submissions');
+    renderSubmissions();
+  }
+
+  function truncateTagLabel(text, maxLen) {
+    const label = decodeHtml(text || '');
+    if (label.length <= maxLen) return label;
+    return label.slice(0, maxLen - 1).trim() + '…';
+  }
+
+  function productCategorySlug(product) {
+    return slugify(product.cat || 'Të Tjera');
+  }
+
+  function productMatchesSearch(product, query) {
+    if (!query) return true;
+    const hay = [
+      product.name,
+      product.cat,
+      product.slug,
+      product.sku,
+      product.id,
+      ...(product.categories || []),
+    ]
+      .join(' ')
+      .toLowerCase();
+    return hay.includes(query);
+  }
+
+  function getProductCategoryOptions() {
+    const map = new Map();
+
+    productsData.products.forEach((product) => {
+      const name = product.cat || 'Të Tjera';
+      const slug = slugify(name);
+      const entry = map.get(slug);
+      if (entry) {
+        entry.count += 1;
+        return;
+      }
+      map.set(slug, { name, slug, count: 1 });
+    });
+
+    (productsData.categories || []).forEach((cat) => {
+      if (!cat || !cat.name) return;
+      const slug = cat.slug || slugify(cat.name);
+      if (!map.has(slug)) {
+        map.set(slug, { name: cat.name, slug, count: cat.count || 0 });
+      }
+    });
+
+    return Array.from(map.values()).sort(
+      (a, b) => b.count - a.count || decodeHtml(a.name).localeCompare(decodeHtml(b.name), 'sq')
+    );
+  }
+
+  function syncProductCategoryFilter() {
+    if (!productCategoryFilter) return;
+
+    const current = selectedProductCategorySlug;
+    const options = getProductCategoryOptions();
+    productCategoryFilter.innerHTML =
+      '<option value="">Të gjitha kategoritë</option>' +
+      options
+        .map(
+          (cat) =>
+            `<option value="${escapeHtml(cat.slug)}"${cat.slug === current ? ' selected' : ''}>${escapeHtml(decodeHtml(cat.name))} (${cat.count})</option>`
+        )
+        .join('');
+  }
+
+  function renderProductCategoryTags(searchMatcher) {
+    if (!productCategoryTags) return;
+
+    const matchFn = searchMatcher || (() => true);
+    const counts = new Map();
+
+    productsData.products.forEach((product) => {
+      if (!matchFn(product)) return;
+      const slug = productCategorySlug(product);
+      counts.set(slug, (counts.get(slug) || 0) + 1);
+    });
+
+    const options = getProductCategoryOptions().filter((cat) => counts.has(cat.slug));
+    const visibleTotal = productsData.products.filter(matchFn).length;
+    const activeSlug = selectedProductCategorySlug;
+
+    let html =
+      `<button type="button" class="filter-tag${!activeSlug ? ' is-active' : ''}" data-cat="" title="Të gjitha produktet">` +
+      `Të gjitha <span class="filter-tag-count">${visibleTotal}</span></button>`;
+
+    options.forEach((cat) => {
+      const count = counts.get(cat.slug) || 0;
+      if (!count) return;
+      const label = decodeHtml(cat.name);
+      html +=
+        `<button type="button" class="filter-tag${activeSlug === cat.slug ? ' is-active' : ''}" data-cat="${escapeHtml(cat.slug)}" title="${escapeHtml(label)}">` +
+        `${escapeHtml(truncateTagLabel(label, 34))} <span class="filter-tag-count">${count}</span></button>`;
+    });
+
+    productCategoryTags.innerHTML = html;
+  }
+
+  function updateProductFilterMeta(visibleCount) {
+    if (!productFilterMeta) return;
+
+    const q = productSearch.value.trim();
+    const category = getProductCategoryOptions().find((cat) => cat.slug === selectedProductCategorySlug);
+    const parts = [`${visibleCount} produkt${visibleCount === 1 ? '' : 'e'}`];
+
+    if (category) parts.push(decodeHtml(category.name));
+    if (q) parts.push(`kërkim: “${q}”`);
+
+    if (!selectedProductCategorySlug && !q) {
+      productFilterMeta.hidden = true;
+      productFilterMeta.textContent = '';
+      return;
+    }
+
+    productFilterMeta.hidden = false;
+    productFilterMeta.textContent = 'Duke shfaqur ' + parts.join(' · ');
+  }
+
+  function renderProducts() {
+    const q = productSearch.value.trim().toLowerCase();
+    const searchMatcher = (product) => productMatchesSearch(product, q);
+
+    renderProductCategoryTags(searchMatcher);
+    syncProductCategoryFilter();
+
+    const rows = productsData.products.filter((product) => {
+      if (selectedProductCategorySlug && productCategorySlug(product) !== selectedProductCategorySlug) {
+        return false;
+      }
+      return searchMatcher(product);
+    });
+
+    updateProductFilterMeta(rows.length);
     setBadge('products-count', productsData.products.length);
     productsTable.innerHTML = rows.length
       ? rows
@@ -531,13 +832,13 @@
         <tr>
           <td class="thumb-cell">${productThumb(p.image, p.name)}</td>
           <td><strong>${escapeHtml(p.name)}</strong></td>
-          <td>${escapeHtml(p.cat || '')}</td>
+          <td><span class="table-tag" title="${escapeHtml(decodeHtml(p.cat || ''))}">${escapeHtml(truncateTagLabel(p.cat || '', 42))}</span></td>
           <td>€${Number(p.price || 0).toFixed(2)}</td>
           <td><button type="button" class="btn ghost small" data-edit-product="${idx}">Ndrysho</button></td>
         </tr>`;
           })
           .join('')
-      : emptyRow(5, productsData.products.length ? 'Asnjë produkt nuk përputhet me kërkimin.' : 'Nuk ka produkte.');
+      : emptyRow(5, productsData.products.length ? 'Asnjë produkt nuk përputhet me filtrat.' : 'Nuk ka produkte.');
   }
 
   function renderPosts() {
@@ -570,17 +871,20 @@
   }
 
   async function loadAll() {
-    const [products, posts, orders] = await Promise.all([
+    const [products, posts, orders, submissions] = await Promise.all([
       api('/api/products'),
       api('/api/posts'),
       api('/api/orders'),
+      api('/api/submissions'),
     ]);
     productsData = products;
     postsData = posts;
     ordersData = orders;
+    submissionsData = submissions;
     renderProducts();
     renderPosts();
     renderOrders();
+    renderSubmissions();
   }
 
   async function saveProducts() {
@@ -645,8 +949,8 @@
       cat: p.cat || '',
     });
     initRichEditors(editorFields, {
-      short_description: p.short_description || '',
-      description: p.description || '',
+      short_description: richContentForEditor(p, 'short_description'),
+      description: richContentForEditor(p, 'description'),
     });
     bindImageUpload(editorFields);
     editorDialog.showModal();
@@ -712,6 +1016,14 @@
         return;
       }
 
+      if (editorMode === 'submission') {
+        const submission = submissionsData[editorIndex];
+        const status = editorFields.querySelector('[name="status"]').value;
+        await saveSubmissionStatus(submission.id, status);
+        editorDialog.close();
+        return;
+      }
+
       if (editorMode === 'product') {
         if (!data.name) throw new Error('Emri i produktit është i detyrueshëm');
         if (!data.cat) throw new Error('Kategoria është e detyrueshme');
@@ -728,6 +1040,17 @@
         data.categories = data.cat ? [data.cat] : [];
         data.permalink = '/produkt/' + data.slug;
         data.image = editorFields.querySelector('[name="image"]')?.value.trim() || '';
+
+        ['short_description', 'description'].forEach((field) => {
+          const html = data[field] || '';
+          if (html) {
+            data[field + '_html'] = html;
+            data[field] = htmlToPlainText(html);
+          } else {
+            data[field + '_html'] = '';
+            data[field] = '';
+          }
+        });
 
         if (editorIndex < 0) productsData.products.unshift(data);
         else productsData.products[editorIndex] = { ...productsData.products[editorIndex], ...data };
@@ -764,11 +1087,15 @@
     const confirmMessage =
       editorMode === 'order'
         ? 'Je i sigurt që do ta fshish këtë porosi?'
-        : 'Je i sigurt që do ta fshish?';
+        : editorMode === 'submission'
+          ? 'Je i sigurt që do ta fshish këtë mesazh?'
+          : 'Je i sigurt që do ta fshish?';
     if (!confirm(confirmMessage)) return;
     try {
       if (editorMode === 'order' && editorIndex >= 0) {
         await deleteOrder(ordersData[editorIndex].id);
+      } else if (editorMode === 'submission' && editorIndex >= 0) {
+        await deleteSubmission(submissionsData[editorIndex].id);
       } else if (editorMode === 'product' && editorIndex >= 0) {
         productsData.products.splice(editorIndex, 1);
         await saveProducts();
@@ -809,6 +1136,24 @@
   orderSearch.addEventListener('input', renderOrders);
   orderStatusFilter.addEventListener('change', renderOrders);
 
+  submissionsTable.addEventListener('click', (e) => {
+    const viewBtn = e.target.closest('[data-view-submission]');
+    if (viewBtn) {
+      openSubmissionViewer(viewBtn.dataset.viewSubmission);
+      return;
+    }
+
+    const deleteBtn = e.target.closest('[data-delete-submission]');
+    if (deleteBtn) {
+      if (!confirm('Je i sigurt që do ta fshish këtë mesazh?')) return;
+      deleteSubmission(deleteBtn.dataset.deleteSubmission).catch((err) => showToast(err.message));
+    }
+  });
+
+  submissionSearch.addEventListener('input', renderSubmissions);
+  submissionTypeFilter.addEventListener('change', renderSubmissions);
+  submissionStatusFilter.addEventListener('change', renderSubmissions);
+
   productsTable.addEventListener('click', (e) => {
     const btn = e.target.closest('[data-edit-product]');
     if (btn) openProductEditor(Number(btn.dataset.editProduct));
@@ -822,6 +1167,16 @@
   document.getElementById('add-product-btn').addEventListener('click', () => openProductEditor(-1));
   document.getElementById('add-post-btn').addEventListener('click', () => openPostEditor(-1));
   productSearch.addEventListener('input', renderProducts);
+  productCategoryFilter.addEventListener('change', () => {
+    selectedProductCategorySlug = productCategoryFilter.value || '';
+    renderProducts();
+  });
+  productCategoryTags.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-cat]');
+    if (!btn) return;
+    selectedProductCategorySlug = btn.dataset.cat || '';
+    renderProducts();
+  });
   postSearch.addEventListener('input', renderPosts);
 
   document.querySelectorAll('.sidebar-link').forEach((tab) => {

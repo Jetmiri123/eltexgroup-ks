@@ -25,6 +25,7 @@ const files = [
   ['live-products', 'data/live-products.json'],
   ['live-posts', 'data/live-posts.json'],
   ['live-orders', 'data/live-orders.json'],
+  ['live-submissions', 'data/live-submissions.json'],
 ];
 
 for (const [key, rel] of files) {

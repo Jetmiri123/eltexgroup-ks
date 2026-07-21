@@ -2,6 +2,7 @@ const KEYS = {
   products: 'live-products',
   posts: 'live-posts',
   orders: 'live-orders',
+  submissions: 'live-submissions',
 };
 
 function sessionKey(token) {
@@ -29,6 +30,7 @@ export async function ensureKvSeeded(env, request) {
   const products = await fetchAssetJson(env, request, '/data/live-products.json');
   const posts = await fetchAssetJson(env, request, '/data/live-posts.json');
   const orders = await fetchAssetJson(env, request, '/data/live-orders.json');
+  const submissions = await fetchAssetJson(env, request, '/data/live-submissions.json');
 
   if (!(await kv.get(KEYS.products)) && products) {
     await kv.put(KEYS.products, JSON.stringify(products, null, 2));
@@ -38,6 +40,9 @@ export async function ensureKvSeeded(env, request) {
   }
   if (!(await kv.get(KEYS.orders)) && orders) {
     await kv.put(KEYS.orders, JSON.stringify(orders, null, 2));
+  }
+  if (!(await kv.get(KEYS.submissions)) && submissions) {
+    await kv.put(KEYS.submissions, JSON.stringify(submissions, null, 2));
   }
 
   await kv.put('_kv_seeded', '1');
@@ -61,6 +66,21 @@ async function readKvRaw(env, key) {
   return kv.get(key);
 }
 
+function mergePostsWithAssets(kvPosts, assetPosts) {
+  if (!Array.isArray(kvPosts) || !Array.isArray(assetPosts) || !assetPosts.length) {
+    return kvPosts;
+  }
+
+  const assetBySlug = new Map(assetPosts.map((post) => [post.slug, post]));
+  return kvPosts.map((post) => {
+    const asset = assetBySlug.get(post.slug);
+    if (asset?.image && asset.image !== post.image) {
+      return { ...post, image: asset.image };
+    }
+    return post;
+  });
+}
+
 export async function readProducts(env, request) {
   const raw = await readKvRaw(env, KEYS.products);
   if (raw !== null) {
@@ -81,16 +101,18 @@ export async function writeProducts(env, data) {
 
 export async function readPosts(env, request) {
   const raw = await readKvRaw(env, KEYS.posts);
+  const fromAssets = await fetchAssetJson(env, request, '/data/live-posts.json');
+
   if (raw !== null) {
     try {
       const data = JSON.parse(raw);
-      return Array.isArray(data) ? data : [];
+      const posts = Array.isArray(data) ? data : [];
+      return mergePostsWithAssets(posts, fromAssets);
     } catch {
-      return [];
+      return fromAssets || [];
     }
   }
 
-  const fromAssets = await fetchAssetJson(env, request, '/data/live-posts.json');
   return fromAssets || [];
 }
 
@@ -115,6 +137,25 @@ export async function readOrders(env, request) {
 
 export async function writeOrders(env, data) {
   await writeJson(env, KEYS.orders, data);
+}
+
+export async function readSubmissions(env, request) {
+  const raw = await readKvRaw(env, KEYS.submissions);
+  if (raw !== null) {
+    try {
+      const data = JSON.parse(raw);
+      return Array.isArray(data) ? data : [];
+    } catch {
+      return [];
+    }
+  }
+
+  const fromAssets = await fetchAssetJson(env, request, '/data/live-submissions.json');
+  return fromAssets || [];
+}
+
+export async function writeSubmissions(env, data) {
+  await writeJson(env, KEYS.submissions, data);
 }
 
 export async function createSession(env, token) {
@@ -151,6 +192,14 @@ function getToken(req) {
 
 export async function loadDataWithFallback(env, assetPath, key, request) {
   const kv = await readJson(env, key);
+  if (key === KEYS.posts) {
+    const fromAssets = await fetchAssetJson(env, request, assetPath);
+    if (Array.isArray(kv)) {
+      return mergePostsWithAssets(kv, fromAssets);
+    }
+    if (fromAssets) return fromAssets;
+  }
+
   if (kv) return kv;
 
   if (env.ASSETS) {

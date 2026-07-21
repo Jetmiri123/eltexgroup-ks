@@ -348,6 +348,11 @@
   font-weight: 600;
 }
 
+.product-detail-summary {
+  margin: 0 0 1rem;
+  max-width: 38rem;
+}
+
 .product-detail-meta {
   display: flex;
   flex-wrap: wrap;
@@ -466,6 +471,14 @@
 
 .product-description-body li {
   margin-bottom: 0.25rem;
+}
+
+.product-description-body li:last-child {
+  margin-bottom: 0;
+}
+
+.product-description-body strong {
+  font-weight: 600;
 }
 
 .product-related {
