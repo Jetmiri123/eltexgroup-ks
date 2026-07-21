@@ -126,6 +126,19 @@ body > section.main_section:first-of-type {
   background-repeat: no-repeat;
 }
 
+/* Override leftover Webflow construction template backgrounds */
+.main_section.services {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)), url('../images/electrical/contact-hero.jpg') !important;
+  background-position: center !important;
+  background-size: cover !important;
+}
+
+.wrapper_material.hiring-sectiob {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../images/electrical/hero-electrician.jpg') !important;
+  background-position: center !important;
+  background-size: cover !important;
+}
+
 .main_section.bg_background + .eltex-footer,
 .main_section.bg_background + footer.eltex-footer {
   margin-top: 0;

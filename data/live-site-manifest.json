@@ -1,26 +1,26 @@
 {
-  "source": "https://eltexgroup-rks.com",
+  "source": "https://eltexgroup-ks.com",
   "fetched": "2026-07-19",
   "pages": {
-    "home": "https://eltexgroup-rks.com/",
-    "produkte": "https://eltexgroup-rks.com/produkte/",
-    "per-ne": "https://eltexgroup-rks.com/per-ne/",
-    "kontakt": "https://eltexgroup-rks.com/kontakt/",
-    "blog": "https://eltexgroup-rks.com/blog/",
-    "faqs": "https://eltexgroup-rks.com/faqs/"
+    "home": "https://eltexgroup-ks.com/",
+    "produkte": "https://eltexgroup-ks.com/produkte/",
+    "per-ne": "https://eltexgroup-ks.com/per-ne/",
+    "kontakt": "https://eltexgroup-ks.com/kontakt/",
+    "blog": "https://eltexgroup-ks.com/blog/",
+    "faqs": "https://eltexgroup-ks.com/faqs/"
   },
   "posts": [
     {
       "slug": "pse-bizneset-serioze-ne-kosove-po-zgjedhin-eltexgroup-per-cdo-projekt-elektrik",
-      "image": "images/blog/post-1.webp"
+      "image": "images/electrical/blog-electrical-1.jpg"
     },
     {
       "slug": "pse-eltextgroup-eshte-partneri-ideal-per-furnizime-elektrike-b2b",
-      "image": "images/blog/post-2.webp"
+      "image": "images/electrical/blog-electrical-2.jpg"
     },
     {
-      "slug": "pse-te-zgjidhni-eltexgrop-rks-per-nevojat-tuaja-b2b-te-pajisjeve-elektrike",
-      "image": "images/blog/post-3.webp"
+      "slug": "pse-te-zgjidhni-eltexgrop-ks-per-nevojat-tuaja-b2b-te-pajisjeve-elektrike",
+      "image": "images/electrical/blog-electrical-3.jpg"
     }
   ],
   "partners": [
