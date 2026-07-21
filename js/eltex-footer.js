@@ -21,9 +21,9 @@
         <h4>Lidhje të Dobishme</h4>
         <ul class="eltex-footer-links">
           <li><a href="/blogs">Blog</a></li>
-          <li><a href="/contact-us">Dërgesa dhe Kthime</a></li>
-          <li><a href="/contact-us">Kushtet e Përdorimit</a></li>
-          <li><a href="/contact-us">Politika e Privatësisë</a></li>
+          <li><a href="/dergesa-kthime">Dërgesa dhe Kthime</a></li>
+          <li><a href="/kushtet-e-perdorimit">Kushtet e Përdorimit</a></li>
+          <li><a href="/politika-e-privatesise">Politika e Privatësisë</a></li>
         </ul>
       </div>
       <div>

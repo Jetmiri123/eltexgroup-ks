@@ -1133,6 +1133,80 @@ body > section.main_section:first-of-type {
   }
 }
 
+/* ========== Legal / policy pages ========== */
+.legal-page-section {
+  padding-top: calc(var(--nav-offset) + var(--section-pad)) !important;
+}
+
+.legal-page-header {
+  max-width: 720px;
+  margin-bottom: 2.5rem;
+}
+
+.legal-page-header .paragraph {
+  margin-top: 0.75rem;
+  color: #636363;
+}
+
+.legal-updated {
+  font-size: 0.9375rem;
+}
+
+.eltex-legal-content {
+  max-width: 760px;
+  color: #2a2a2a;
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.eltex-legal-content section + section {
+  margin-top: 2.25rem;
+  padding-top: 2.25rem;
+  border-top: 1px solid #e8e3df;
+}
+
+.eltex-legal-content h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+  color: #111;
+}
+
+.eltex-legal-content p {
+  margin: 0 0 1rem;
+}
+
+.eltex-legal-content ul,
+.eltex-legal-content ol {
+  margin: 0 0 1rem 1.25rem;
+  padding: 0;
+}
+
+.eltex-legal-content li {
+  margin-bottom: 0.5rem;
+}
+
+.eltex-legal-content a {
+  color: var(--orange, #f88837);
+  text-decoration: underline;
+}
+
+.eltex-legal-content a:hover {
+  opacity: 0.85;
+}
+
+.legal-contact-box {
+  background: #faf8f6;
+  border: 1px solid #e8e3df;
+  border-radius: 8px;
+  padding: 1.25rem 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.legal-contact-box p:last-child {
+  margin-bottom: 0;
+}
+
 /* ========== Global layout & IX2 fallbacks ========== */
 
 .main-image {
@@ -1531,7 +1605,8 @@ section.main_section:has(.about-faq) {
     height: 2.25rem;
   }
 
-  .hero-section .main-image {
+  .hero-section .main-image,
+  .hero-section .hero-video {
     min-height: 280px;
     max-height: 400px;
   }
