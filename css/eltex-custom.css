@@ -283,9 +283,9 @@ body > section.main_section:first-of-type {
 
 .eltex-footer-logo {
   display: block;
-  height: 48px;
+  height: 44px;
   width: auto;
-  max-width: none;
+  max-width: min(240px, 100%);
   margin-bottom: 1.25rem;
   object-fit: contain;
 }

@@ -4,7 +4,7 @@
   <div class="eltex-footer-inner">
     <div class="eltex-footer-grid">
       <div class="eltex-footer-brand">
-        <a href="/"><img src="images/brand/eltex-mark-white.svg" alt="Eltex Group" class="eltex-footer-logo"></a>
+        <a href="/"><img src="images/brand/eltex-logo-white.png" alt="Eltex Group" class="eltex-footer-logo"></a>
         <h4>Kompania Jonë</h4>
         <p>Eltex Group ofron furnizime elektrike me cilësi të lartë për instalime profesionale dhe shtëpiake. Fokusohemi në cilësi, besueshmëri dhe çmime konkurruese.</p>
       </div>
@@ -55,7 +55,7 @@
         </div>
         <div class="footer-contact-item">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-          <a href="mailto:info@eltexgroup-rks.com">info@eltexgroup-rks.com</a>
+          <a href="mailto:info@eltexgroup-ks.com">info@eltexgroup-ks.com</a>
         </div>
       </div>
       <div>
