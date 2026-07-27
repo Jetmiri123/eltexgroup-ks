@@ -1,4 +1,4 @@
-name = "eltexgroup-rks"
+name = "eltexgroup-ks"
 main = "worker/index.js"
 compatibility_date = "2024-09-01"
 
