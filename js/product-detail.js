@@ -1,6 +1,17 @@
 (function () {
-  const { loadProducts, findProduct, formatPrice, productUrl, cartPayload, getProductParams, formatRichContent, renderCategoryBadge, categoryFilterUrl, escapeHtml } =
-    window.EltexProducts;
+  const {
+    loadProducts,
+    findProduct,
+    formatPrice,
+    productUrl,
+    cartPayload,
+    getProductParams,
+    formatRichContent,
+    renderCategoryBadge,
+    categoryFilterUrl,
+    escapeHtml,
+    parseProductVariants,
+  } = window.EltexProducts;
 
   const params = getProductParams();
   const notFound = document.getElementById('product-not-found');
@@ -13,9 +24,12 @@
   const detailsBlock = document.getElementById('product-details');
   const descriptionWrap = document.getElementById('product-description-wrap');
   const skuEl = document.getElementById('product-sku');
+  const variantsEl = document.getElementById('product-variants');
   const mainImage = document.getElementById('product-image');
 
   let currentProduct = null;
+  let variantConfig = null;
+  let selectedVariant = null;
 
   function stripHtml(html) {
     return String(html || '')
@@ -62,9 +76,163 @@
     });
   }
 
+  function updateAddButton() {
+    if (!addBtn || !currentProduct) return;
+
+    if (currentProduct.in_stock === false) {
+      addBtn.disabled = true;
+      addBtn.textContent = 'Nuk ka stok';
+      return;
+    }
+
+    if (variantConfig && !selectedVariant) {
+      addBtn.disabled = true;
+      addBtn.textContent = 'Zgjidhni variantin';
+      return;
+    }
+
+    addBtn.disabled = false;
+    addBtn.textContent = 'Shto në Shportë';
+  }
+
+  function updateSkuDisplay() {
+    if (selectedVariant && selectedVariant.kod) {
+      skuEl.hidden = false;
+      skuEl.textContent = 'Kodi: ' + selectedVariant.kod;
+      return;
+    }
+
+    if (currentProduct && currentProduct.sku) {
+      skuEl.hidden = false;
+      skuEl.textContent = 'SKU: ' + currentProduct.sku;
+      return;
+    }
+
+    skuEl.hidden = true;
+  }
+
+  function updateVariantSpecRow() {
+    const row = document.getElementById('product-variant-spec-row');
+    if (!row) return;
+
+    if (selectedVariant && variantConfig) {
+      const kodHtml = selectedVariant.kod
+        ? ' <span class="product-variant-kod">(' + escapeHtml(selectedVariant.kod) + ')</span>'
+        : '';
+      row.innerHTML =
+        '<th>' +
+        escapeHtml(variantConfig.attributeName) +
+        '</th><td>' +
+        escapeHtml(selectedVariant.label) +
+        kodHtml +
+        '</td>';
+      row.hidden = false;
+      return;
+    }
+
+    row.hidden = true;
+    row.innerHTML = '';
+  }
+
+  function onVariantSelected() {
+    updateSkuDisplay();
+    updateVariantSpecRow();
+    updateAddButton();
+  }
+
+  function renderVariants(product) {
+    variantConfig = parseProductVariants(product);
+    selectedVariant = null;
+
+    if (!variantsEl || !variantConfig || !variantConfig.variants.length) {
+      if (variantsEl) {
+        variantsEl.hidden = true;
+        variantsEl.innerHTML = '';
+      }
+      updateAddButton();
+      updateVariantSpecRow();
+      return;
+    }
+
+    const { attributeName, variants } = variantConfig;
+    const useSelect = variants.length > 8;
+
+    variantsEl.hidden = false;
+
+    if (useSelect) {
+      variantsEl.innerHTML =
+        '<label class="product-variants-label" for="product-variant-select">' +
+        escapeHtml(attributeName) +
+        '</label>' +
+        '<select class="product-variant-select" id="product-variant-select">' +
+        '<option value="">Zgjidhni një variant</option>' +
+        variants
+          .map((variant) => {
+            const suffix = variant.kod ? ' (' + variant.kod + ')' : '';
+            return (
+              '<option value="' +
+              escapeHtml(variant.value) +
+              '">' +
+              escapeHtml(variant.label + suffix) +
+              '</option>'
+            );
+          })
+          .join('') +
+        '</select>';
+
+      const select = document.getElementById('product-variant-select');
+      select.addEventListener('change', () => {
+        const match = variants.find((variant) => variant.value === select.value);
+        selectedVariant = match ? { ...match, attributeName } : null;
+        onVariantSelected();
+      });
+    } else {
+      variantsEl.innerHTML =
+        '<span class="product-variants-label">' +
+        escapeHtml(attributeName) +
+        '</span>' +
+        '<div class="product-variant-options" role="listbox" aria-label="' +
+        escapeHtml(attributeName) +
+        '">' +
+        variants
+          .map(
+            (variant) =>
+              '<button type="button" class="product-variant-option" data-variant-value="' +
+              escapeHtml(variant.value) +
+              '" role="option" aria-selected="false">' +
+              escapeHtml(variant.label) +
+              '</button>'
+          )
+          .join('') +
+        '</div>';
+
+      variantsEl.querySelectorAll('.product-variant-option').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const match = variants.find((variant) => variant.value === btn.dataset.variantValue);
+          selectedVariant = match ? { ...match, attributeName } : null;
+          variantsEl.querySelectorAll('.product-variant-option').forEach((el) => {
+            const isSelected = el === btn;
+            el.classList.toggle('is-selected', isSelected);
+            el.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+          });
+          onVariantSelected();
+        });
+      });
+    }
+
+    updateAddButton();
+    updateVariantSpecRow();
+  }
+
   function renderSpecs(product) {
-    const rows = (product.attributes || []).filter((a) => a.name && a.value);
-    if (!product.sku && !product.cat && !rows.length) {
+    const config = parseProductVariants(product);
+    const variantAttrNames = config ? config.attributeNames : [];
+    const rows = (product.attributes || []).filter((attr) => {
+      if (!attr.name || !attr.value) return false;
+      return !variantAttrNames.includes(String(attr.name).trim());
+    });
+
+    if (!product.sku && !product.cat && !rows.length && !config) {
       specsBlock.hidden = true;
       specsTable.innerHTML = '';
       return false;
@@ -79,6 +247,9 @@
     }
     if (product.sku) {
       html.push(`<tr><th>SKU</th><td>${escapeHtml(product.sku)}</td></tr>`);
+    }
+    if (config) {
+      html.push('<tr id="product-variant-spec-row" hidden></tr>');
     }
     rows.forEach((row) => {
       html.push(`<tr><th>${escapeHtml(row.name)}</th><td>${escapeHtml(row.value)}</td></tr>`);
@@ -184,19 +355,14 @@
     document.getElementById('product-title').textContent = product.name;
     document.getElementById('product-price').textContent = formatPrice(product.price);
 
-    if (product.sku) {
-      skuEl.hidden = false;
-      skuEl.textContent = 'SKU: ' + product.sku;
-    } else {
-      skuEl.hidden = true;
-    }
-
-    addBtn.disabled = product.in_stock === false;
-    addBtn.textContent = product.in_stock === false ? 'Nuk ka stok' : 'Shto në Shportë';
+    renderVariants(product);
+    updateSkuDisplay();
+    updateAddButton();
 
     renderGallery(product);
     renderSummary(product);
     const hasSpecs = renderSpecs(product);
+    updateVariantSpecRow();
     const hasDescription = renderDescription(product);
     detailsBlock.hidden = !(hasSpecs || hasDescription);
     detailsBlock.classList.toggle('product-detail-details--single', hasSpecs !== hasDescription);
@@ -213,9 +379,9 @@
   }
 
   addBtn.addEventListener('click', () => {
-    if (currentProduct && window.EltexCart) {
-      window.EltexCart.add(cartPayload(currentProduct));
-    }
+    if (!currentProduct || !window.EltexCart) return;
+    if (variantConfig && !selectedVariant) return;
+    window.EltexCart.add(cartPayload(currentProduct, selectedVariant));
   });
 
   loadProducts()

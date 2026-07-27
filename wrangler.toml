@@ -1,6 +1,14 @@
-name = "eltexgroup-rks"
+name = "eltexgroup-ks"
 main = "worker/index.js"
 compatibility_date = "2024-09-01"
+
+[[routes]]
+pattern = "eltexgroup-rks.com"
+custom_domain = true
+
+[[routes]]
+pattern = "www.eltexgroup-rks.com"
+custom_domain = true
 
 [assets]
 directory = "."
@@ -14,4 +22,4 @@ id = "b9e70c0bec494769bde7d8ff6bd65cdd"
 
 [vars]
 ELTEX_ADMIN_PASSWORD = "Eltex2026!"
-ELTEX_ORDER_EMAIL = "info@eltexgroup-rks.com"
+ELTEX_ORDER_EMAIL = "info@eltexgroup-ks.com"

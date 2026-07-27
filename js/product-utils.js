@@ -91,8 +91,68 @@
     };
   }
 
-  function cartPayload(product) {
+  function splitAttributeValues(value) {
+    return String(value || '')
+      .split(/,\s*/)
+      .map((entry) => entry.trim())
+      .filter(Boolean);
+  }
+
+  function parseProductVariants(product) {
+    const attrs = (product.attributes || [])
+      .filter((attr) => attr.name && attr.value)
+      .map((attr) => ({
+        name: String(attr.name).trim(),
+        values: splitAttributeValues(attr.value),
+      }))
+      .filter((attr) => attr.values.length >= 2);
+
+    if (!attrs.length) return null;
+
+    const priority = [
+      /seksioni|vrima|bulonit|papuç|papuqe|madh/i,
+      /modeli|tipi|dimension/i,
+      /diametri|diameter|montimit/i,
+      /^kodi$/i,
+      /kodi/i,
+    ];
+
+    let primary = attrs[0];
+    priority.some((pattern) => {
+      const match = attrs.find((attr) => pattern.test(attr.name));
+      if (match) {
+        primary = match;
+        return true;
+      }
+      return false;
+    });
+
+    const kodAttr = attrs.find(
+      (attr) => attr !== primary && (/^kodi$/i.test(attr.name) || /kodi/i.test(attr.name))
+    );
+
+    const variants = primary.values.map((value, index) => ({
+      value,
+      label: value,
+      kod: kodAttr && kodAttr.values[index] !== undefined ? kodAttr.values[index] : '',
+      index,
+    }));
+
     return {
+      attributeName: primary.name,
+      attributeNames: attrs.map((attr) => attr.name),
+      variants,
+    };
+  }
+
+  function cartLineKey(item) {
+    const id = String(item.id || item.slug || '');
+    const variant = String(item.variant || '');
+    return variant ? id + '::' + variant : id;
+  }
+
+  function cartPayload(product, variantSelection) {
+    const payload = {
       id: product.id,
       slug: product.slug,
       name: product.name,
@@ -100,6 +160,16 @@
       img: product.img,
       cat: product.cat,
     };
+
+    if (variantSelection) {
+      payload.variant = variantSelection.value;
+      payload.variantLabel = variantSelection.label || variantSelection.value;
+      payload.variantAttribute = variantSelection.attributeName || '';
+      if (variantSelection.kod) payload.variantKod = variantSelection.kod;
+      payload.name = product.name + ' — ' + payload.variantLabel;
+    }
+
+    return payload;
   }
 
   function loadProducts() {
@@ -175,6 +245,9 @@
     renderCategoryBadge,
     getProductParams,
     normalizeProduct,
+    splitAttributeValues,
+    parseProductVariants,
+    cartLineKey,
     cartPayload,
     loadProducts,
     findProduct,

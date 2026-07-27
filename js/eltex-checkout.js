@@ -47,6 +47,9 @@
         id: item.id,
         slug: item.slug,
         qty: item.qty,
+        variant: item.variant || '',
+        variantLabel: item.variantLabel || '',
+        variantKod: item.variantKod || '',
       })),
     };
   }

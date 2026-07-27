@@ -296,15 +296,21 @@ function buildOrderFromRequest(body) {
     const qty = Math.max(1, Math.min(999, Number(line.qty) || 1));
     const price = Number(product.price) || 0;
     const lineTotal = Math.round(price * qty * 100) / 100;
+    const variantLabel = sanitizeText(line.variantLabel || line.variant, 80);
+    const displayName = variantLabel
+      ? (product.name || '') + ' — ' + variantLabel
+      : product.name || '';
 
     orderItems.push({
       id: String(product.id),
       slug: product.slug || '',
-      name: product.name || '',
+      name: displayName,
       cat: product.cat || (product.categories && product.categories[0]) || '',
       price,
       qty,
       lineTotal,
+      variant: variantLabel,
+      variantKod: sanitizeText(line.variantKod, 40),
     });
     total += lineTotal;
   });

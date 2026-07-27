@@ -1,7 +1,16 @@
 (function () {
   const STORAGE_KEY = 'eltex_cart';
   const CART_VERSION_KEY = 'eltex_cart_version';
-  const CART_VERSION = 2;
+  const CART_VERSION = 3;
+
+  function cartLineKey(item) {
+    if (window.EltexProducts && window.EltexProducts.cartLineKey) {
+      return window.EltexProducts.cartLineKey(item);
+    }
+    const id = String(item.id || item.slug || '');
+    const variant = String(item.variant || '');
+    return variant ? id + '::' + variant : id;
+  }
 
   function readCart() {
     try {
@@ -30,19 +39,17 @@
   function sameItem(a, b) {
     const aId = String(a.id || a.slug || '').toLowerCase();
     const bId = String(b.id || b.slug || '').toLowerCase();
-    return aId && bId && aId === bId;
+    const aVariant = String(a.variant || '');
+    const bVariant = String(b.variant || '');
+    return aId && bId && aId === bId && aVariant === bVariant;
   }
 
-  function sameItemId(item, productId) {
-    const key = String(productId || '').toLowerCase();
-    return (
-      String(item.id || '').toLowerCase() === key ||
-      String(item.slug || '').toLowerCase() === key
-    );
+  function findCartItem(cart, key) {
+    return cart.find((item) => cartLineKey(item) === key);
   }
 
   function normalizeCartProduct(product) {
-    return {
+    const entry = {
       id: String(product.id),
       slug: product.slug || String(product.id),
       name: product.name,
@@ -50,6 +57,15 @@
       img: product.img || product.image || 'images/Placeholder.jpg',
       cat: product.cat || '',
     };
+
+    if (product.variant) {
+      entry.variant = product.variant;
+      entry.variantLabel = product.variantLabel || product.variant;
+      entry.variantAttribute = product.variantAttribute || '';
+      if (product.variantKod) entry.variantKod = product.variantKod;
+    }
+
+    return entry;
   }
 
   function addItem(product) {
@@ -69,8 +85,8 @@
     return cart;
   }
 
-  function removeItem(productId) {
-    const cart = readCart().filter((item) => !sameItemId(item, productId));
+  function removeItem(cartKey) {
+    const cart = readCart().filter((item) => cartLineKey(item) !== cartKey);
     writeCart(cart);
     return cart;
   }
@@ -101,13 +117,31 @@
         return;
       }
 
-      next.push({ ...normalizeCartProduct(product), qty: Math.max(1, Number(item.qty) || 1) });
+      const synced = {
+        ...normalizeCartProduct(product),
+        qty: Math.max(1, Number(item.qty) || 1),
+      };
+
+      if (item.variant) {
+        synced.variant = item.variant;
+        synced.variantLabel = item.variantLabel || item.variant;
+        synced.variantAttribute = item.variantAttribute || '';
+        if (item.variantKod) synced.variantKod = item.variantKod;
+        synced.name = product.name + ' — ' + synced.variantLabel;
+      }
+
+      next.push(synced);
     });
 
     const changed =
       removed.length > 0 ||
       next.length !== cart.length ||
-      next.some((item, index) => !sameItem(item, cart[index]) || item.price !== cart[index].price);
+      next.some(
+        (item, index) =>
+          cartLineKey(item) !== cartLineKey(cart[index]) ||
+          item.price !== cart[index].price ||
+          item.name !== cart[index].name
+      );
 
     if (changed) writeCart(next);
     return { removed, cart: next };
@@ -118,13 +152,13 @@
     return [];
   }
 
-  function updateQty(productId, qty) {
+  function updateQty(cartKey, qty) {
     const cart = readCart();
-    const item = cart.find((entry) => sameItemId(entry, productId));
+    const item = findCartItem(cart, cartKey);
     if (!item) return cart;
 
     if (qty <= 0) {
-      return removeItem(productId);
+      return removeItem(cartKey);
     }
 
     item.qty = qty;
@@ -186,6 +220,7 @@
     clear: clearCart,
     syncWithCatalog,
     syncFromCatalog,
+    cartLineKey,
     count: () => readCart().reduce((sum, item) => sum + item.qty, 0),
     init: () => updateBadge(readCart()),
   };

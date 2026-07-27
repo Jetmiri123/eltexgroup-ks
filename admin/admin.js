@@ -10,7 +10,6 @@
   const postsTable = document.getElementById('posts-table');
   const productSearch = document.getElementById('product-search');
   const productCategoryFilter = document.getElementById('product-category-filter');
-  const productCategoryTags = document.getElementById('product-category-tags');
   const productFilterMeta = document.getElementById('product-filter-meta');
   const postSearch = document.getElementById('post-search');
   const orderSearch = document.getElementById('order-search');
@@ -756,38 +755,6 @@
         .join('');
   }
 
-  function renderProductCategoryTags(searchMatcher) {
-    if (!productCategoryTags) return;
-
-    const matchFn = searchMatcher || (() => true);
-    const counts = new Map();
-
-    productsData.products.forEach((product) => {
-      if (!matchFn(product)) return;
-      const slug = productCategorySlug(product);
-      counts.set(slug, (counts.get(slug) || 0) + 1);
-    });
-
-    const options = getProductCategoryOptions().filter((cat) => counts.has(cat.slug));
-    const visibleTotal = productsData.products.filter(matchFn).length;
-    const activeSlug = selectedProductCategorySlug;
-
-    let html =
-      `<button type="button" class="filter-tag${!activeSlug ? ' is-active' : ''}" data-cat="" title="Të gjitha produktet">` +
-      `Të gjitha <span class="filter-tag-count">${visibleTotal}</span></button>`;
-
-    options.forEach((cat) => {
-      const count = counts.get(cat.slug) || 0;
-      if (!count) return;
-      const label = decodeHtml(cat.name);
-      html +=
-        `<button type="button" class="filter-tag${activeSlug === cat.slug ? ' is-active' : ''}" data-cat="${escapeHtml(cat.slug)}" title="${escapeHtml(label)}">` +
-        `${escapeHtml(truncateTagLabel(label, 34))} <span class="filter-tag-count">${count}</span></button>`;
-    });
-
-    productCategoryTags.innerHTML = html;
-  }
-
   function updateProductFilterMeta(visibleCount) {
     if (!productFilterMeta) return;
 
@@ -812,7 +779,6 @@
     const q = productSearch.value.trim().toLowerCase();
     const searchMatcher = (product) => productMatchesSearch(product, q);
 
-    renderProductCategoryTags(searchMatcher);
     syncProductCategoryFilter();
 
     const rows = productsData.products.filter((product) => {
@@ -1169,12 +1135,6 @@
   productSearch.addEventListener('input', renderProducts);
   productCategoryFilter.addEventListener('change', () => {
     selectedProductCategorySlug = productCategoryFilter.value || '';
-    renderProducts();
-  });
-  productCategoryTags.addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-cat]');
-    if (!btn) return;
-    selectedProductCategorySlug = btn.dataset.cat || '';
     renderProducts();
   });
   postSearch.addEventListener('input', renderPosts);
