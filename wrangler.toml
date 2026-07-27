@@ -4,8 +4,14 @@ compatibility_date = "2024-09-01"
 workers_dev = true
 compatibility_flags = ["global_fetch_strictly_public"]
 
-# Custom domains: add in Cloudflare Dashboard → Workers & Pages → eltexgroup-ks
-# → Settings → Domains & Routes (NOT here — wrangler deploy fails on domains/records API)
+# Routes (keep your existing A records — do NOT use Custom Domain in dashboard)
+[[routes]]
+pattern = "eltexgroup-rks.com/*"
+zone_name = "eltexgroup-rks.com"
+
+[[routes]]
+pattern = "www.eltexgroup-rks.com/*"
+zone_name = "eltexgroup-rks.com"
 
 [assets]
 directory = "."
