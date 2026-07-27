@@ -25,7 +25,6 @@
       'Të Gjitha',
       ...Object.entries(counts)
         .sort((a, b) => b[1] - a[1])
-        .slice(0, 10)
         .map(([name]) => name),
     ];
   }
@@ -37,17 +36,34 @@
       const matchesSearch =
         !q ||
         product.name.toLowerCase().includes(q) ||
-        product.cat.toLowerCase().includes(q);
+        product.cat.toLowerCase().includes(q) ||
+        (product.sku || '').toLowerCase().includes(q);
       return matchesCategory && matchesSearch;
     });
   }
 
   function escapeHtml(text) {
-    return String(text)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+    return utils.escapeHtml(text);
+  }
+
+  function syncCategoryUrl() {
+    const url = new URL(window.location.href);
+    if (activeCategory === 'Të Gjitha') {
+      url.searchParams.delete('cat');
+    } else {
+      url.searchParams.set('cat', utils.slugify(activeCategory));
+    }
+    history.replaceState({}, '', url.pathname + url.search);
+  }
+
+  function applyCategoryFromUrl() {
+    const param = new URLSearchParams(window.location.search).get('cat');
+    if (!param) return;
+
+    const match = products.find((product) => utils.slugify(product.cat) === param);
+    if (match) {
+      activeCategory = match.cat;
+    }
   }
 
   function renderFilters() {
@@ -74,7 +90,7 @@
           <img src="${product.img}" alt="${escapeHtml(product.name)}" class="product-card-image" loading="lazy">
         </a>
         <div class="product-card-body">
-          <div class="product-card-category">${escapeHtml(product.cat)}</div>
+          ${utils.renderCategoryBadge(product.cat)}
           <h3 class="product-card-title">
             <a href="${utils.productUrl(product)}">${escapeHtml(product.name)}</a>
           </h3>
@@ -93,6 +109,7 @@
   function init(list) {
     products = list.map(utils.normalizeProduct);
     categories = buildCategories(products);
+    applyCategoryFromUrl();
     renderFilters();
     renderProducts();
   }
@@ -101,6 +118,7 @@
     const button = event.target.closest('[data-category]');
     if (!button) return;
     activeCategory = button.dataset.category;
+    syncCategoryUrl();
     renderFilters();
     renderProducts();
   });

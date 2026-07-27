@@ -22,6 +22,38 @@
     return '/produkt/' + encodeURIComponent(slug);
   }
 
+  function slugify(text) {
+    return String(text || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 80);
+  }
+
+  function categoryFilterUrl(cat) {
+    const slug = slugify(cat || '');
+    return slug ? '/produkte?cat=' + encodeURIComponent(slug) : '/produkte';
+  }
+
+  function renderCategoryBadge(cat, options) {
+    const opts = options || {};
+    const label = decodeHtml(cat || 'Të Tjera');
+    if (!label) return '';
+
+    const linked = opts.linked !== false;
+    const valueHtml = linked
+      ? `<a href="${categoryFilterUrl(label)}" class="product-category-value">${escapeHtml(label)}</a>`
+      : `<span class="product-category-value">${escapeHtml(label)}</span>`;
+
+    const prefix = opts.showLabel === false
+      ? ''
+      : '<span class="product-category-label">Kategoria</span>';
+
+    return `<div class="product-category-badge${opts.detail ? ' product-category-badge--detail' : ''}">${prefix}${valueHtml}</div>`;
+  }
+
   function getProductParams(location) {
     const loc = location || window.location;
     const params = new URLSearchParams(loc.search);
@@ -135,8 +167,12 @@
 
   root.EltexProducts = {
     decodeHtml,
+    escapeHtml,
     formatPrice,
     productUrl,
+    slugify,
+    categoryFilterUrl,
+    renderCategoryBadge,
     getProductParams,
     normalizeProduct,
     cartPayload,

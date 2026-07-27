@@ -716,6 +716,10 @@ body > section.main_section:first-of-type {
   min-height: 2.4em;
 }
 
+.home-product-card .product-category-badge {
+  margin-bottom: 0.65rem;
+}
+
 .home-product-card .category_name .xs-text {
   display: -webkit-box;
   -webkit-box-orient: vertical;

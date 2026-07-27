@@ -1,5 +1,5 @@
 (function () {
-  const { loadProducts, findProduct, formatPrice, productUrl, cartPayload, getProductParams, formatRichContent } =
+  const { loadProducts, findProduct, formatPrice, productUrl, cartPayload, getProductParams, formatRichContent, renderCategoryBadge, categoryFilterUrl, escapeHtml } =
     window.EltexProducts;
 
   const params = getProductParams();
@@ -16,14 +16,6 @@
   const mainImage = document.getElementById('product-image');
 
   let currentProduct = null;
-
-  function escapeHtml(text) {
-    return String(text)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-  }
 
   function stripHtml(html) {
     return String(html || '')
@@ -72,7 +64,7 @@
 
   function renderSpecs(product) {
     const rows = (product.attributes || []).filter((a) => a.name && a.value);
-    if (!product.sku && !rows.length) {
+    if (!product.sku && !product.cat && !rows.length) {
       specsBlock.hidden = true;
       specsTable.innerHTML = '';
       return false;
@@ -80,6 +72,11 @@
 
     specsBlock.hidden = false;
     const html = [];
+    if (product.cat) {
+      html.push(
+        `<tr><th>Kategoria</th><td><a href="${categoryFilterUrl(product.cat)}" class="product-category-link">${escapeHtml(product.cat)}</a></td></tr>`
+      );
+    }
     if (product.sku) {
       html.push(`<tr><th>SKU</th><td>${escapeHtml(product.sku)}</td></tr>`);
     }
@@ -141,7 +138,7 @@
           <img src="${item.img}" alt="${escapeHtml(item.name)}" class="product-card-image" loading="lazy">
         </a>
         <div class="product-card-body">
-          <div class="product-card-category">${escapeHtml(item.cat)}</div>
+          ${renderCategoryBadge(item.cat, { showLabel: false })}
           <h3 class="product-card-title">
             <a href="${productUrl(item)}">${escapeHtml(item.name)}</a>
           </h3>
@@ -168,9 +165,22 @@
     }
 
     document.getElementById('breadcrumb-current').textContent = product.name;
+
+    const breadcrumbCategory = document.getElementById('breadcrumb-category');
+    const breadcrumbCategorySep = document.getElementById('breadcrumb-category-sep');
+    if (product.cat && breadcrumbCategory) {
+      breadcrumbCategory.textContent = product.cat;
+      breadcrumbCategory.href = categoryFilterUrl(product.cat);
+      breadcrumbCategory.hidden = false;
+      if (breadcrumbCategorySep) breadcrumbCategorySep.hidden = false;
+    } else if (breadcrumbCategory) {
+      breadcrumbCategory.hidden = true;
+      if (breadcrumbCategorySep) breadcrumbCategorySep.hidden = true;
+    }
+
     mainImage.src = product.img;
     mainImage.alt = product.name;
-    document.getElementById('product-category').textContent = product.cat;
+    document.getElementById('product-category').innerHTML = renderCategoryBadge(product.cat, { detail: true });
     document.getElementById('product-title').textContent = product.name;
     document.getElementById('product-price').textContent = formatPrice(product.price);
 
