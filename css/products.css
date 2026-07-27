@@ -1012,6 +1012,33 @@ body.products-filter-open {
   line-height: 1;
 }
 
+.cart-qty-input {
+  width: 3.25rem;
+  height: 2rem;
+  padding: 0 0.25rem;
+  border: 1px solid #e8e3df;
+  border-radius: 0;
+  background: #fff;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.cart-qty-input:focus {
+  outline: none;
+  border-color: var(--orange);
+}
+
+.cart-qty-input::-webkit-outer-spin-button,
+.cart-qty-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 .cart-qty-value {
   min-width: 1.5rem;
   text-align: center;
@@ -1300,6 +1327,13 @@ body.products-filter-open {
     height: 2.75rem;
     min-width: 44px;
     min-height: 44px;
+  }
+
+  .cart-qty-input {
+    width: 3.5rem;
+    height: 2.75rem;
+    min-height: 44px;
+    font-size: 1rem;
   }
 
   .cart-remove-btn {

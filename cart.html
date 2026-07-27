@@ -107,6 +107,22 @@
         : window.EltexCart.cartLineKey(item);
     }
 
+    function normalizeQty(value) {
+      const qty = parseInt(String(value).trim(), 10);
+      if (!Number.isFinite(qty) || qty < 1) return 1;
+      return Math.min(999, qty);
+    }
+
+    function applyQtyInput(input) {
+      const key = input.dataset.cartQty;
+      if (!key) return;
+
+      const qty = normalizeQty(input.value);
+      input.value = qty;
+      window.EltexCart.updateQty(key, qty);
+      renderCartPage();
+    }
+
     function formatCheckoutLines(items) {
       return items
         .map(
@@ -168,7 +184,16 @@
               ${variantMeta}
               <div class="cart-item-controls">
                 <button type="button" class="cart-qty-btn" data-cart-minus="${lineKey}" aria-label="Zvogëlo">−</button>
-                <span class="cart-qty-value">${item.qty}</span>
+                <input
+                  type="number"
+                  class="cart-qty-input"
+                  data-cart-qty="${lineKey}"
+                  value="${item.qty}"
+                  min="1"
+                  max="999"
+                  inputmode="numeric"
+                  aria-label="Sasia"
+                >
                 <button type="button" class="cart-qty-btn" data-cart-plus="${lineKey}" aria-label="Rrit">+</button>
                 <button type="button" class="cart-remove-btn" data-cart-remove="${lineKey}">Hiq</button>
               </div>
@@ -223,6 +248,27 @@
         if (remove) {
           window.EltexCart.remove(remove.dataset.cartRemove);
           renderCartPage();
+        }
+      });
+
+      document.getElementById('cart-items').addEventListener('change', (event) => {
+        const input = event.target.closest('[data-cart-qty]');
+        if (!input) return;
+        applyQtyInput(input);
+      });
+
+      document.getElementById('cart-items').addEventListener('blur', (event) => {
+        const input = event.target.closest('[data-cart-qty]');
+        if (!input) return;
+        applyQtyInput(input);
+      }, true);
+
+      document.getElementById('cart-items').addEventListener('keydown', (event) => {
+        const input = event.target.closest('[data-cart-qty]');
+        if (!input) return;
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          input.blur();
         }
       });
 

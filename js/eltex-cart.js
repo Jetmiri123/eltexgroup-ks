@@ -161,7 +161,7 @@
       return removeItem(cartKey);
     }
 
-    item.qty = qty;
+    item.qty = Math.max(1, Math.min(999, qty));
     writeCart(cart);
     return cart;
   }
