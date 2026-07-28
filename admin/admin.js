@@ -150,18 +150,32 @@
     return '<div class="table-thumb placeholder">—</div>';
   }
 
-  function categoryOptions() {
+  function categoryNames(selected) {
     const cats = (productsData.categories || []).map((c) => c.name).filter(Boolean);
     const fromProducts = productsData.products.map((p) => p.cat).filter(Boolean);
-    const unique = [...new Set([...cats, ...fromProducts])].sort((a, b) => a.localeCompare(b, 'sq'));
-    return unique.map((name) => `<option value="${escapeHtml(name)}"></option>`).join('');
+    const unique = [...new Set([...cats, ...fromProducts].map((name) => decodeHtml(name).trim()))].filter(Boolean);
+    const selectedDecoded = decodeHtml(selected || '').trim();
+    if (selectedDecoded && !unique.includes(selectedDecoded)) {
+      unique.push(selectedDecoded);
+    }
+    return unique.sort((a, b) => a.localeCompare(b, 'sq'));
   }
 
-  function categoryField(name, label) {
+  function categoryField(name, label, selected) {
+    const selectedValue = decodeHtml(selected || '').trim();
+    const options = categoryNames(selected)
+      .map((cat) => {
+        const isSelected = cat === selectedValue ? ' selected' : '';
+        return `<option value="${escapeHtml(cat)}"${isSelected}>${escapeHtml(cat)}</option>`;
+      })
+      .join('');
+
     return `<div class="full">
       <label for="${name}">${escapeHtml(label)}</label>
-      <input type="text" name="${name}" id="${name}" list="${name}-list" autocomplete="off" placeholder="Zgjidhni ose shkruani kategori">
-      <datalist id="${name}-list">${categoryOptions()}</datalist>
+      <select name="${name}" id="${name}" required>
+        <option value="" disabled${selectedValue ? '' : ' selected'}>Zgjidhni kategorinë...</option>
+        ${options}
+      </select>
     </div>`;
   }
 
@@ -901,7 +915,9 @@
   function fillEditorFields(values) {
     editorFields.querySelectorAll('[name]').forEach((el) => {
       if (Object.prototype.hasOwnProperty.call(values, el.name)) {
-        el.value = values[el.name] == null ? '' : String(values[el.name]);
+        let value = values[el.name] == null ? '' : String(values[el.name]);
+        if (el.name === 'cat') value = decodeHtml(value);
+        el.value = value;
       }
     });
   }
@@ -920,7 +936,7 @@
       <div class="field-grid">
         ${field('name', 'Emri i produktit *', { full: true })}
         ${field('price', 'Çmimi (EUR)', { type: 'number', step: '0.01' })}
-        ${categoryField('cat', 'Kategoria *')}
+        ${categoryField('cat', 'Kategoria *', p.cat || '')}
         ${imageUploadField(p.image || '')}
         ${richField('short_description', 'Përshkrim i shkurtër')}
         ${richField('description', 'Përshkrim i plotë', { tall: true })}
