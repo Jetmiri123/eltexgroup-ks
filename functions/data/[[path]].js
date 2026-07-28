@@ -26,10 +26,11 @@ export async function onRequest(context) {
     return new Response('Not found', { status: 404 });
   }
 
+  const isCatalog = filename === 'live-products.json' || filename === 'live-posts.json';
   return new Response(JSON.stringify(data, null, 2) + '\n', {
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
-      'Cache-Control': filename.includes('orders') ? 'no-store' : 'public, max-age=60',
+      'Cache-Control': filename.includes('orders') || isCatalog ? 'no-store, must-revalidate' : 'public, max-age=60',
     },
   });
 }

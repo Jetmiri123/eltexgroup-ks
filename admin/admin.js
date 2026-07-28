@@ -800,7 +800,10 @@
           <td><strong>${escapeHtml(p.name)}</strong></td>
           <td><span class="table-tag" title="${escapeHtml(decodeHtml(p.cat || ''))}">${escapeHtml(truncateTagLabel(p.cat || '', 42))}</span></td>
           <td>€${Number(p.price || 0).toFixed(2)}</td>
-          <td><button type="button" class="btn ghost small" data-edit-product="${idx}">Ndrysho</button></td>
+          <td class="table-actions">
+            <button type="button" class="btn ghost small" data-edit-product="${idx}">Ndrysho</button>
+            <button type="button" class="btn danger small" data-delete-product="${escapeHtml(p.id)}">Fshi</button>
+          </td>
         </tr>`;
           })
           .join('')
@@ -853,14 +856,27 @@
     renderSubmissions();
   }
 
+  function findProductIndex(id) {
+    return productsData.products.findIndex((product) => String(product.id) === String(id));
+  }
+
   async function saveProducts() {
-    await api('/api/products', {
+    const res = await api('/api/products', {
       method: 'PUT',
       body: JSON.stringify(productsData),
     });
     productsData = await api('/api/products');
-    showToast('Produktet u ruajtën');
+    const when = res.updatedAt ? new Date(res.updatedAt).toLocaleString('sq-AL') : '';
+    showToast(when ? `Produktet u ruajtën · faqja përditësohet menjëherë (${when})` : 'Produktet u ruajtën · faqja përditësohet menjëherë');
     renderProducts();
+    return res;
+  }
+
+  async function deleteProduct(id) {
+    const index = findProductIndex(id);
+    if (index === -1) throw new Error('Produkti nuk u gjet');
+    productsData.products.splice(index, 1);
+    await saveProducts();
   }
 
   async function savePosts() {
@@ -1121,8 +1137,17 @@
   submissionStatusFilter.addEventListener('change', renderSubmissions);
 
   productsTable.addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-edit-product]');
-    if (btn) openProductEditor(Number(btn.dataset.editProduct));
+    const editBtn = e.target.closest('[data-edit-product]');
+    if (editBtn) {
+      openProductEditor(Number(editBtn.dataset.editProduct));
+      return;
+    }
+
+    const deleteBtn = e.target.closest('[data-delete-product]');
+    if (deleteBtn) {
+      if (!confirm('Je i sigurt që do ta fshish këtë produkt?')) return;
+      deleteProduct(deleteBtn.dataset.deleteProduct).catch((err) => showToast(err.message));
+    }
   });
 
   postsTable.addEventListener('click', (e) => {

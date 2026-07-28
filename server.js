@@ -214,6 +214,37 @@ function rebuildCategories(products) {
     }));
 }
 
+function assignProductSlugs(products) {
+  const slugs = new Set();
+  for (const product of products) {
+    if (!product.name || !String(product.name).trim()) {
+      throw new Error('Çdo produkt duhet të ketë emër');
+    }
+    const preferred = String(product.slug || slugify(product.name)).trim();
+    if (!preferred) throw new Error('Çdo produkt duhet të ketë slug');
+
+    let slug = preferred;
+    let suffix = 2;
+    while (slugs.has(slug)) {
+      slug = `${preferred}-${suffix}`;
+      suffix += 1;
+    }
+    slugs.add(slug);
+    product.slug = slug;
+    product.price = Number(product.price) || 0;
+  }
+}
+
+function prepareProductCatalog(body) {
+  if (!Array.isArray(body.products)) {
+    throw new Error('products array required');
+  }
+  assignProductSlugs(body.products);
+  body.categories = rebuildCategories(body.products);
+  body.updatedAt = new Date().toISOString();
+  return body;
+}
+
 function readOrders() {
   try {
     const data = readJson(ORDERS_PATH);
@@ -756,33 +787,14 @@ async function handleApi(req, res, pathname) {
       return;
     }
     if (req.method === 'PUT') {
-      const body = await readBody(req);
-      if (!Array.isArray(body.products)) {
-        sendJson(res, 400, { error: 'products array required' });
-        return;
+      try {
+        const body = await readBody(req);
+        const catalog = prepareProductCatalog(body);
+        writeJson(PRODUCTS_PATH, catalog);
+        sendJson(res, 200, { ok: true, count: catalog.products.length, updatedAt: catalog.updatedAt });
+      } catch (e) {
+        sendJson(res, 400, { error: e.message || 'Ruajtja e produkteve dështoi' });
       }
-      const slugs = new Set();
-      for (const product of body.products) {
-        if (!product.name || !String(product.name).trim()) {
-          sendJson(res, 400, { error: 'Çdo produkt duhet të ketë emër' });
-          return;
-        }
-        const slug = String(product.slug || slugify(product.name)).trim();
-        if (!slug) {
-          sendJson(res, 400, { error: 'Çdo produkt duhet të ketë slug' });
-          return;
-        }
-        if (slugs.has(slug)) {
-          sendJson(res, 400, { error: 'Slug i përsëritur: ' + slug });
-          return;
-        }
-        slugs.add(slug);
-        product.slug = slug;
-        product.price = Number(product.price) || 0;
-      }
-      body.categories = rebuildCategories(body.products);
-      writeJson(PRODUCTS_PATH, body);
-      sendJson(res, 200, { ok: true, count: body.products.length });
       return;
     }
   }

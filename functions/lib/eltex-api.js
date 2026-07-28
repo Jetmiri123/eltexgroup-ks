@@ -59,6 +59,37 @@ function rebuildCategories(products) {
     .map(([name, count]) => ({ name, slug: slugify(name), count }));
 }
 
+function assignProductSlugs(products) {
+  const slugs = new Set();
+  for (const product of products) {
+    if (!product.name || !String(product.name).trim()) {
+      throw new Error('Çdo produkt duhet të ketë emër');
+    }
+    const preferred = String(product.slug || slugify(product.name)).trim();
+    if (!preferred) throw new Error('Çdo produkt duhet të ketë slug');
+
+    let slug = preferred;
+    let suffix = 2;
+    while (slugs.has(slug)) {
+      slug = `${preferred}-${suffix}`;
+      suffix += 1;
+    }
+    slugs.add(slug);
+    product.slug = slug;
+    product.price = Number(product.price) || 0;
+  }
+}
+
+function prepareProductCatalog(body) {
+  if (!Array.isArray(body.products)) {
+    throw new Error('products array required');
+  }
+  assignProductSlugs(body.products);
+  body.categories = rebuildCategories(body.products);
+  body.updatedAt = new Date().toISOString();
+  return body;
+}
+
 function findCatalogProduct(catalog, line) {
   const keys = [line.id, line.slug]
     .filter(Boolean)
@@ -351,22 +382,16 @@ export async function handleApiRequest(context) {
   if (pathname === '/api/products') {
     if (method === 'GET') return json(await readProducts(env, request));
     if (method === 'PUT') {
-      if (!Array.isArray(body.products)) return json({ error: 'products array required' }, 400);
-      const slugs = new Set();
-      for (const product of body.products) {
-        if (!product.name || !String(product.name).trim()) {
-          return json({ error: 'Çdo produkt duhet të ketë emër' }, 400);
-        }
-        const slug = String(product.slug || slugify(product.name)).trim();
-        if (!slug) return json({ error: 'Çdo produkt duhet të ketë slug' }, 400);
-        if (slugs.has(slug)) return json({ error: 'Slug i përsëritur: ' + slug }, 400);
-        slugs.add(slug);
-        product.slug = slug;
-        product.price = Number(product.price) || 0;
+      if (!getKv(env)) {
+        return json({ error: 'Magazina e të dhënave nuk është e disponueshme. Ndryshimet nuk mund të ruhen.' }, 503);
       }
-      body.categories = rebuildCategories(body.products);
-      await writeProducts(env, body);
-      return json({ ok: true, count: body.products.length });
+      try {
+        const catalog = prepareProductCatalog(body);
+        await writeProducts(env, catalog);
+        return json({ ok: true, count: catalog.products.length, updatedAt: catalog.updatedAt });
+      } catch (e) {
+        return json({ error: e.message || 'Ruajtja e produkteve dështoi' }, 400);
+      }
     }
   }
 

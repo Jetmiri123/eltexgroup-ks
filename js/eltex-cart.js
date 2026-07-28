@@ -184,7 +184,7 @@
       return window.EltexProducts.loadProducts();
     }
 
-    const res = await fetch('/data/live-products.json');
+    const res = await fetch('/data/live-products.json', { cache: 'no-store' });
     if (!res.ok) throw new Error('catalog unavailable');
     const data = await res.json();
     return (data.products || []).map((raw) => ({

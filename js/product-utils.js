@@ -173,7 +173,7 @@
   }
 
   function loadProducts() {
-    return fetch('/data/live-products.json')
+    return fetch('/data/live-products.json', { cache: 'no-store' })
       .then((res) => (res.ok ? res.json() : Promise.reject()))
       .then((data) => (data.products || []).map(normalizeProduct));
   }

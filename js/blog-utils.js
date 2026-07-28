@@ -1,6 +1,4 @@
 (function (window) {
-  let cache = null;
-
   function normalizePost(raw) {
     return {
       id: raw.id,
@@ -15,12 +13,10 @@
   }
 
   async function loadPosts() {
-    if (cache) return cache;
-    const res = await fetch('/data/live-posts.json');
+    const res = await fetch('/data/live-posts.json', { cache: 'no-store' });
     if (!res.ok) throw new Error('Posts not found');
     const data = await res.json();
-    cache = data.map(normalizePost);
-    return cache;
+    return data.map(normalizePost);
   }
 
   function findPost(posts, { slug, id } = {}) {
