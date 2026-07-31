@@ -3,6 +3,7 @@ const KEYS = {
   posts: 'live-posts',
   orders: 'live-orders',
   submissions: 'live-submissions',
+  users: 'live-users',
 };
 
 function sessionKey(token) {
@@ -31,6 +32,7 @@ export async function ensureKvSeeded(env, request) {
   const posts = await fetchAssetJson(env, request, '/data/live-posts.json');
   const orders = await fetchAssetJson(env, request, '/data/live-orders.json');
   const submissions = await fetchAssetJson(env, request, '/data/live-submissions.json');
+  const users = await fetchAssetJson(env, request, '/data/live-users.json');
 
   if (!(await kv.get(KEYS.products)) && products) {
     await kv.put(KEYS.products, JSON.stringify(products, null, 2));
@@ -43,6 +45,9 @@ export async function ensureKvSeeded(env, request) {
   }
   if (!(await kv.get(KEYS.submissions)) && submissions) {
     await kv.put(KEYS.submissions, JSON.stringify(submissions, null, 2));
+  }
+  if (!(await kv.get(KEYS.users)) && users) {
+    await kv.put(KEYS.users, JSON.stringify(users, null, 2));
   }
 
   await kv.put('_kv_seeded', '1');

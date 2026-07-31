@@ -15,7 +15,11 @@ const PRODUCTS_PATH = path.join(ROOT, 'data/live-products.json');
 const POSTS_PATH = path.join(ROOT, 'data/live-posts.json');
 const ORDERS_PATH = path.join(ROOT, 'data/live-orders.json');
 const SUBMISSIONS_PATH = path.join(ROOT, 'data/live-submissions.json');
+const USERS_PATH = path.join(ROOT, 'data/live-users.json');
 const UPLOADS_DIR = path.join(ROOT, 'images/uploads');
+
+const sessions = new Map();
+const userSessions = new Map();
 
 const ORDER_EMAIL = process.env.ELTEX_ORDER_EMAIL || process.env.ELTEX_SMTP_USER || '';
 const SMTP_HOST = process.env.ELTEX_SMTP_HOST || '';
@@ -31,7 +35,6 @@ try {
   mailer = null;
 }
 
-const sessions = new Map();
 const MIME = {
   '.html': 'text/html; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
@@ -106,6 +109,61 @@ function isAuthed(req) {
     return false;
   }
   return true;
+}
+
+function hashPassword(password, salt) {
+  return crypto.pbkdf2Sync(password, salt, 100000, 32, 'sha256').toString('hex');
+}
+
+function randomUserId() {
+  return 'usr_' + Date.now().toString(36) + crypto.randomBytes(4).toString('hex');
+}
+
+function publicUser(user) {
+  return {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    company: user.company || '',
+    phone: user.phone || '',
+    status: user.status,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt || user.createdAt,
+  };
+}
+
+function readUsers() {
+  try {
+    const data = readJson(USERS_PATH);
+    return Array.isArray(data) ? data : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeUsers(users) {
+  writeJson(USERS_PATH, users);
+}
+
+function getUserFromRequest(req) {
+  const token = getToken(req);
+  const session = userSessions.get(token);
+  if (!session || session.expires < Date.now()) {
+    if (session) userSessions.delete(token);
+    return null;
+  }
+  return readUsers().find((user) => user.id === session.userId) || null;
+}
+
+function createUserSession(userId) {
+  const token = crypto.randomBytes(24).toString('hex');
+  userSessions.set(token, { userId, expires: Date.now() + 7 * 24 * 60 * 60 * 1000 });
+  return token;
+}
+
+function deleteUserSession(req) {
+  const token = getToken(req);
+  if (token) userSessions.delete(token);
 }
 
 function send(res, status, body, type, extraHeaders) {
@@ -701,6 +759,114 @@ async function handleApi(req, res, pathname) {
     return;
   }
 
+  if (pathname === '/api/auth/signup' && req.method === 'POST') {
+    try {
+      const body = await readBody(req);
+      const name = sanitizeText(body.name, 120);
+      const email = sanitizeText(body.email, 160).toLowerCase();
+      const password = String(body.password || '');
+      const company = sanitizeText(body.company, 120);
+      const phone = sanitizeText(body.phone, 40);
+
+      if (!name) {
+        sendJson(res, 400, { error: 'Emri është i detyrueshëm' });
+        return;
+      }
+      if (!isValidEmail(email)) {
+        sendJson(res, 400, { error: 'Email i pavlefshëm' });
+        return;
+      }
+      if (password.length < 8) {
+        sendJson(res, 400, { error: 'Fjalëkalimi duhet të ketë të paktën 8 karaktere' });
+        return;
+      }
+
+      const users = readUsers();
+      if (users.some((user) => user.email === email)) {
+        sendJson(res, 400, { error: 'Ky email është i regjistruar tashmë' });
+        return;
+      }
+
+      const salt = crypto.randomBytes(16).toString('hex');
+      const now = new Date().toISOString();
+      const user = {
+        id: randomUserId(),
+        email,
+        name,
+        company,
+        phone,
+        passwordHash: hashPassword(password, salt),
+        passwordSalt: salt,
+        status: 'pending',
+        createdAt: now,
+        updatedAt: now,
+      };
+      users.unshift(user);
+      writeUsers(users);
+      sendJson(
+        res,
+        201,
+        {
+          ok: true,
+          user: publicUser(user),
+          message: 'Kërkesa u dërgua. Do të njoftoheni pas aprovimit nga administratori.',
+        }
+      );
+    } catch (e) {
+      sendJson(res, 400, { error: e.message || 'Regjistrimi dështoi' });
+    }
+    return;
+  }
+
+  if (pathname === '/api/auth/login' && req.method === 'POST') {
+    try {
+      const body = await readBody(req);
+      const email = sanitizeText(body.email, 160).toLowerCase();
+      const password = String(body.password || '');
+      const users = readUsers();
+      const user = users.find((entry) => entry.email === email);
+      if (!user || hashPassword(password, user.passwordSalt) !== user.passwordHash) {
+        sendJson(res, 401, { error: 'Email ose fjalëkalimi i gabuar' });
+        return;
+      }
+      if (user.status === 'pending') {
+        sendJson(res, 403, {
+          error: 'Llogaria juaj është në pritje të aprovimit nga administratori.',
+          code: 'pending',
+        });
+        return;
+      }
+      if (user.status === 'rejected') {
+        sendJson(res, 403, {
+          error: 'Kërkesa juaj për llogari u refuzua. Kontaktoni Eltex Group për më shumë.',
+          code: 'rejected',
+        });
+        return;
+      }
+      const token = createUserSession(user.id);
+      sendJson(res, 200, { ok: true, token, user: publicUser(user) });
+    } catch (e) {
+      sendJson(res, 400, { error: e.message || 'Kyçja dështoi' });
+    }
+    return;
+  }
+
+  if (pathname === '/api/auth/logout' && req.method === 'POST') {
+    deleteUserSession(req);
+    sendJson(res, 200, { ok: true });
+    return;
+  }
+
+  if (pathname === '/api/auth/me' && req.method === 'GET') {
+    const user = getUserFromRequest(req);
+    if (!user) {
+      sendJson(res, 401, { ok: false });
+      return;
+    }
+    sendJson(res, 200, { ok: true, user: publicUser(user) });
+    return;
+  }
+
   if (!isAuthed(req)) {
     sendJson(res, 401, { error: 'Nuk jeni i kyçur' });
     return;
@@ -708,6 +874,46 @@ async function handleApi(req, res, pathname) {
 
   const orderMatch = pathname.match(/^\/api\/orders\/([^/]+)$/);
   const submissionMatch = pathname.match(/^\/api\/submissions\/([^/]+)$/);
+  const userMatch = pathname.match(/^\/api\/users\/([^/]+)$/);
+
+  if (pathname === '/api/users' && req.method === 'GET') {
+    sendJson(res, 200, readUsers().map(publicUser));
+    return;
+  }
+
+  if (userMatch && req.method === 'PATCH') {
+    const body = await readBody(req);
+    const allowed = ['pending', 'approved', 'rejected'];
+    if (!allowed.includes(body.status)) {
+      sendJson(res, 400, { error: 'Status i pavlefshëm' });
+      return;
+    }
+    const users = readUsers();
+    const user = users.find((entry) => entry.id === userMatch[1]);
+    if (!user) {
+      sendJson(res, 404, { error: 'Përdoruesi nuk u gjet' });
+      return;
+    }
+    user.status = body.status;
+    user.updatedAt = new Date().toISOString();
+    if (body.status === 'approved') user.approvedAt = user.updatedAt;
+    writeUsers(users);
+    sendJson(res, 200, { ok: true, user: publicUser(user) });
+    return;
+  }
+
+  if (userMatch && req.method === 'DELETE') {
+    const users = readUsers();
+    const index = users.findIndex((entry) => entry.id === userMatch[1]);
+    if (index === -1) {
+      sendJson(res, 404, { error: 'Përdoruesi nuk u gjet' });
+      return;
+    }
+    users.splice(index, 1);
+    writeUsers(users);
+    sendJson(res, 200, { ok: true });
+    return;
+  }
 
   if (pathname === '/api/orders' && req.method === 'GET') {
     sendJson(res, 200, readOrders());

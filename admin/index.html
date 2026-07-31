@@ -54,6 +54,10 @@
           <span class="sidebar-link-label">Mesazhet</span>
           <span id="submissions-count" class="sidebar-badge"></span>
         </button>
+        <button type="button" class="sidebar-link" data-tab="users">
+          <span class="sidebar-link-label">Përdoruesit</span>
+          <span id="users-count" class="sidebar-badge"></span>
+        </button>
       </nav>
       <div class="sidebar-footer">
         <a href="/" target="_blank" class="btn ghost btn-block">Shiko faqen</a>
@@ -171,6 +175,33 @@
                 </tr>
               </thead>
               <tbody id="submissions-table"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="panel-users" class="panel" hidden>
+          <div class="panel-toolbar">
+            <input type="search" id="user-search" placeholder="Kërko përdorues..." class="search">
+            <select id="user-status-filter" class="search order-filter">
+              <option value="">Të gjitha statuset</option>
+              <option value="pending">Në pritje</option>
+              <option value="approved">Aprovuar</option>
+              <option value="rejected">Refuzuar</option>
+            </select>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Emri</th>
+                  <th>Email</th>
+                  <th>Kompania</th>
+                  <th>Statusi</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="users-table"></tbody>
             </table>
           </div>
         </section>

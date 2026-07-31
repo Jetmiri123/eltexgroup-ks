@@ -15,6 +15,16 @@ import {
 } from '../lib/eltex-store.js';
 import { sendOrderEmail, sendContactEmail } from '../lib/eltex-email.js';
 import { storeUploadedImage } from '../lib/eltex-media.js';
+import {
+  signupUser,
+  loginUser,
+  getUserFromRequest,
+  deleteUserSession,
+  readUsers,
+  updateUserStatus,
+  deleteUser,
+  publicUser,
+} from '../lib/eltex-users.js';
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -320,12 +330,69 @@ export async function handleApiRequest(context) {
     return json({ ok }, ok ? 200 : 401);
   }
 
+  if (pathname === '/api/auth/signup' && method === 'POST') {
+    try {
+      const user = await signupUser(env, request, body);
+      return json({ ok: true, user, message: 'Kërkesa u dërgua. Do të njoftoheni pas aprovimit nga administratori.' }, 201);
+    } catch (e) {
+      const status = e.message.includes('Storage') ? 503 : 400;
+      return json({ error: e.message || 'Regjistrimi dështoi' }, status);
+    }
+  }
+
+  if (pathname === '/api/auth/login' && method === 'POST') {
+    try {
+      const result = await loginUser(env, request, body);
+      return json({ ok: true, ...result });
+    } catch (e) {
+      if (e.code === 'pending' || e.code === 'rejected') {
+        return json({ error: e.message, code: e.code }, 403);
+      }
+      return json({ error: e.message || 'Kyçja dështoi' }, 401);
+    }
+  }
+
+  if (pathname === '/api/auth/logout' && method === 'POST') {
+    await deleteUserSession(env, request);
+    return json({ ok: true });
+  }
+
+  if (pathname === '/api/auth/me' && method === 'GET') {
+    const user = await getUserFromRequest(env, request);
+    if (!user) return json({ ok: false }, 401);
+    return json({ ok: true, user: publicUser(user) });
+  }
+
   if (!(await isAuthed(env, request))) {
     return json({ error: 'Nuk jeni i kyçur' }, 401);
   }
 
   const orderMatch = pathname.match(/^\/api\/orders\/([^/]+)$/);
   const submissionMatch = pathname.match(/^\/api\/submissions\/([^/]+)$/);
+  const userMatch = pathname.match(/^\/api\/users\/([^/]+)$/);
+
+  if (pathname === '/api/users' && method === 'GET') {
+    const users = await readUsers(env, request);
+    return json(users.map(publicUser));
+  }
+
+  if (userMatch && method === 'PATCH') {
+    try {
+      const user = await updateUserStatus(env, request, userMatch[1], body.status);
+      return json({ ok: true, user });
+    } catch (e) {
+      return json({ error: e.message || 'Ndryshimi dështoi' }, 400);
+    }
+  }
+
+  if (userMatch && method === 'DELETE') {
+    try {
+      await deleteUser(env, request, userMatch[1]);
+      return json({ ok: true });
+    } catch (e) {
+      return json({ error: e.message || 'Fshirja dështoi' }, 404);
+    }
+  }
 
   if (pathname === '/api/orders' && method === 'GET') {
     return json(await readOrders(env, request));

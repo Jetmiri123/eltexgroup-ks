@@ -783,6 +783,9 @@ textarea {
 }
 
 .status-new { background: #fff3e8; color: #b45309; }
+.status-pending { background: #fff7e6; color: #d48806; }
+.status-approved { background: #f6ffed; color: #389e0d; }
+.status-rejected { background: #fff1f0; color: #cf1322; }
 .status-processing { background: #eef4ff; color: #1d4ed8; }
 .status-read { background: #eef4ff; color: #1d4ed8; }
 .status-done { background: #ecfdf3; color: #047857; }

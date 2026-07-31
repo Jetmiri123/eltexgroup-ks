@@ -393,6 +393,68 @@ body.products-filter-open {
   color: var(--orange);
 }
 
+.products-grid:has(.products-category-group) {
+  display: block;
+}
+
+.products-category-group + .products-category-group {
+  margin-top: 2.75rem;
+  padding-top: 2rem;
+  border-top: 1px solid #ece8e4;
+}
+
+.products-category-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.products-category-title {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.products-category-view {
+  appearance: none;
+  border: 1px solid #ddd;
+  background: #fff;
+  color: #111;
+  border-radius: 999px;
+  padding: 0.45rem 0.9rem;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.products-category-view:hover {
+  border-color: var(--orange);
+  color: var(--orange);
+}
+
+.products-grid.products-grid--section {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  align-items: stretch;
+}
+
+.btn-add-cart--link {
+  display: inline-block;
+  text-decoration: none;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.btn-add-cart--link:hover {
+  color: #fff;
+}
+
 .products-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

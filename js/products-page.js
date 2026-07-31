@@ -227,19 +227,13 @@
     }
   }
 
-  function renderProducts() {
-    const list = filteredProducts();
+  function renderProductCard(product) {
+    const hasVariants = !!utils.parseProductVariants(product);
+    const cartAction = hasVariants
+      ? `<a href="${utils.productUrl(product)}" class="btn-add-cart btn-add-cart--link">Zgjidh opsionin</a>`
+      : `<button type="button" class="btn-add-cart" data-add-cart="${escapeHtml(product.id)}">Shto në Shportë</button>`;
 
-    if (emptyState) {
-      emptyState.hidden = list.length > 0;
-    }
-
-    updateResultsMeta(list.length);
-    updateFilterUi();
-
-    grid.innerHTML = list
-      .map(
-        (product) => `
+    return `
       <article class="product-card" data-category="${escapeHtml(product.cat)}">
         <a href="${utils.productUrl(product)}" class="product-card-image-link">
           <img src="${product.img}" alt="${escapeHtml(product.name)}" class="product-card-image" loading="lazy">
@@ -253,12 +247,51 @@
             <div class="product-card-price">
               <span class="price-current">${utils.formatPrice(product.price)}</span>
             </div>
-            <button type="button" class="btn-add-cart" data-add-cart="${escapeHtml(product.id)}">Shto në Shportë</button>
+            ${cartAction}
           </div>
         </div>
-      </article>`
-      )
-      .join('');
+      </article>`;
+  }
+
+  function renderProducts() {
+    const list = filteredProducts();
+
+    if (emptyState) {
+      emptyState.hidden = list.length > 0;
+    }
+
+    updateResultsMeta(list.length);
+    updateFilterUi();
+
+    const showGrouped = activeCategory === 'Të Gjitha' && !searchQuery.trim();
+
+    if (showGrouped) {
+      const groups = new Map();
+      categories.slice(1).forEach((cat) => groups.set(cat, []));
+      list.forEach((product) => {
+        if (!groups.has(product.cat)) groups.set(product.cat, []);
+        groups.get(product.cat).push(product);
+      });
+
+      grid.innerHTML = [...groups.entries()]
+        .filter(([, items]) => items.length)
+        .map(
+          ([cat, items]) => `
+        <section class="products-category-group">
+          <div class="products-category-head">
+            <h2 class="products-category-title">${escapeHtml(cat)}</h2>
+            <button type="button" class="products-category-view" data-category="${escapeHtml(cat)}">Shiko të gjitha (${items.length})</button>
+          </div>
+          <div class="products-grid products-grid--section">
+            ${items.map(renderProductCard).join('')}
+          </div>
+        </section>`
+        )
+        .join('');
+      return;
+    }
+
+    grid.innerHTML = list.map(renderProductCard).join('');
   }
 
   function init(list) {
@@ -318,6 +351,12 @@
   });
 
   grid.addEventListener('click', (event) => {
+    const categoryBtn = event.target.closest('[data-category].products-category-view');
+    if (categoryBtn) {
+      setCategory(categoryBtn.dataset.category);
+      return;
+    }
+
     const button = event.target.closest('[data-add-cart]');
     if (!button || !window.EltexCart) return;
     event.preventDefault();

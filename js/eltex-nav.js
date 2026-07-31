@@ -9,6 +9,7 @@
     { id: 'about-us', href: '/about-us', label: 'Për Ne' },
     { id: 'blogs', href: '/blogs', label: 'Blog' },
     { id: 'contact-us', href: '/contact-us', label: 'Kontakt' },
+    { id: 'llogaria', href: '/llogaria', label: 'Llogaria' },
     { id: 'cart', href: '/cart', label: 'Shporta', cart: true },
   ];
 

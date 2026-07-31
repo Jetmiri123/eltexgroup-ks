@@ -19,6 +19,9 @@
   const submissionTypeFilter = document.getElementById('submission-type-filter');
   const submissionStatusFilter = document.getElementById('submission-status-filter');
   const submissionsTable = document.getElementById('submissions-table');
+  const userSearch = document.getElementById('user-search');
+  const userStatusFilter = document.getElementById('user-status-filter');
+  const usersTable = document.getElementById('users-table');
   const editorDialog = document.getElementById('editor-dialog');
   const editorForm = document.getElementById('editor-form');
   const editorTitle = document.getElementById('editor-title');
@@ -32,6 +35,7 @@
   let postsData = [];
   let ordersData = [];
   let submissionsData = [];
+  let usersData = [];
   let editorMode = null;
   let editorIndex = -1;
   let richEditors = {};
@@ -432,6 +436,7 @@
     posts: 'Blog B2B',
     orders: 'Porositë',
     submissions: 'Mesazhet',
+    users: 'Përdoruesit',
   };
 
   function setBadge(id, value) {
@@ -448,6 +453,7 @@
     document.getElementById('panel-posts').hidden = name !== 'posts';
     document.getElementById('panel-orders').hidden = name !== 'orders';
     document.getElementById('panel-submissions').hidden = name !== 'submissions';
+    document.getElementById('panel-users').hidden = name !== 'users';
     if (pageTitle) pageTitle.textContent = TAB_LABELS[name] || 'Admin';
   }
 
@@ -647,6 +653,72 @@
           6,
           submissionsData.length ? 'Asnjë mesazh nuk përputhet me kërkimin.' : 'Ende nuk ka mesazhe.'
         );
+  }
+
+  function userStatusLabel(status) {
+    const map = {
+      pending: 'Në pritje',
+      approved: 'Aprovuar',
+      rejected: 'Refuzuar',
+    };
+    return map[status] || status;
+  }
+
+  function renderUsers() {
+    const q = userSearch.value.trim().toLowerCase();
+    const status = userStatusFilter.value;
+    const rows = usersData.filter((user) => {
+      if (status && user.status !== status) return false;
+      if (!q) return true;
+      const hay = [user.id, user.name, user.email, user.company, user.phone].join(' ').toLowerCase();
+      return hay.includes(q);
+    });
+
+    const pendingCount = usersData.filter((user) => user.status === 'pending').length;
+    setBadge('users-count', pendingCount || usersData.length);
+
+    usersTable.innerHTML = rows.length
+      ? rows
+          .map((user) => {
+            const actions =
+              user.status === 'pending'
+                ? `<button type="button" class="btn primary small" data-approve-user="${escapeHtml(user.id)}">Prano</button>
+                   <button type="button" class="btn danger small" data-reject-user="${escapeHtml(user.id)}">Refuzo</button>`
+                : user.status === 'approved'
+                  ? `<button type="button" class="btn danger small" data-reject-user="${escapeHtml(user.id)}">Refuzo</button>`
+                  : `<button type="button" class="btn primary small" data-approve-user="${escapeHtml(user.id)}">Prano</button>`;
+
+            return `
+        <tr>
+          <td>${escapeHtml(formatOrderDate(user.createdAt))}</td>
+          <td><strong>${escapeHtml(user.name)}</strong></td>
+          <td><span class="muted-inline">${escapeHtml(user.email)}</span></td>
+          <td>${escapeHtml(user.company || '—')}</td>
+          <td><span class="status-badge status-${escapeHtml(user.status || 'pending')}">${escapeHtml(userStatusLabel(user.status))}</span></td>
+          <td class="table-actions">${actions}
+            <button type="button" class="btn ghost small" data-delete-user="${escapeHtml(user.id)}">Fshi</button>
+          </td>
+        </tr>`;
+          })
+          .join('')
+      : emptyRow(6, usersData.length ? 'Asnjë përdorues nuk përputhet me filtrat.' : 'Ende nuk ka kërkesa për llogari.');
+  }
+
+  async function updateUserStatus(userId, status) {
+    await api('/api/users/' + encodeURIComponent(userId), {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    });
+    usersData = await api('/api/users');
+    renderUsers();
+    showToast(status === 'approved' ? 'Llogaria u aprovua' : 'Llogaria u refuzua');
+  }
+
+  async function deleteUserAccount(userId) {
+    await api('/api/users/' + encodeURIComponent(userId), { method: 'DELETE' });
+    usersData = await api('/api/users');
+    renderUsers();
+    showToast('Përdoruesi u fshi');
   }
 
   function openSubmissionViewer(submissionId) {
@@ -854,20 +926,23 @@
   }
 
   async function loadAll() {
-    const [products, posts, orders, submissions] = await Promise.all([
+    const [products, posts, orders, submissions, users] = await Promise.all([
       api('/api/products'),
       api('/api/posts'),
       api('/api/orders'),
       api('/api/submissions'),
+      api('/api/users'),
     ]);
     productsData = products;
     postsData = posts;
     ordersData = orders;
     submissionsData = submissions;
+    usersData = users;
     renderProducts();
     renderPosts();
     renderOrders();
     renderSubmissions();
+    renderUsers();
   }
 
   function findProductIndex(id) {
@@ -1151,6 +1226,30 @@
   submissionSearch.addEventListener('input', renderSubmissions);
   submissionTypeFilter.addEventListener('change', renderSubmissions);
   submissionStatusFilter.addEventListener('change', renderSubmissions);
+
+  usersTable.addEventListener('click', (e) => {
+    const approveBtn = e.target.closest('[data-approve-user]');
+    if (approveBtn) {
+      updateUserStatus(approveBtn.dataset.approveUser, 'approved').catch((err) => showToast(err.message));
+      return;
+    }
+
+    const rejectBtn = e.target.closest('[data-reject-user]');
+    if (rejectBtn) {
+      if (!confirm('Je i sigurt që do ta refuzosh këtë llogari?')) return;
+      updateUserStatus(rejectBtn.dataset.rejectUser, 'rejected').catch((err) => showToast(err.message));
+      return;
+    }
+
+    const deleteBtn = e.target.closest('[data-delete-user]');
+    if (deleteBtn) {
+      if (!confirm('Je i sigurt që do ta fshish këtë përdorues?')) return;
+      deleteUserAccount(deleteBtn.dataset.deleteUser).catch((err) => showToast(err.message));
+    }
+  });
+
+  userSearch.addEventListener('input', renderUsers);
+  userStatusFilter.addEventListener('change', renderUsers);
 
   productsTable.addEventListener('click', (e) => {
     const editBtn = e.target.closest('[data-edit-product]');
