@@ -153,12 +153,17 @@ function getUserFromRequest(req) {
     if (session) userSessions.delete(token);
     return null;
   }
+  if (session.remember) {
+    session.expires = Date.now() + 30 * 24 * 60 * 60 * 1000;
+    userSessions.set(token, session);
+  }
   return readUsers().find((user) => user.id === session.userId) || null;
 }
 
-function createUserSession(userId) {
+function createUserSession(userId, remember = true) {
   const token = crypto.randomBytes(24).toString('hex');
-  userSessions.set(token, { userId, expires: Date.now() + 7 * 24 * 60 * 60 * 1000 });
+  const ttl = remember ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000;
+  userSessions.set(token, { userId, expires: Date.now() + ttl, remember: !!remember });
   return token;
 }
 
@@ -857,7 +862,7 @@ async function handleApi(req, res, pathname) {
         });
         return;
       }
-      const token = createUserSession(user.id);
+      const token = createUserSession(user.id, body.remember !== false);
       sendJson(res, 200, { ok: true, token, user: publicUser(user) });
     } catch (e) {
       sendJson(res, 400, { error: e.message || 'Kyçja dështoi' });
@@ -878,6 +883,59 @@ async function handleApi(req, res, pathname) {
       return;
     }
     sendJson(res, 200, { ok: true, user: publicUser(user) });
+    return;
+  }
+
+  if (pathname === '/api/auth/profile' && req.method === 'PATCH') {
+    const current = getUserFromRequest(req);
+    if (!current) {
+      sendJson(res, 401, { error: 'Nuk jeni i kyçur' });
+      return;
+    }
+    try {
+      const body = await readBody(req);
+      const users = readUsers();
+      const user = users.find((entry) => entry.id === current.id);
+      if (!user) {
+        sendJson(res, 404, { error: 'Përdoruesi nuk u gjet' });
+        return;
+      }
+
+      const name = sanitizeText(body.name, 120);
+      const company = sanitizeText(body.company, 120);
+      const phone = sanitizeText(body.phone, 40);
+      const currentPassword = String(body.currentPassword || '');
+      const newPassword = String(body.newPassword || '');
+
+      if (!name) {
+        sendJson(res, 400, { error: 'Emri është i detyrueshëm' });
+        return;
+      }
+
+      user.name = name;
+      user.company = company;
+      user.phone = phone;
+      user.updatedAt = new Date().toISOString();
+
+      if (newPassword) {
+        if (newPassword.length < 8) {
+          sendJson(res, 400, { error: 'Fjalëkalimi i ri duhet të ketë të paktën 8 karaktere' });
+          return;
+        }
+        if (hashPassword(currentPassword, user.passwordSalt) !== user.passwordHash) {
+          sendJson(res, 400, { error: 'Fjalëkalimi aktual është i gabuar' });
+          return;
+        }
+        const salt = crypto.randomBytes(16).toString('hex');
+        user.passwordSalt = salt;
+        user.passwordHash = hashPassword(newPassword, salt);
+      }
+
+      writeUsers(users);
+      sendJson(res, 200, { ok: true, user: publicUser(user) });
+    } catch (e) {
+      sendJson(res, 400, { error: e.message || 'Ndryshimi dështoi' });
+    }
     return;
   }
 

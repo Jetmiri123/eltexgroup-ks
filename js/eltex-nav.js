@@ -3,24 +3,49 @@
   if (!mount) return;
 
   var page = mount.getAttribute('data-page') || '';
+  var profileIcon =
+    '<svg class="navbar_profile-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">' +
+    '<circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.75"/>' +
+    '<path d="M5 20c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>' +
+    '</svg>';
+
   var links = [
     { id: 'index', href: '/', label: 'Home' },
     { id: 'produkte', href: '/produkte', label: 'Produkte' },
     { id: 'about-us', href: '/about-us', label: 'Për Ne' },
     { id: 'blogs', href: '/blogs', label: 'Blog' },
     { id: 'contact-us', href: '/contact-us', label: 'Kontakt' },
-    { id: 'llogaria', href: '/llogaria', label: 'Llogaria' },
+    { id: 'llogaria', href: '/llogaria', label: 'Llogaria', profile: true },
     { id: 'cart', href: '/cart', label: 'Shporta', cart: true },
   ];
 
   function linkHtml(link) {
     var current = link.id === page;
-    var cls = 'navbar_link w-nav-link' + (current ? ' w--current' : '') + (link.cart ? ' navbar_cart-link' : '');
+    var cls =
+      'navbar_link w-nav-link' +
+      (current ? ' w--current' : '') +
+      (link.cart ? ' navbar_cart-link' : '') +
+      (link.profile ? ' navbar_profile-link' : '');
     var aria = current ? ' aria-current="page"' : '';
     var label = link.label;
+
     if (link.cart) {
       label = 'Shporta<span class="cart-count" data-cart-count aria-hidden="true">0</span>';
     }
+
+    if (link.profile) {
+      return (
+        '<a href="' +
+        link.href +
+        '" data-profile-link class="' +
+        cls +
+        '" aria-label="Llogaria">' +
+        profileIcon +
+        '<span class="profile-initial" data-profile-initial hidden></span>' +
+        '</a>'
+      );
+    }
+
     return '<a href="' + link.href + '"' + aria + ' class="' + cls + '">' + label + '</a>';
   }
 
@@ -53,4 +78,13 @@
     '</div></div></div></div>';
 
   mount.outerHTML = html;
+
+  if (!window.EltexAuth) {
+    var script = document.createElement('script');
+    script.src = '/js/eltex-auth.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    window.EltexAuth.init();
+  }
 })();

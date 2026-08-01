@@ -3,7 +3,8 @@ import { getKv, getToken, writeJson } from './eltex-store.js';
 export const USERS_KEY = 'live-users';
 
 const USER_SESSION_PREFIX = 'user-session:';
-const SESSION_TTL_SEC = 7 * 24 * 60 * 60;
+const SESSION_TTL_SHORT_SEC = 24 * 60 * 60;
+const SESSION_TTL_REMEMBER_SEC = 30 * 24 * 60 * 60;
 
 function randomId(prefix) {
   const arr = new Uint8Array(4);
@@ -85,13 +86,14 @@ function userSessionKey(token) {
   return USER_SESSION_PREFIX + token;
 }
 
-export async function createUserSession(env, userId) {
+export async function createUserSession(env, userId, remember = true) {
   const kv = getKv(env);
   if (!kv) throw new Error('Storage nuk është i disponueshëm');
+  const ttlSec = remember ? SESSION_TTL_REMEMBER_SEC : SESSION_TTL_SHORT_SEC;
   const token = randomToken();
-  const expires = Date.now() + SESSION_TTL_SEC * 1000;
-  await kv.put(userSessionKey(token), JSON.stringify({ userId, expires }), {
-    expirationTtl: SESSION_TTL_SEC,
+  const expires = Date.now() + ttlSec * 1000;
+  await kv.put(userSessionKey(token), JSON.stringify({ userId, expires, remember }), {
+    expirationTtl: ttlSec,
   });
   return token;
 }
@@ -120,6 +122,13 @@ export async function getUserFromRequest(env, request) {
   if (!session?.userId || !session.expires || session.expires < Date.now()) {
     if (session?.userId) await kv.delete(userSessionKey(token));
     return null;
+  }
+
+  // Extend remember-me sessions on activity
+  if (session.remember) {
+    const ttlSec = SESSION_TTL_REMEMBER_SEC;
+    session.expires = Date.now() + ttlSec * 1000;
+    await kv.put(userSessionKey(token), JSON.stringify(session), { expirationTtl: ttlSec });
   }
 
   const users = await readUsers(env, request);
@@ -193,8 +202,39 @@ export async function loginUser(env, request, body) {
     throw err;
   }
 
-  const token = await createUserSession(env, user.id);
+  const token = await createUserSession(env, user.id, body.remember !== false);
   return { token, user: publicUser(user) };
+}
+
+export async function updateUserProfile(env, request, userId, body) {
+  const users = await readUsers(env, request);
+  const user = users.find((entry) => entry.id === userId);
+  if (!user) throw new Error('Përdoruesi nuk u gjet');
+
+  const name = String(body.name || '').trim().slice(0, 120);
+  const company = String(body.company || '').trim().slice(0, 120);
+  const phone = String(body.phone || '').trim().slice(0, 40);
+  const currentPassword = String(body.currentPassword || '');
+  const newPassword = String(body.newPassword || '');
+
+  if (!name) throw new Error('Emri është i detyrueshëm');
+
+  user.name = name;
+  user.company = company;
+  user.phone = phone;
+  user.updatedAt = new Date().toISOString();
+
+  if (newPassword) {
+    if (newPassword.length < 8) throw new Error('Fjalëkalimi i ri duhet të ketë të paktën 8 karaktere');
+    const valid = (await hashPassword(currentPassword, user.passwordSalt)) === user.passwordHash;
+    if (!valid) throw new Error('Fjalëkalimi aktual është i gabuar');
+    const salt = randomSalt();
+    user.passwordSalt = salt;
+    user.passwordHash = await hashPassword(newPassword, salt);
+  }
+
+  await writeUsers(env, users);
+  return publicUser(user);
 }
 
 export async function updateUserStatus(env, request, userId, status) {

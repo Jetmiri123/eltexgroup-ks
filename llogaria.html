@@ -19,9 +19,10 @@
   <script src="js/eltex-nav.js"></script>
 
   <section class="main_section padding margin account-page-section">
-    <div class="wrapper">
-      <div class="section_headline">
-        <h1 class="big-text">Llogaria <span class="orange">B2B</span></h1>
+    <div class="wrapper account-wrapper">
+      <div class="account-page-head">
+        <h1 class="big-text account-page-title">Llogaria <span class="orange">B2B</span></h1>
+        <p class="account-page-sub">Kyçuni, regjistrohuni ose menaxhoni të dhënat e llogarisë suaj.</p>
       </div>
 
       <div class="account-shell">
@@ -37,11 +38,15 @@
             <form id="login-form" class="account-form" novalidate>
               <label>
                 Email
-                <input type="email" name="email" autocomplete="email" required placeholder="email@kompania.com">
+                <input type="email" name="email" id="login-email" autocomplete="email" required placeholder="email@kompania.com">
               </label>
               <label>
                 Fjalëkalimi
                 <input type="password" name="password" autocomplete="current-password" required minlength="8" placeholder="Fjalëkalimi">
+              </label>
+              <label class="account-remember">
+                <input type="checkbox" name="remember" id="login-remember" checked>
+                <span>Më mbaj të kyçur (30 ditë)</span>
               </label>
               <button type="submit" class="account-submit">Kyçu</button>
             </form>
@@ -78,13 +83,56 @@
           <p id="account-message" class="account-message" hidden></p>
         </div>
 
-        <div id="account-user" class="account-card account-status-card" hidden>
-          <span id="account-status-badge" class="account-status-badge"></span>
-          <h2 id="account-user-name"></h2>
-          <p id="account-user-email" class="account-user-meta"></p>
-          <p id="account-user-company" class="account-user-meta"></p>
-          <p id="account-user-note" class="account-lead"></p>
-          <button type="button" id="account-logout" class="account-logout">Dil nga llogaria</button>
+        <div id="account-user" hidden>
+          <div class="account-tabs account-tabs--user" role="tablist">
+            <button type="button" class="account-tab is-active" data-user-tab="profile" role="tab" aria-selected="true">Profili</button>
+            <button type="button" class="account-tab" data-user-tab="settings" role="tab" aria-selected="false">Cilësimet</button>
+          </div>
+
+          <div id="account-panel-profile" class="account-panel account-card account-status-card" role="tabpanel">
+            <span id="account-status-badge" class="account-status-badge"></span>
+            <h2 id="account-user-name"></h2>
+            <p id="account-user-email" class="account-user-meta"></p>
+            <p id="account-user-phone" class="account-user-meta"></p>
+            <p id="account-user-company" class="account-user-meta"></p>
+            <p id="account-user-note" class="account-lead"></p>
+            <button type="button" id="account-logout" class="account-logout">Dil nga llogaria</button>
+          </div>
+
+          <div id="account-panel-settings" class="account-panel account-card" role="tabpanel" hidden>
+            <h2>Cilësimet e llogarisë</h2>
+            <p class="account-lead">Përditësoni të dhënat tuaja. Email-i nuk ndryshohet këtu.</p>
+            <form id="settings-form" class="account-form" novalidate>
+              <label>
+                Emri dhe mbiemri *
+                <input type="text" name="name" id="settings-name" autocomplete="name" required>
+              </label>
+              <label>
+                Email
+                <input type="email" name="email" id="settings-email" disabled>
+              </label>
+              <label>
+                Telefoni
+                <input type="tel" name="phone" id="settings-phone" autocomplete="tel">
+              </label>
+              <label>
+                Kompania
+                <input type="text" name="company" id="settings-company" autocomplete="organization">
+              </label>
+              <hr class="account-divider">
+              <p class="account-settings-note">Lini bosh nëse nuk dëshironi të ndryshoni fjalëkalimin.</p>
+              <label>
+                Fjalëkalimi aktual
+                <input type="password" name="currentPassword" autocomplete="current-password" placeholder="Vetëm për ndryshim fjalëkalimi">
+              </label>
+              <label>
+                Fjalëkalimi i ri
+                <input type="password" name="newPassword" autocomplete="new-password" minlength="8" placeholder="Të paktën 8 karaktere">
+              </label>
+              <button type="submit" class="account-submit">Ruaj ndryshimet</button>
+            </form>
+            <p id="settings-message" class="account-message" hidden></p>
+          </div>
         </div>
       </div>
     </div>

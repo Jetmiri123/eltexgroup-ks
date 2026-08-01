@@ -25,6 +25,7 @@ import {
   readUsers,
   updateUserStatus,
   deleteUser,
+  updateUserProfile,
   publicUser,
 } from '../lib/eltex-users.js';
 
@@ -363,6 +364,17 @@ export async function handleApiRequest(context) {
     const user = await getUserFromRequest(env, request);
     if (!user) return json({ ok: false }, 401);
     return json({ ok: true, user: publicUser(user) });
+  }
+
+  if (pathname === '/api/auth/profile' && method === 'PATCH') {
+    const current = await getUserFromRequest(env, request);
+    if (!current) return json({ error: 'Nuk jeni i kyçur' }, 401);
+    try {
+      const user = await updateUserProfile(env, request, current.id, body);
+      return json({ ok: true, user });
+    } catch (e) {
+      return json({ error: e.message || 'Ndryshimi dështoi' }, 400);
+    }
   }
 
   if (!(await isAuthed(env, request))) {
