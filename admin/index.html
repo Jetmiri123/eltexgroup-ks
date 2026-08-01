@@ -58,6 +58,10 @@
           <span class="sidebar-link-label">Përdoruesit</span>
           <span id="users-count" class="sidebar-badge"></span>
         </button>
+        <button type="button" class="sidebar-link" data-tab="requests">
+          <span class="sidebar-link-label">Kërkesat</span>
+          <span id="requests-count" class="sidebar-badge"></span>
+        </button>
       </nav>
       <div class="sidebar-footer">
         <a href="/" target="_blank" class="btn ghost btn-block">Shiko faqen</a>
@@ -204,6 +208,26 @@
               <tbody id="users-table"></tbody>
             </table>
           </div>
+        </section>
+
+        <section id="panel-requests" class="panel" hidden>
+          <div class="requests-intro">
+            <p><strong>Lista e ndryshimeve që dëshironi.</strong> Shkruani çdo kërkesë veç e veç — titull opsional, pastaj përshkrimi i plotë. Ruhen në server. Zhvilluesi i lexon një nga një kur thuhet <em>“go read it”</em>.</p>
+          </div>
+          <div class="requests-compose card">
+            <h3 class="requests-compose-title">Kërkesë e re</h3>
+            <input type="text" id="request-title" class="search" placeholder="Titulli (opsional) — p.sh. Ndrysho faqen kryesore">
+            <textarea id="request-body" class="requests-textarea" rows="8" placeholder="Shkruani këtu çfarë dëshironi të ndryshohet..."></textarea>
+            <button type="button" id="add-request-btn" class="btn primary">+ Shto kërkesën</button>
+          </div>
+          <div class="panel-toolbar requests-toolbar">
+            <select id="request-status-filter" class="search order-filter">
+              <option value="">Të gjitha</option>
+              <option value="pending">Në pritje</option>
+              <option value="done">Kryera</option>
+            </select>
+          </div>
+          <div id="requests-list" class="requests-list"></div>
         </section>
       </main>
     </div>

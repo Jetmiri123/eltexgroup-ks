@@ -16,6 +16,7 @@ const POSTS_PATH = path.join(ROOT, 'data/live-posts.json');
 const ORDERS_PATH = path.join(ROOT, 'data/live-orders.json');
 const SUBMISSIONS_PATH = path.join(ROOT, 'data/live-submissions.json');
 const USERS_PATH = path.join(ROOT, 'data/live-users.json');
+const REQUESTS_PATH = path.join(ROOT, 'data/live-requests.json');
 const UPLOADS_DIR = path.join(ROOT, 'images/uploads');
 
 const sessions = new Map();
@@ -327,6 +328,19 @@ function readSubmissions() {
 
 function writeSubmissions(submissions) {
   writeJson(SUBMISSIONS_PATH, submissions);
+}
+
+function readRequests() {
+  try {
+    const data = readJson(REQUESTS_PATH);
+    return Array.isArray(data) ? data : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeRequests(requests) {
+  writeJson(REQUESTS_PATH, requests);
 }
 
 function randomSubmissionId() {
@@ -1035,6 +1049,32 @@ async function handleApi(req, res, pathname) {
         post.slug = slug;
       }
       writeJson(POSTS_PATH, body);
+      sendJson(res, 200, { ok: true, count: body.length });
+      return;
+    }
+  }
+
+  if (pathname === '/api/requests') {
+    if (req.method === 'GET') {
+      sendJson(res, 200, readRequests());
+      return;
+    }
+    if (req.method === 'PUT') {
+      const body = await readBody(req);
+      if (!Array.isArray(body)) {
+        sendJson(res, 400, { error: 'requests array required' });
+        return;
+      }
+      for (const item of body) {
+        if (!item.body || !String(item.body).trim()) {
+          sendJson(res, 400, { error: 'Çdo kërkesë duhet të ketë përshkrim' });
+          return;
+        }
+        item.body = String(item.body).trim();
+        item.title = String(item.title || '').trim();
+        item.status = item.status === 'done' ? 'done' : 'pending';
+      }
+      writeRequests(body);
       sendJson(res, 200, { ok: true, count: body.length });
       return;
     }

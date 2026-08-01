@@ -910,3 +910,122 @@ textarea {
     max-height: none;
   }
 }
+
+/* Client change requests */
+.requests-intro {
+  margin-bottom: 1.25rem;
+  color: var(--gray-700);
+  line-height: 1.55;
+}
+
+.requests-intro p {
+  margin: 0;
+}
+
+.requests-compose.card {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: 14px;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.requests-compose-title {
+  margin: 0 0 0.85rem;
+  font-size: 1rem;
+}
+
+.requests-textarea {
+  width: 100%;
+  min-height: 180px;
+  margin: 0.75rem 0 1rem;
+  border: 1px solid var(--gray-300);
+  border-radius: 10px;
+  padding: 0.85rem;
+  font: inherit;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.requests-toolbar {
+  margin-bottom: 0.75rem;
+}
+
+.requests-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.request-card {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: 14px;
+  padding: 1.1rem 1.25rem;
+}
+
+.request-card.is-done {
+  opacity: 0.72;
+  background: #fafafa;
+}
+
+.request-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.request-card-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  background: rgba(248, 136, 55, 0.12);
+  color: #b45309;
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.request-card-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.request-card-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.request-card-date {
+  margin: 0.2rem 0 0;
+  font-size: 0.82rem;
+  color: var(--gray-500);
+}
+
+.request-card-body {
+  margin: 0;
+  white-space: pre-wrap;
+  line-height: 1.55;
+  color: var(--gray-800);
+}
+
+.request-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.requests-empty {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--gray-500);
+  border: 1px dashed var(--gray-300);
+  border-radius: 14px;
+}

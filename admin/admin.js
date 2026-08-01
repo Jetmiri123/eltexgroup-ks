@@ -22,6 +22,11 @@
   const userSearch = document.getElementById('user-search');
   const userStatusFilter = document.getElementById('user-status-filter');
   const usersTable = document.getElementById('users-table');
+  const requestTitleInput = document.getElementById('request-title');
+  const requestBodyInput = document.getElementById('request-body');
+  const addRequestBtn = document.getElementById('add-request-btn');
+  const requestStatusFilter = document.getElementById('request-status-filter');
+  const requestsList = document.getElementById('requests-list');
   const editorDialog = document.getElementById('editor-dialog');
   const editorForm = document.getElementById('editor-form');
   const editorTitle = document.getElementById('editor-title');
@@ -36,6 +41,7 @@
   let ordersData = [];
   let submissionsData = [];
   let usersData = [];
+  let requestsData = [];
   let editorMode = null;
   let editorIndex = -1;
   let richEditors = {};
@@ -437,6 +443,7 @@
     orders: 'Porositë',
     submissions: 'Mesazhet',
     users: 'Përdoruesit',
+    requests: 'Kërkesat',
   };
 
   function setBadge(id, value) {
@@ -454,6 +461,7 @@
     document.getElementById('panel-orders').hidden = name !== 'orders';
     document.getElementById('panel-submissions').hidden = name !== 'submissions';
     document.getElementById('panel-users').hidden = name !== 'users';
+    document.getElementById('panel-requests').hidden = name !== 'requests';
     if (pageTitle) pageTitle.textContent = TAB_LABELS[name] || 'Admin';
   }
 
@@ -721,6 +729,79 @@
     showToast('Përdoruesi u fshi');
   }
 
+  function requestStatusLabel(status) {
+    return status === 'done' ? 'Kryer' : 'Në pritje';
+  }
+
+  async function saveRequests() {
+    await api('/api/requests', {
+      method: 'PUT',
+      body: JSON.stringify(requestsData),
+    });
+    requestsData = await api('/api/requests');
+    renderRequests();
+  }
+
+  function renderRequests() {
+    const status = requestStatusFilter.value;
+    const rows = requestsData.filter((item) => !status || item.status === status);
+    const pendingCount = requestsData.filter((item) => item.status !== 'done').length;
+    setBadge('requests-count', pendingCount || requestsData.length);
+
+    if (!rows.length) {
+      requestsList.innerHTML =
+        '<p class="requests-empty">' +
+        (requestsData.length ? 'Asnjë kërkesë nuk përputhet me filtrin.' : 'Ende nuk ka kërkesa. Shtoni të parën më sipër.') +
+        '</p>';
+      return;
+    }
+
+    requestsList.innerHTML = rows
+      .map((item, index) => {
+        const number = requestsData.indexOf(item) + 1;
+        const title = item.title ? `<h4 class="request-card-title">${escapeHtml(item.title)}</h4>` : '';
+        const doneClass = item.status === 'done' ? ' is-done' : '';
+        return `
+        <article class="request-card${doneClass}" data-request-id="${escapeHtml(item.id)}">
+          <div class="request-card-head">
+            <span class="request-card-number">#${number}</span>
+            <div class="request-card-meta">
+              ${title}
+              <p class="request-card-date">${escapeHtml(formatOrderDate(item.createdAt))} · ${escapeHtml(requestStatusLabel(item.status))}</p>
+            </div>
+            <span class="status-badge status-${item.status === 'done' ? 'approved' : 'pending'}">${escapeHtml(requestStatusLabel(item.status))}</span>
+          </div>
+          <p class="request-card-body">${escapeHtml(item.body)}</p>
+          <div class="request-card-actions">
+            <button type="button" class="btn ghost small" data-edit-request="${escapeHtml(item.id)}">Ndrysho</button>
+            <button type="button" class="btn ghost small" data-toggle-request="${escapeHtml(item.id)}">${item.status === 'done' ? 'Rikthe në pritje' : 'Shëno kryer'}</button>
+            <button type="button" class="btn danger small" data-delete-request="${escapeHtml(item.id)}">Fshi</button>
+          </div>
+        </article>`;
+      })
+      .join('');
+  }
+
+  function openRequestEditor(requestId) {
+    const item = requestsData.find((entry) => entry.id === requestId);
+    if (!item) return;
+
+    editorMode = 'request';
+    editorIndex = requestsData.indexOf(item);
+    editorTitle.textContent = 'Ndrysho kërkesën #' + (editorIndex + 1);
+    deleteItemBtn.hidden = false;
+    editorFields.innerHTML = `
+      <div class="field-grid">
+        ${field('title', 'Titulli (opsional)', { full: true })}
+        ${field('body', 'Përshkrimi *', { type: 'textarea', full: true, rows: 12 })}
+      </div>`;
+    fillEditorFields({
+      title: item.title || '',
+      body: item.body || '',
+    });
+    editorDialog.showModal();
+  }
+
   function openSubmissionViewer(submissionId) {
     const entry = submissionsData.find((item) => item.id === submissionId);
     if (!entry) return;
@@ -926,23 +1007,26 @@
   }
 
   async function loadAll() {
-    const [products, posts, orders, submissions, users] = await Promise.all([
+    const [products, posts, orders, submissions, users, requests] = await Promise.all([
       api('/api/products'),
       api('/api/posts'),
       api('/api/orders'),
       api('/api/submissions'),
       api('/api/users'),
+      api('/api/requests'),
     ]);
     productsData = products;
     postsData = posts;
     ordersData = orders;
     submissionsData = submissions;
     usersData = users;
+    requestsData = requests;
     renderProducts();
     renderPosts();
     renderOrders();
     renderSubmissions();
     renderUsers();
+    renderRequests();
   }
 
   function findProductIndex(id) {
@@ -1145,6 +1229,17 @@
         else postsData[editorIndex] = { ...postsData[editorIndex], ...data };
 
         await savePosts();
+      } else if (editorMode === 'request') {
+        if (!data.body) throw new Error('Përshkrimi i kërkesës është i detyrueshëm');
+        const existing = requestsData[editorIndex];
+        requestsData[editorIndex] = {
+          ...existing,
+          title: data.title || '',
+          body: data.body,
+          updatedAt: new Date().toISOString(),
+        };
+        await saveRequests();
+        showToast('Kërkesa u ruajt');
       }
 
       editorDialog.close();
@@ -1175,6 +1270,10 @@
       } else if (editorMode === 'post' && editorIndex >= 0) {
         postsData.splice(editorIndex, 1);
         await savePosts();
+      } else if (editorMode === 'request' && editorIndex >= 0) {
+        requestsData.splice(editorIndex, 1);
+        await saveRequests();
+        showToast('Kërkesa u fshi');
       }
       editorDialog.close();
       resetRichEditors();
@@ -1250,6 +1349,68 @@
 
   userSearch.addEventListener('input', renderUsers);
   userStatusFilter.addEventListener('change', renderUsers);
+
+  addRequestBtn.addEventListener('click', async () => {
+    const title = requestTitleInput.value.trim();
+    const body = requestBodyInput.value.trim();
+    if (!body) {
+      showToast('Shkruani përshkrimin e kërkesës');
+      return;
+    }
+    try {
+      setBusy(addRequestBtn, true, 'Duke ruajtur...');
+      const now = new Date().toISOString();
+      requestsData.unshift({
+        id: 'req_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
+        title,
+        body,
+        status: 'pending',
+        createdAt: now,
+        updatedAt: now,
+      });
+      await saveRequests();
+      requestTitleInput.value = '';
+      requestBodyInput.value = '';
+      showToast('Kërkesa u shtua');
+    } catch (err) {
+      showToast(err.message);
+    } finally {
+      setBusy(addRequestBtn, false, '+ Shto kërkesën');
+    }
+  });
+
+  requestStatusFilter.addEventListener('change', renderRequests);
+
+  requestsList.addEventListener('click', (e) => {
+    const editBtn = e.target.closest('[data-edit-request]');
+    if (editBtn) {
+      openRequestEditor(editBtn.dataset.editRequest);
+      return;
+    }
+
+    const toggleBtn = e.target.closest('[data-toggle-request]');
+    if (toggleBtn) {
+      const item = requestsData.find((entry) => entry.id === toggleBtn.dataset.toggleRequest);
+      if (!item) return;
+      item.status = item.status === 'done' ? 'pending' : 'done';
+      item.updatedAt = new Date().toISOString();
+      saveRequests()
+        .then(() => showToast(item.status === 'done' ? 'Kërkesa u shënua kryer' : 'Kërkesa u rikthye në pritje'))
+        .catch((err) => showToast(err.message));
+      return;
+    }
+
+    const deleteBtn = e.target.closest('[data-delete-request]');
+    if (deleteBtn) {
+      if (!confirm('Je i sigurt që do ta fshish këtë kërkesë?')) return;
+      const index = requestsData.findIndex((entry) => entry.id === deleteBtn.dataset.deleteRequest);
+      if (index === -1) return;
+      requestsData.splice(index, 1);
+      saveRequests()
+        .then(() => showToast('Kërkesa u fshi'))
+        .catch((err) => showToast(err.message));
+    }
+  });
 
   productsTable.addEventListener('click', (e) => {
     const editBtn = e.target.closest('[data-edit-product]');

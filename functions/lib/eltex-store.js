@@ -4,6 +4,7 @@ const KEYS = {
   orders: 'live-orders',
   submissions: 'live-submissions',
   users: 'live-users',
+  requests: 'live-requests',
 };
 
 function sessionKey(token) {
@@ -33,6 +34,7 @@ export async function ensureKvSeeded(env, request) {
   const orders = await fetchAssetJson(env, request, '/data/live-orders.json');
   const submissions = await fetchAssetJson(env, request, '/data/live-submissions.json');
   const users = await fetchAssetJson(env, request, '/data/live-users.json');
+  const requests = await fetchAssetJson(env, request, '/data/live-requests.json');
 
   if (!(await kv.get(KEYS.products)) && products) {
     await kv.put(KEYS.products, JSON.stringify(products, null, 2));
@@ -48,6 +50,9 @@ export async function ensureKvSeeded(env, request) {
   }
   if (!(await kv.get(KEYS.users)) && users) {
     await kv.put(KEYS.users, JSON.stringify(users, null, 2));
+  }
+  if (!(await kv.get(KEYS.requests)) && requests) {
+    await kv.put(KEYS.requests, JSON.stringify(requests, null, 2));
   }
 
   await kv.put('_kv_seeded', '1');
@@ -161,6 +166,25 @@ export async function readSubmissions(env, request) {
 
 export async function writeSubmissions(env, data) {
   await writeJson(env, KEYS.submissions, data);
+}
+
+export async function readRequests(env, request) {
+  const raw = await readKvRaw(env, KEYS.requests);
+  if (raw !== null) {
+    try {
+      const data = JSON.parse(raw);
+      return Array.isArray(data) ? data : [];
+    } catch {
+      return [];
+    }
+  }
+
+  const fromAssets = await fetchAssetJson(env, request, '/data/live-requests.json');
+  return fromAssets || [];
+}
+
+export async function writeRequests(env, data) {
+  await writeJson(env, KEYS.requests, data);
 }
 
 export async function createSession(env, token) {

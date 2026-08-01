@@ -8,6 +8,8 @@ import {
   writeOrders,
   readSubmissions,
   writeSubmissions,
+  readRequests,
+  writeRequests,
   createSession,
   isAuthed,
   deleteSession,
@@ -488,6 +490,26 @@ export async function handleApiRequest(context) {
       return json(result);
     } catch (e) {
       return json({ error: e.message || 'Ngarkimi dështoi' }, 400);
+    }
+  }
+
+  if (pathname === '/api/requests') {
+    if (method === 'GET') return json(await readRequests(env, request));
+    if (method === 'PUT') {
+      if (!getKv(env)) {
+        return json({ error: 'Magazina e të dhënave nuk është e disponueshme.' }, 503);
+      }
+      if (!Array.isArray(body)) return json({ error: 'requests array required' }, 400);
+      for (const item of body) {
+        if (!item.body || !String(item.body).trim()) {
+          return json({ error: 'Çdo kërkesë duhet të ketë përshkrim' }, 400);
+        }
+        item.body = String(item.body).trim();
+        item.title = String(item.title || '').trim();
+        item.status = item.status === 'done' ? 'done' : 'pending';
+      }
+      await writeRequests(env, body);
+      return json({ ok: true, count: body.length });
     }
   }
 
