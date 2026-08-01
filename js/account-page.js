@@ -161,19 +161,18 @@
     showMessage('');
 
     const form = new FormData(signupForm);
+    const email = String(form.get('email') || '').trim();
     try {
       const data = await auth.signup({
         name: String(form.get('name') || '').trim(),
-        email: String(form.get('email') || '').trim(),
+        email,
         phone: String(form.get('phone') || '').trim(),
         company: String(form.get('company') || '').trim(),
         password: String(form.get('password') || ''),
       });
       signupForm.reset();
       setGuestTab('login');
-      if (loginEmailInput) {
-        loginEmailInput.value = String(form.get('email') || '').trim();
-      }
+      if (loginEmailInput) loginEmailInput.value = email;
       showMessage(data.message || 'Kërkesa u dërgua. Do të njoftoheni pas aprovimit.', 'success');
     } catch (err) {
       showMessage(err.message, 'error');

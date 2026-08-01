@@ -229,9 +229,11 @@
 
   function renderProductCard(product) {
     const hasVariants = !!utils.parseProductVariants(product);
-    const cartAction = hasVariants
-      ? `<a href="${utils.productUrl(product)}" class="btn-add-cart btn-add-cart--link">Zgjidh opsionin</a>`
-      : `<button type="button" class="btn-add-cart" data-add-cart="${escapeHtml(product.id)}">Shto në Shportë</button>`;
+    const cartAction = !utils.canViewPrices()
+      ? `<a href="/llogaria" class="btn-add-cart btn-add-cart--link">Kyçu për çmime</a>`
+      : hasVariants
+        ? `<a href="${utils.productUrl(product)}" class="btn-add-cart btn-add-cart--link">Zgjidh opsionin</a>`
+        : `<button type="button" class="btn-add-cart" data-add-cart="${escapeHtml(product.id)}">Shto në Shportë</button>`;
 
     return `
       <article class="product-card" data-category="${escapeHtml(product.cat)}">
@@ -244,9 +246,7 @@
             <a href="${utils.productUrl(product)}">${escapeHtml(product.name)}</a>
           </h3>
           <div class="product-card-footer">
-            <div class="product-card-price">
-              <span class="price-current">${utils.formatPrice(product.price)}</span>
-            </div>
+            <div class="product-card-price">${utils.renderProductPrice(product, { style: hasVariants ? 'from' : 'single' })}</div>
             ${cartAction}
           </div>
         </div>
@@ -370,4 +370,8 @@
     .loadProducts()
     .then(init)
     .catch(() => init(fallbackProducts.map(utils.normalizeProduct)));
+
+  document.addEventListener('eltex-auth-ready', () => {
+    if (products.length) renderProducts();
+  });
 })();

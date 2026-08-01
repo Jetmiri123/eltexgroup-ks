@@ -377,6 +377,14 @@ function findCatalogProduct(catalog, line) {
   return null;
 }
 
+function getCatalogVariantPrice(product, variantValue) {
+  const map = product.variant_prices || {};
+  if (variantValue != null && Object.prototype.hasOwnProperty.call(map, variantValue)) {
+    return Number(map[variantValue]) || 0;
+  }
+  return Number(product.price) || 0;
+}
+
 function buildOrderFromRequest(body) {
   const customer = body.customer || {};
   const name = sanitizeText(customer.name, 120);
@@ -402,7 +410,10 @@ function buildOrderFromRequest(body) {
     if (!product) throw new Error('Një produkt në shportë nuk u gjet: ' + ref);
 
     const qty = Math.max(1, Math.min(999, Number(line.qty) || 1));
-    const price = Number(product.price) || 0;
+    const variantKey = sanitizeText(line.variant || line.variantLabel, 80);
+    const price = variantKey
+      ? getCatalogVariantPrice(product, variantKey)
+      : Number(product.price) || 0;
     const lineTotal = Math.round(price * qty * 100) / 100;
     const variantLabel = sanitizeText(line.variantLabel || line.variant, 80);
     const displayName = variantLabel
@@ -747,6 +758,14 @@ async function handleApi(req, res, pathname) {
 
   if (pathname === '/api/orders' && req.method === 'POST') {
     try {
+      const user = getUserFromRequest(req);
+      if (!user || user.status !== 'approved') {
+        sendJson(res, 403, {
+          error: 'Duhet të jeni i kyçur me llogari të aprovuar për të dërguar porosi.',
+        });
+        return;
+      }
+
       const body = await readBody(req);
       const order = buildOrderFromRequest(body);
       const orders = readOrders();

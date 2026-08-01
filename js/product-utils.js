@@ -17,6 +17,64 @@
     return '€' + Number(value || 0).toFixed(2);
   }
 
+  function canViewPrices() {
+    const auth = root.EltexAuth;
+    if (!auth || typeof auth.cachedUser !== 'function') return false;
+    const user = auth.cachedUser();
+    return !!(user && user.status === 'approved');
+  }
+
+  function priceGateHtml(label) {
+    const text = label || 'Kyçu për të parë çmimin';
+    return '<a href="/llogaria" class="price-gate-link">' + escapeHtml(text) + '</a>';
+  }
+
+  function getVariantPrice(product, variantValue) {
+    const map = product.variant_prices || {};
+    if (variantValue != null && Object.prototype.hasOwnProperty.call(map, variantValue)) {
+      return Number(map[variantValue]) || 0;
+    }
+    return Number(product.price) || 0;
+  }
+
+  function getProductPriceSummary(product) {
+    const config = parseProductVariants(product);
+    if (!config || !config.variants.length) {
+      return { type: 'single', price: Number(product.price) || 0 };
+    }
+    const prices = config.variants.map((variant) => getVariantPrice(product, variant.value));
+    const min = Math.min.apply(null, prices);
+    const max = Math.max.apply(null, prices);
+    if (min === max) return { type: 'single', price: min };
+    return { type: 'range', min, max };
+  }
+
+  function renderProductPrice(product, opts) {
+    const options = opts || {};
+    if (!canViewPrices()) {
+      return priceGateHtml(options.gateLabel);
+    }
+    const summary = getProductPriceSummary(product);
+    if (summary.type === 'range') {
+      if (options.style === 'from') {
+        return '<span class="price-current">nga ' + formatPrice(summary.min) + '</span>';
+      }
+      return (
+        '<span class="price-current">' +
+        formatPrice(summary.min) +
+        ' – ' +
+        formatPrice(summary.max) +
+        '</span>'
+      );
+    }
+    return '<span class="price-current">' + formatPrice(summary.price) + '</span>';
+  }
+
+  function renderVariantPrice(product, variantValue) {
+    if (!canViewPrices()) return priceGateHtml();
+    return formatPrice(getVariantPrice(product, variantValue));
+  }
+
   function productUrl(product) {
     const slug = product.slug || product.id;
     return '/produkt/' + encodeURIComponent(slug);
@@ -86,6 +144,7 @@
       short_description_html: decodeHtml(raw.short_description_html || ''),
       description_html: decodeHtml(raw.description_html || raw.short_description_html || ''),
       attributes: raw.attributes || [],
+      variant_prices: raw.variant_prices && typeof raw.variant_prices === 'object' ? raw.variant_prices : {},
       sku: raw.sku || '',
       in_stock: raw.in_stock !== false,
     };
@@ -136,6 +195,7 @@
       label: value,
       kod: kodAttr && kodAttr.values[index] !== undefined ? kodAttr.values[index] : '',
       index,
+      price: getVariantPrice(product, value),
     }));
 
     return {
@@ -166,6 +226,7 @@
       payload.variantLabel = variantSelection.label || variantSelection.value;
       payload.variantAttribute = variantSelection.attributeName || '';
       if (variantSelection.kod) payload.variantKod = variantSelection.kod;
+      payload.price = getVariantPrice(product, variantSelection.value);
       payload.name = product.name + ' — ' + payload.variantLabel;
     }
 
@@ -239,6 +300,12 @@
     decodeHtml,
     escapeHtml,
     formatPrice,
+    canViewPrices,
+    priceGateHtml,
+    getVariantPrice,
+    getProductPriceSummary,
+    renderProductPrice,
+    renderVariantPrice,
     productUrl,
     slugify,
     categoryFilterUrl,

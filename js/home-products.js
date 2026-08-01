@@ -2,14 +2,25 @@
   const utils = window.EltexProducts;
   if (!utils) return;
 
+  let cachedProducts = [];
+
   function renderHomeProducts(products) {
     const grid = document.getElementById('home-products-grid');
     if (!grid) return;
 
+    cachedProducts = products;
+
     grid.innerHTML = products
       .slice(0, 4)
-      .map(
-        (product) => `
+      .map((product) => {
+        const hasVariants = !!utils.parseProductVariants(product);
+        const cartButton = !utils.canViewPrices()
+          ? `<a href="/llogaria" class="btn-add-cart btn-add-cart--link">Kyçu për çmime</a>`
+          : hasVariants
+            ? `<a href="${utils.productUrl(product)}" class="btn-add-cart btn-add-cart--link">Shiko opsionet</a>`
+            : `<button type="button" class="btn-add-cart" data-home-add="${utils.escapeHtml(product.id)}">Shto në Shportë</button>`;
+
+        return `
       <article class="home-product-card">
         <a href="${utils.productUrl(product)}" class="home-product-image-link">
           <img src="${utils.escapeHtml(product.img)}" alt="${utils.escapeHtml(product.name)}" class="home-product-image" loading="lazy">
@@ -19,11 +30,11 @@
           <h3 class="small-text home-product-title">
             <a href="${utils.productUrl(product)}">${utils.escapeHtml(product.name)}</a>
           </h3>
-          <div class="home-product-price">${utils.formatPrice(product.price)}</div>
-          <button type="button" class="btn-add-cart" data-home-add="${utils.escapeHtml(product.id)}">Shto në Shportë</button>
+          <div class="home-product-price">${utils.renderProductPrice(product, { style: hasVariants ? 'from' : 'single' })}</div>
+          ${cartButton}
         </div>
-      </article>`
-      )
+      </article>`;
+      })
       .join('');
 
     grid.querySelectorAll('[data-home-add]').forEach((button) => {
@@ -48,5 +59,9 @@
       .catch(() => {
         window.EltexHomeProducts = [];
       });
+  });
+
+  document.addEventListener('eltex-auth-ready', () => {
+    if (cachedProducts.length) renderHomeProducts(cachedProducts);
   });
 })();

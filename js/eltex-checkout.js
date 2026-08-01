@@ -58,6 +58,13 @@
     event.preventDefault();
     setError('');
 
+    if (window.EltexProducts && typeof window.EltexProducts.canViewPrices === 'function') {
+      if (!window.EltexProducts.canViewPrices()) {
+        setError('Duhet të jeni i kyçur me llogari të aprovuar për të dërguar porosi.');
+        return;
+      }
+    }
+
     let payload;
     try {
       const syncResult = await validateCartItems();
@@ -81,9 +88,15 @@
     submitBtn.value = 'Duke dërguar...';
 
     try {
+      const headers = { 'Content-Type': 'application/json' };
+      if (window.EltexAuth && typeof window.EltexAuth.token === 'function') {
+        const authToken = window.EltexAuth.token();
+        if (authToken) headers.Authorization = 'Bearer ' + authToken;
+      }
+
       const res = await fetch('/api/orders', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(payload),
       });
       const data = await res.json().catch(() => ({}));

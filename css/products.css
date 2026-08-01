@@ -451,8 +451,32 @@ body.products-filter-open {
   box-sizing: border-box;
 }
 
-.btn-add-cart--link:hover {
-  color: #fff;
+.price-gate-link {
+  color: #b45309;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.price-gate-link:hover {
+  text-decoration: underline;
+}
+
+.product-variant-option {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+}
+
+.variant-option-price {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #b45309;
+}
+
+.product-variant-select option {
+  font-family: inherit;
 }
 
 .products-grid {

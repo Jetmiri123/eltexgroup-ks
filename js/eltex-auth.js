@@ -94,6 +94,9 @@
       setRememberedEmail(String(payload.email).trim().toLowerCase());
     }
     refreshNav(data.user || null);
+    document.dispatchEvent(
+      new CustomEvent('eltex-auth-ready', { detail: { user: data.user || null } })
+    );
     return data;
   }
 
@@ -106,6 +109,7 @@
     setToken('');
     setCachedUser(null);
     refreshNav(null);
+    document.dispatchEvent(new CustomEvent('eltex-auth-ready', { detail: { user: null } }));
   }
 
   async function me() {
@@ -148,6 +152,9 @@
         /* handled in me() */
       });
     }
+    document.dispatchEvent(
+      new CustomEvent('eltex-auth-ready', { detail: { user: cachedUser() } })
+    );
   }
 
   root.EltexAuth = {

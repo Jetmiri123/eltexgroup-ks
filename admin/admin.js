@@ -153,6 +153,139 @@
     return `<tr><td colspan="${colspan}" class="table-empty">${escapeHtml(message)}</td></tr>`;
   }
 
+  function splitCsv(value) {
+    return String(value || '')
+      .split(/,\s*/)
+      .map((entry) => entry.trim())
+      .filter(Boolean);
+  }
+
+  function parseAdminVariantState(product) {
+    const attrs = (product.attributes || []).filter((attr) => attr && attr.name && attr.value);
+    if (!attrs.length) {
+      return {
+        attributeName: '',
+        values: '',
+        kods: '',
+        prices: product.variant_prices || {},
+        otherAttributes: [],
+      };
+    }
+
+    const priority = [
+      /seksioni|vrima|bulonit|papuç|papuqe|madh/i,
+      /modeli|tipi|dimension/i,
+      /diametri|diameter|montimit/i,
+      /^kodi$/i,
+      /kodi/i,
+    ];
+
+    let primary = attrs.find((attr) => splitCsv(attr.value).length >= 2) || null;
+    priority.some((pattern) => {
+      const match = attrs.find((attr) => pattern.test(attr.name) && splitCsv(attr.value).length >= 2);
+      if (match) {
+        primary = match;
+        return true;
+      }
+      return false;
+    });
+
+    if (!primary) {
+      return {
+        attributeName: '',
+        values: '',
+        kods: '',
+        prices: product.variant_prices || {},
+        otherAttributes: attrs,
+      };
+    }
+
+    const kodAttr = attrs.find(
+      (attr) =>
+        attr !== primary &&
+        (/^kodi$/i.test(String(attr.name).trim()) || /kodi/i.test(String(attr.name).trim()))
+    );
+    const otherAttributes = attrs.filter((attr) => attr !== primary && attr !== kodAttr);
+
+    return {
+      attributeName: primary.name,
+      values: primary.value,
+      kods: kodAttr ? kodAttr.value : '',
+      prices: product.variant_prices || {},
+      otherAttributes,
+    };
+  }
+
+  function variantPriceFieldsHtml(state, basePrice) {
+    const values = splitCsv(state.values);
+    if (!values.length) return '';
+
+    const rows = values
+      .map((value) => {
+        const price = state.prices[value] != null ? state.prices[value] : basePrice;
+        return `<div class="variant-price-row">
+          <span class="variant-price-label">${escapeHtml(value)}</span>
+          <input type="number" step="0.01" min="0" data-variant-price="${escapeHtml(value)}" value="${Number(price || 0).toFixed(2)}" placeholder="0.00">
+        </div>`;
+      })
+      .join('');
+
+    return `<div class="variant-prices-editor" data-variant-prices-editor>
+      <label>Çmimet për secilin variant (EUR)</label>
+      <div class="variant-price-grid">${rows}</div>
+      <p class="field-hint">Vendosni çmimin për çdo variant. Nëse mungon, përdoret çmimi bazë.</p>
+    </div>`;
+  }
+
+  function bindVariantPriceEditor(container) {
+    const valuesInput = container.querySelector('[name="variant_values"]');
+    const basePriceInput = container.querySelector('[name="price"]');
+    if (!valuesInput || valuesInput.dataset.variantBound === '1') return;
+    valuesInput.dataset.variantBound = '1';
+
+    const refreshVariantPrices = () => {
+      const editor = container.querySelector('[data-variant-prices-editor]');
+      if (!editor) return;
+      const state = { values: valuesInput.value, prices: {} };
+      editor.querySelectorAll('[data-variant-price]').forEach((input) => {
+        state.prices[input.dataset.variantPrice] = Number(input.value) || 0;
+      });
+      editor.outerHTML = variantPriceFieldsHtml(state, Number(basePriceInput?.value) || 0);
+    };
+
+    valuesInput.addEventListener('input', refreshVariantPrices);
+    if (basePriceInput) basePriceInput.addEventListener('input', refreshVariantPrices);
+  }
+
+  function readVariantPricesFromEditor() {
+    const prices = {};
+    editorFields.querySelectorAll('[data-variant-price]').forEach((input) => {
+      prices[input.dataset.variantPrice] = Number(input.value) || 0;
+    });
+    return prices;
+  }
+
+  function buildAttributesFromEditor(existing, data) {
+    const preserved = (existing.attributes || []).filter((attr) => {
+      const name = String(attr.name || '').trim();
+      if (!name) return false;
+      if (data.variant_attribute && name === data.variant_attribute) return false;
+      if (/^kodi$/i.test(name) || /kodi/i.test(name)) return false;
+      return true;
+    });
+
+    const next = [...preserved];
+    const values = splitCsv(data.variant_values);
+    if (data.variant_attribute && values.length) {
+      next.unshift({ name: data.variant_attribute.trim(), value: values.join(', ') });
+      const kods = splitCsv(data.variant_kods);
+      if (kods.length) {
+        next.push({ name: 'Kodi', value: kods.join(', ') });
+      }
+    }
+    return next;
+  }
+
   function productThumb(image, alt) {
     if (image) {
       return `<img src="${escapeHtml(image)}" alt="${escapeHtml(alt)}" class="table-thumb" loading="lazy">`;
@@ -1086,17 +1219,39 @@
     editorIndex = index;
     const isNew = index < 0;
     const p = isNew
-      ? { id: String(Date.now()), slug: '', name: '', cat: '', price: 0, image: '', short_description: '', description: '', categories: [] }
+      ? {
+          id: String(Date.now()),
+          slug: '',
+          name: '',
+          cat: '',
+          price: 0,
+          image: '',
+          short_description: '',
+          description: '',
+          categories: [],
+          attributes: [],
+          variant_prices: {},
+        }
       : { ...productsData.products[index] };
+
+    const variantState = parseAdminVariantState(p);
 
     editorTitle.textContent = isNew ? 'Produkt i Ri' : 'Ndrysho Produktin';
     deleteItemBtn.hidden = isNew;
     editorFields.innerHTML = `
       <div class="field-grid">
         ${field('name', 'Emri i produktit *', { full: true })}
-        ${field('price', 'Çmimi (EUR)', { type: 'number', step: '0.01' })}
+        ${field('price', 'Çmimi bazë (EUR)', { type: 'number', step: '0.01' })}
         ${categoryField('cat', 'Kategoria *', p.cat || '')}
         ${imageUploadField(p.image || '')}
+        <div class="full product-variant-section">
+          <h3 class="product-variant-section-title">Variantet &amp; çmimet</h3>
+          <p class="field-hint">Për produkte me opsione (p.sh. madhësi, model), shkruani emrin e atributit dhe vlerat e ndara me presje.</p>
+          ${field('variant_attribute', 'Emri i atributit (p.sh. Modeli/Tipi)', { full: true })}
+          ${field('variant_values', 'Vlerat e variantit (të ndara me presje)', { full: true })}
+          ${field('variant_kods', 'Kodi për secilin variant (opsional, me presje)', { full: true })}
+          ${variantPriceFieldsHtml(variantState, p.price ?? 0)}
+        </div>
         ${richField('short_description', 'Përshkrim i shkurtër')}
         ${richField('description', 'Përshkrim i plotë', { tall: true })}
       </div>`;
@@ -1104,12 +1259,16 @@
       name: p.name || '',
       price: p.price ?? 0,
       cat: p.cat || '',
+      variant_attribute: variantState.attributeName || '',
+      variant_values: variantState.values || '',
+      variant_kods: variantState.kods || '',
     });
     initRichEditors(editorFields, {
       short_description: richContentForEditor(p, 'short_description'),
       description: richContentForEditor(p, 'description'),
     });
     bindImageUpload(editorFields);
+    bindVariantPriceEditor(editorFields);
     editorDialog.showModal();
   }
 
@@ -1197,6 +1356,14 @@
         data.categories = data.cat ? [data.cat] : [];
         data.permalink = '/produkt/' + data.slug;
         data.image = editorFields.querySelector('[name="image"]')?.value.trim() || '';
+        data.attributes = buildAttributesFromEditor(
+          editorIndex >= 0 ? productsData.products[editorIndex] : {},
+          data
+        );
+        data.variant_prices = readVariantPricesFromEditor();
+        delete data.variant_attribute;
+        delete data.variant_values;
+        delete data.variant_kods;
 
         ['short_description', 'description'].forEach((field) => {
           const html = data[field] || '';

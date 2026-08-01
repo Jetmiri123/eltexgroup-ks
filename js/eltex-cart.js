@@ -1,7 +1,21 @@
 (function () {
   const STORAGE_KEY = 'eltex_cart';
   const CART_VERSION_KEY = 'eltex_cart_version';
-  const CART_VERSION = 3;
+  const CART_VERSION = 4;
+
+  function resolveLinePrice(product, item) {
+    if (window.EltexProducts) {
+      if (item.variant) {
+        return window.EltexProducts.getVariantPrice(product, item.variant);
+      }
+      return Number(product.price) || 0;
+    }
+    const map = product.variant_prices || {};
+    if (item.variant && Object.prototype.hasOwnProperty.call(map, item.variant)) {
+      return Number(map[item.variant]) || 0;
+    }
+    return Number(product.price) || 0;
+  }
 
   function cartLineKey(item) {
     if (window.EltexProducts && window.EltexProducts.cartLineKey) {
@@ -69,6 +83,13 @@
   }
 
   function addItem(product) {
+    if (window.EltexProducts && typeof window.EltexProducts.canViewPrices === 'function') {
+      if (!window.EltexProducts.canViewPrices()) {
+        window.location.href = '/llogaria';
+        return readCart();
+      }
+    }
+
     const entry = normalizeCartProduct(product);
     const cart = readCart();
     const existing = cart.find((item) => sameItem(item, entry));
@@ -129,6 +150,8 @@
         if (item.variantKod) synced.variantKod = item.variantKod;
         synced.name = product.name + ' — ' + synced.variantLabel;
       }
+
+      synced.price = resolveLinePrice(product, synced);
 
       next.push(synced);
     });

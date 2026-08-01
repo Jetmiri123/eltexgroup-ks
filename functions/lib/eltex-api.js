@@ -152,6 +152,14 @@ async function storeSubmission(env, request, submission) {
   return submission;
 }
 
+function getCatalogVariantPrice(product, variantValue) {
+  const map = product.variant_prices || {};
+  if (variantValue != null && Object.prototype.hasOwnProperty.call(map, variantValue)) {
+    return Number(map[variantValue]) || 0;
+  }
+  return Number(product.price) || 0;
+}
+
 async function buildOrderFromRequest(env, request, body) {
   const customer = body.customer || {};
   const name = sanitizeText(customer.name, 120);
@@ -177,7 +185,10 @@ async function buildOrderFromRequest(env, request, body) {
     if (!product) throw new Error('Një produkt në shportë nuk u gjet: ' + ref);
 
     const qty = Math.max(1, Math.min(999, Number(line.qty) || 1));
-    const price = Number(product.price) || 0;
+    const variantKey = sanitizeText(line.variant || line.variantLabel, 80);
+    const price = variantKey
+      ? getCatalogVariantPrice(product, variantKey)
+      : Number(product.price) || 0;
     const lineTotal = Math.round(price * qty * 100) / 100;
     const variantLabel = sanitizeText(line.variantLabel || line.variant, 80);
     const displayName = variantLabel
@@ -299,6 +310,14 @@ export async function handleApiRequest(context) {
 
   if (pathname === '/api/orders' && method === 'POST') {
     try {
+      const user = await getUserFromRequest(env, request);
+      if (!user || user.status !== 'approved') {
+        return json(
+          { error: 'Duhet të jeni i kyçur me llogari të aprovuar për të dërguar porosi.' },
+          403
+        );
+      }
+
       if (!getKv(env)) {
         return json({ error: 'Storage nuk është i disponueshëm. Porosia nuk u ruajt.' }, 503);
       }

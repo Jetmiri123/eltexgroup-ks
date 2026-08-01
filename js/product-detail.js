@@ -11,6 +11,10 @@
     categoryFilterUrl,
     escapeHtml,
     parseProductVariants,
+    getVariantPrice,
+    renderProductPrice,
+    renderVariantPrice,
+    canViewPrices,
   } = window.EltexProducts;
 
   const params = getProductParams();
@@ -79,6 +83,12 @@
   function updateAddButton() {
     if (!addBtn || !currentProduct) return;
 
+    if (!canViewPrices()) {
+      addBtn.disabled = false;
+      addBtn.textContent = 'Kyçu për çmime';
+      return;
+    }
+
     if (currentProduct.in_stock === false) {
       addBtn.disabled = true;
       addBtn.textContent = 'Nuk ka stok';
@@ -134,9 +144,27 @@
     row.innerHTML = '';
   }
 
+  function updatePriceDisplay() {
+    const priceEl = document.getElementById('product-price');
+    if (!priceEl || !currentProduct) return;
+
+    if (!canViewPrices()) {
+      priceEl.innerHTML = renderProductPrice(currentProduct);
+      return;
+    }
+
+    if (selectedVariant) {
+      priceEl.textContent = formatPrice(getVariantPrice(currentProduct, selectedVariant.value));
+      return;
+    }
+
+    priceEl.innerHTML = renderProductPrice(currentProduct, { style: 'from' });
+  }
+
   function onVariantSelected() {
     updateSkuDisplay();
     updateVariantSpecRow();
+    updatePriceDisplay();
     updateAddButton();
   }
 
@@ -169,11 +197,14 @@
         variants
           .map((variant) => {
             const suffix = variant.kod ? ' (' + variant.kod + ')' : '';
+            const priceHtml = canViewPrices()
+              ? ' — ' + formatPrice(variant.price)
+              : '';
             return (
               '<option value="' +
               escapeHtml(variant.value) +
               '">' +
-              escapeHtml(variant.label + suffix) +
+              escapeHtml(variant.label + suffix + priceHtml) +
               '</option>'
             );
           })
@@ -200,7 +231,12 @@
               '<button type="button" class="product-variant-option" data-variant-value="' +
               escapeHtml(variant.value) +
               '" role="option" aria-selected="false">' +
+              '<span>' +
               escapeHtml(variant.label) +
+              '</span>' +
+              (canViewPrices()
+                ? '<span class="variant-option-price">' + formatPrice(variant.price) + '</span>'
+                : '') +
               '</button>'
           )
           .join('') +
@@ -314,9 +350,7 @@
             <a href="${productUrl(item)}">${escapeHtml(item.name)}</a>
           </h3>
           <div class="product-card-footer">
-            <div class="product-card-price">
-              <span class="price-current">${formatPrice(item.price)}</span>
-            </div>
+            <div class="product-card-price">${renderProductPrice(item, { style: 'from' })}</div>
             <a href="${productUrl(item)}" class="btn-add-cart product-card-view-link">Shiko detajet</a>
           </div>
         </div>
@@ -353,7 +387,7 @@
     mainImage.alt = product.name;
     document.getElementById('product-category').innerHTML = renderCategoryBadge(product.cat, { detail: true });
     document.getElementById('product-title').textContent = product.name;
-    document.getElementById('product-price').textContent = formatPrice(product.price);
+    updatePriceDisplay();
 
     renderVariants(product);
     updateSkuDisplay();
@@ -380,8 +414,20 @@
 
   addBtn.addEventListener('click', () => {
     if (!currentProduct || !window.EltexCart) return;
+    if (!canViewPrices()) {
+      window.location.href = '/llogaria';
+      return;
+    }
     if (variantConfig && !selectedVariant) return;
     window.EltexCart.add(cartPayload(currentProduct, selectedVariant));
+  });
+
+  document.addEventListener('eltex-auth-ready', () => {
+    if (currentProduct) {
+      renderVariants(currentProduct);
+      updatePriceDisplay();
+      updateAddButton();
+    }
   });
 
   loadProducts()
