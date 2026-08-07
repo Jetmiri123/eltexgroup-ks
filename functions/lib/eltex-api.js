@@ -57,8 +57,9 @@ function isValidEmail(email) {
 }
 
 function getAdminPassword(env) {
-  const value = String(env.ELTEX_ADMIN_PASSWORD || 'Eltex2026!').trim();
-  return value;
+  // Password lives only in the Cloudflare secret; no fallback so a missing
+  // secret can never silently re-enable a known default password.
+  return String(env.ELTEX_ADMIN_PASSWORD || '').trim();
 }
 
 function rebuildCategories(products) {
@@ -238,7 +239,8 @@ export async function handleApiRequest(context) {
   }
 
   if (pathname === '/api/login' && method === 'POST') {
-    if (body.password !== getAdminPassword(env)) {
+    const adminPassword = getAdminPassword(env);
+    if (!adminPassword || body.password !== adminPassword) {
       return json({ error: 'Fjalëkalimi i gabuar' }, 401);
     }
     const token = randomToken();

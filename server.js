@@ -9,7 +9,8 @@ const { URL } = require('url');
 
 const ROOT = __dirname;
 const PORT = Number(process.env.PORT || 3456);
-const ADMIN_PASSWORD = process.env.ELTEX_ADMIN_PASSWORD || 'Eltex2026!';
+// Local development only; the live site uses the Cloudflare secret instead.
+const ADMIN_PASSWORD = process.env.ELTEX_ADMIN_PASSWORD || 'dev-admin';
 
 const PRODUCTS_PATH = path.join(ROOT, 'data/live-products.json');
 const POSTS_PATH = path.join(ROOT, 'data/live-posts.json');
