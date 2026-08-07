@@ -1599,8 +1599,35 @@
   });
 
   document.getElementById('add-product-btn').addEventListener('click', () => openProductEditor(-1));
-  document.getElementById('add-category-btn').addEventListener('click', async () => {
-    const name = (window.prompt('Shkruani emrin e kategorisë së re:') || '').trim();
+  const categoriesDialog = document.getElementById('categories-dialog');
+  const categoriesList = document.getElementById('categories-list');
+  const newCategoryInput = document.getElementById('new-category-name');
+
+  function renderCategoriesList() {
+    const options = getProductCategoryOptions();
+    categoriesList.innerHTML = options.length
+      ? options
+          .map((cat) => {
+            const name = decodeHtml(cat.name);
+            const countLabel = `${cat.count} produkt${cat.count === 1 ? '' : 'e'}`;
+            const deleteBtn =
+              cat.count > 0
+                ? `<button type="button" class="btn ghost small" disabled title="Zhvendosni produktet në një kategori tjetër fillimisht">Fshi</button>`
+                : `<button type="button" class="btn danger small" data-delete-category="${escapeHtml(cat.slug)}">Fshi</button>`;
+            return `<li>
+              <div class="cat-info">
+                <span class="cat-name">${escapeHtml(name)}</span>
+                <span class="cat-count">${countLabel}</span>
+              </div>
+              ${deleteBtn}
+            </li>`;
+          })
+          .join('')
+      : '<li class="cat-empty">Nuk ka kategori.</li>';
+  }
+
+  async function addCategory() {
+    const name = (newCategoryInput.value || '').trim();
     if (!name) return;
     const slug = slugify(name);
     if (getProductCategoryOptions().some((cat) => cat.slug === slug)) {
@@ -1611,9 +1638,43 @@
     productsData.categories.push({ name, slug, count: 0 });
     try {
       await saveProducts();
+      newCategoryInput.value = '';
+      renderCategoriesList();
       showToast(`Kategoria “${name}” u shtua`);
     } catch (err) {
       showToast(err.message || 'Gabim gjatë shtimit të kategorisë');
+    }
+  }
+
+  document.getElementById('manage-categories-btn').addEventListener('click', () => {
+    renderCategoriesList();
+    newCategoryInput.value = '';
+    categoriesDialog.showModal();
+  });
+  document.getElementById('close-categories-dialog').addEventListener('click', () => categoriesDialog.close());
+  document.getElementById('add-category-confirm').addEventListener('click', addCategory);
+  newCategoryInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addCategory();
+    }
+  });
+  categoriesList.addEventListener('click', async (e) => {
+    const btn = e.target.closest('[data-delete-category]');
+    if (!btn) return;
+    const slug = btn.dataset.deleteCategory;
+    const cat = getProductCategoryOptions().find((c) => c.slug === slug);
+    if (!cat) return;
+    if (!window.confirm(`Të fshihet kategoria “${decodeHtml(cat.name)}”?`)) return;
+    productsData.categories = (productsData.categories || []).filter(
+      (c) => (c.slug || slugify(c.name || '')) !== slug
+    );
+    try {
+      await saveProducts();
+      renderCategoriesList();
+      showToast('Kategoria u fshi');
+    } catch (err) {
+      showToast(err.message || 'Gabim gjatë fshirjes së kategorisë');
     }
   });
   document.getElementById('add-post-btn').addEventListener('click', () => openPostEditor(-1));
