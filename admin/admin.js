@@ -1317,8 +1317,32 @@
     return data;
   }
 
+  const editorError = document.getElementById('editor-error');
+
+  // Toasts render below the modal dialog's top layer, so errors raised while
+  // the editor is open must be shown inside the dialog to be visible.
+  function showEditorError(message) {
+    const text = message || 'Ndodhi një gabim. Provoni përsëri.';
+    if (editorDialog.open && editorError) {
+      editorError.textContent = text;
+      editorError.hidden = false;
+    } else {
+      showToast(text);
+    }
+  }
+
+  function clearEditorError() {
+    if (editorError) {
+      editorError.hidden = true;
+      editorError.textContent = '';
+    }
+  }
+
+  editorDialog.addEventListener('close', clearEditorError);
+
   editorForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+    clearEditorError();
     const data = readForm();
 
     try {
@@ -1412,7 +1436,7 @@
       editorDialog.close();
       resetRichEditors();
     } catch (err) {
-      showToast(err.message);
+      showEditorError(err.message);
     } finally {
       setBusy(editorSubmitBtn, false, 'Ruaj');
     }
@@ -1445,7 +1469,7 @@
       editorDialog.close();
       resetRichEditors();
     } catch (err) {
-      showToast(err.message);
+      showEditorError(err.message);
     }
   });
 

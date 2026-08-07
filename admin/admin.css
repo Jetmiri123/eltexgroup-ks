@@ -536,6 +536,16 @@ textarea {
   width: min(480px, calc(100vw - 2rem));
 }
 
+.editor-error {
+  margin: 0;
+  padding: 0.7rem 1.5rem;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-top: 1px solid #fecaca;
+}
+
 .category-add-row {
   display: flex;
   gap: 0.5rem;
