@@ -1599,6 +1599,23 @@
   });
 
   document.getElementById('add-product-btn').addEventListener('click', () => openProductEditor(-1));
+  document.getElementById('add-category-btn').addEventListener('click', async () => {
+    const name = (window.prompt('Shkruani emrin e kategorisë së re:') || '').trim();
+    if (!name) return;
+    const slug = slugify(name);
+    if (getProductCategoryOptions().some((cat) => cat.slug === slug)) {
+      showToast('Kjo kategori ekziston tashmë');
+      return;
+    }
+    if (!Array.isArray(productsData.categories)) productsData.categories = [];
+    productsData.categories.push({ name, slug, count: 0 });
+    try {
+      await saveProducts();
+      showToast(`Kategoria “${name}” u shtua`);
+    } catch (err) {
+      showToast(err.message || 'Gabim gjatë shtimit të kategorisë');
+    }
+  });
   document.getElementById('add-post-btn').addEventListener('click', () => openPostEditor(-1));
   productSearch.addEventListener('input', renderProducts);
   productCategoryFilter.addEventListener('change', () => {

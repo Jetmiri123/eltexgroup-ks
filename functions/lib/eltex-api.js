@@ -99,7 +99,20 @@ function prepareProductCatalog(body) {
     throw new Error('products array required');
   }
   assignProductSlugs(body.products);
-  body.categories = rebuildCategories(body.products);
+  const derived = rebuildCategories(body.products);
+  const seen = new Set(derived.map((c) => c.slug));
+  // Keep manually added categories that have no products yet (count 0),
+  // otherwise they would be wiped on every save.
+  const custom = (Array.isArray(body.categories) ? body.categories : []).filter((cat) => {
+    if (!cat || !cat.name) return false;
+    const slug = cat.slug || slugify(cat.name);
+    if (seen.has(slug)) return false;
+    seen.add(slug);
+    cat.slug = slug;
+    cat.count = 0;
+    return true;
+  });
+  body.categories = [...derived, ...custom];
   body.updatedAt = new Date().toISOString();
   return body;
 }
