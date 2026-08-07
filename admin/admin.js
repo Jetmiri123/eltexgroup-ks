@@ -344,7 +344,9 @@
         <p class="upload-progress" hidden data-upload-status></p>
       </div>
       <div class="image-url-row">
-        <input type="url" name="image" value="${safeUrl}" placeholder="https://..." data-image-url>
+        <!-- type=text: uploads produce relative URLs (/media/...) that fail type=url
+             validation, silently blocking form submit from a hidden field. -->
+        <input type="text" name="image" value="${safeUrl}" placeholder="https://..." data-image-url>
         <button type="button" class="btn ghost small image-url-toggle" data-toggle-url>URL</button>
       </div>
       <p class="field-hint">Ngarkoni një foto ose vendosni linkun e imazhit.</p>
