@@ -1495,8 +1495,32 @@
       }
     },
     {
-      "id": "4537",
+      "name": "Lidhëse Alumini për kabllo AL (Qaura)",
+      "price": 0,
+      "cat": "Terminale (Papuçe) dhe Lidhëse për Kablla",
+      "image": "/media/uploads/1786175333588-1f2eb2.png",
+      "short_description": "",
+      "description": "",
       "slug": "lidhese-alumini-per-kabllo-al-qaura",
+      "id": "1786175349045",
+      "currency": "EUR",
+      "categories": [
+        "Terminale (Papuçe) dhe Lidhëse për Kablla"
+      ],
+      "permalink": "/produkt/lidhese-alumini-per-kabllo-al-qaura",
+      "attributes": [
+        {
+          "name": "Seksioni i Kabllos (mm²)",
+          "value": "16, 25, 35, 50, 70, 95, 120, 150"
+        }
+      ],
+      "variant_prices": {},
+      "short_description_html": "",
+      "description_html": ""
+    },
+    {
+      "id": "4537",
+      "slug": "lidhese-alumini-per-kabllo-al-qaura-2",
       "name": "Lidhëse Alumini për kabllo AL (Qaura)",
       "sku": "",
       "price": 0.4,
@@ -1518,6 +1542,10 @@
         {
           "name": "Seksioni i Kabllos (mm²)",
           "value": "16, 25, 35, 50, 70, 95, 120, 150, 185, 240, 300"
+        },
+        {
+          "name": "Kodi",
+          "value": "370501AL, , , , , , , , , , "
         }
       ],
       "in_stock": true,
@@ -5454,6 +5482,11 @@
       "count": 12
     },
     {
+      "name": "Terminale (Papuçe) dhe Lidhëse për Kablla",
+      "slug": "terminale-papuce-dhe-lidhese-per-kablla",
+      "count": 10
+    },
+    {
       "name": "Elemente shpërndarëse për panele (Kleme &amp; Ura shpërndarëse)",
       "slug": "elemente-shperndarese-per-panele-kleme-amp-ura-shperndarese",
       "count": 10
@@ -5461,11 +5494,6 @@
     {
       "name": "Mufa &amp; Aksesorë termo‑tkurrës, mbulesa izoluese LV/MV",
       "slug": "mufa-amp-aksesore-termo-tkurres-mbulesa-izoluese-lv-mv",
-      "count": 9
-    },
-    {
-      "name": "Terminale (Papuçe) dhe Lidhëse për Kablla",
-      "slug": "terminale-papuce-dhe-lidhese-per-kablla",
       "count": 9
     },
     {
