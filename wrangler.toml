@@ -25,4 +25,4 @@ id = "b9e70c0bec494769bde7d8ff6bd65cdd"
 
 # ELTEX_ADMIN_PASSWORD is stored as a Cloudflare secret (wrangler secret put), not in this file.
 [vars]
-ELTEX_ORDER_EMAIL = "info@eltexgroup-ks.com"
+ELTEX_ORDER_EMAIL = "info@eltexgroup-rks.com"

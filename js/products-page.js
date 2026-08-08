@@ -26,6 +26,29 @@
 
   if (!grid || !filterOpenBtn || !filterModal || !filterList || !utils) return;
 
+  // Keep these featured categories at the top of the catalog (and filter list).
+  // Matching is done on a normalized string so &amp; / & and thin spaces still match.
+  const FEATURED_CATEGORY_ORDER = [
+    'Terminale (Papuçe) dhe Lidhëse për Kablla',
+    'Aksesorë për Rrjete Ajrore ABC LV deri 1KV',
+    'Elemente shpërndarëse për panele (Kleme & Ura shpërndarëse)',
+    'Kabllo',
+  ];
+
+  function normalizeCategoryKey(name) {
+    return String(name || '')
+      .replace(/&amp;/gi, '&')
+      .replace(/[\u00a0\u202f]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .toLowerCase();
+  }
+
+  function featuredCategoryRank(name) {
+    const key = normalizeCategoryKey(name);
+    return FEATURED_CATEGORY_ORDER.findIndex((item) => normalizeCategoryKey(item) === key);
+  }
+
   function buildCategories(list) {
     const counts = {};
     list.forEach((product) => {
@@ -34,7 +57,14 @@
     return [
       'Të Gjitha',
       ...Object.entries(counts)
-        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'sq'))
+        .sort((a, b) => {
+          const aRank = featuredCategoryRank(a[0]);
+          const bRank = featuredCategoryRank(b[0]);
+          const aFeatured = aRank === -1 ? Number.POSITIVE_INFINITY : aRank;
+          const bFeatured = bRank === -1 ? Number.POSITIVE_INFINITY : bRank;
+          if (aFeatured !== bFeatured) return aFeatured - bFeatured;
+          return b[1] - a[1] || a[0].localeCompare(b[0], 'sq');
+        })
         .map(([name]) => name),
     ];
   }
