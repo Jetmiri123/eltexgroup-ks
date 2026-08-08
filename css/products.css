@@ -469,6 +469,23 @@ body.products-filter-open {
   gap: 0.15rem;
 }
 
+.variant-option-main {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.1rem;
+}
+
+.variant-option-kod {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #636363;
+}
+
+.product-variant-option.is-selected .variant-option-kod {
+  color: rgba(255, 255, 255, 0.9);
+}
+
 .variant-option-price {
   font-size: 0.78rem;
   font-weight: 700;

@@ -196,15 +196,14 @@
         '<option value="">Zgjidhni një variant</option>' +
         variants
           .map((variant) => {
-            const suffix = variant.kod ? ' (' + variant.kod + ')' : '';
-            const priceHtml = canViewPrices()
-              ? ' — ' + formatPrice(variant.price)
-              : '';
+            const parts = [variant.label];
+            if (variant.kod) parts.push('Kodi ' + variant.kod);
+            if (canViewPrices()) parts.push(formatPrice(variant.price));
             return (
               '<option value="' +
               escapeHtml(variant.value) +
               '">' +
-              escapeHtml(variant.label + suffix + priceHtml) +
+              escapeHtml(parts.join(' — ')) +
               '</option>'
             );
           })
@@ -231,8 +230,13 @@
               '<button type="button" class="product-variant-option" data-variant-value="' +
               escapeHtml(variant.value) +
               '" role="option" aria-selected="false">' +
-              '<span>' +
+              '<span class="variant-option-main">' +
+              '<span class="variant-option-label">' +
               escapeHtml(variant.label) +
+              '</span>' +
+              (variant.kod
+                ? '<span class="variant-option-kod">Kodi ' + escapeHtml(variant.kod) + '</span>'
+                : '') +
               '</span>' +
               (canViewPrices()
                 ? '<span class="variant-option-price">' + formatPrice(variant.price) + '</span>'
