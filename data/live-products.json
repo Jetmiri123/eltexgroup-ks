@@ -5381,6 +5381,55 @@
       "attributes": [],
       "in_stock": true,
       "variant_prices": {}
+    },
+    {
+      "id": "1786160000001",
+      "slug": "kontaktor-schneider-tesys-lc1-d25-lc1-d25",
+      "name": "Kontaktor Schneider TeSys LC1-D25",
+      "sku": "LC1-D25",
+      "price": 0,
+      "currency": "EUR",
+      "categories": [
+        "Mbrojtje & Kontroll Automatik Elektrik"
+      ],
+      "cat": "Mbrojtje & Kontroll Automatik Elektrik",
+      "image": "/media/uploads/1786148569237-557074.png",
+      "images": [
+        "/media/uploads/1786148569237-557074.png"
+      ],
+      "permalink": "/produkt/kontaktor-schneider-tesys-lc1-d25-lc1-d25",
+      "short_description": "Kontaktor Schneider TeSys LC1-D25, 25A, 3 pole, për komandim motorësh dhe ngarkesash industriale.",
+      "description": "Kontaktor Schneider TeSys LC1-D25, 25A, 3 pole, për komandim motorësh dhe ngarkesash industriale.",
+      "short_description_html": "<p>Kontaktor Schneider TeSys LC1-D25, 25A, 3 pole, për komandim motorësh dhe ngarkesash industriale.</p>",
+      "description_html": "<p>Kontaktor Schneider TeSys LC1-D25, 25A, 3 pole, për komandim motorësh dhe ngarkesash industriale.</p>",
+      "attributes": [],
+      "in_stock": true,
+      "variant_prices": {}
+    },
+    {
+      "id": "1786160000002",
+      "slug": "kanale-me-vrima",
+      "name": "Kanale me vrima",
+      "sku": "",
+      "price": 0,
+      "currency": "EUR",
+      "categories": [
+        "Kanale me vrima"
+      ],
+      "cat": "Kanale me vrima",
+      "image": "/media/uploads/1786148570257-e3efb1.png",
+      "images": [
+        "/media/uploads/1786148570257-e3efb1.png",
+        "/media/uploads/1786148570626-a2a03b.png"
+      ],
+      "permalink": "/produkt/kanale-me-vrima",
+      "short_description": "Kanal plastik me vrima për organizimin e kabllove në panele elektrike.",
+      "description": "Kanal plastik me vrima për organizimin e kabllove në panele elektrike.",
+      "short_description_html": "<p>Kanal plastik me vrima për organizimin e kabllove në panele elektrike.</p>",
+      "description_html": "<p>Kanal plastik me vrima për organizimin e kabllove në panele elektrike.</p>",
+      "attributes": [],
+      "in_stock": true,
+      "variant_prices": {}
     }
   ],
   "categories": [
@@ -5465,6 +5514,11 @@
       "count": 4
     },
     {
+      "name": "Mbrojtje & Kontroll Automatik Elektrik",
+      "slug": "mbrojtje-kontroll-automatik-elektrik",
+      "count": 3
+    },
+    {
       "name": "Terminale & Aksesorë Kabllosh për Panel",
       "slug": "terminale-aksesore-kabllosh-per-panel",
       "count": 2
@@ -5492,11 +5546,6 @@
     {
       "name": "Kuti-shperndarese",
       "slug": "kuti-shperndarese",
-      "count": 2
-    },
-    {
-      "name": "Mbrojtje & Kontroll Automatik Elektrik",
-      "slug": "mbrojtje-kontroll-automatik-elektrik",
       "count": 2
     },
     {
@@ -5657,6 +5706,11 @@
     {
       "name": "Kutia elektrike OG",
       "slug": "kutia-elektrike-og",
+      "count": 1
+    },
+    {
+      "name": "Kanale me vrima",
+      "slug": "kanale-me-vrima",
       "count": 1
     }
   ]
