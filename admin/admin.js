@@ -1752,16 +1752,111 @@
               cat.count > 0
                 ? `<button type="button" class="btn ghost small" disabled title="Zhvendosni produktet në një kategori tjetër fillimisht">Fshi</button>`
                 : `<button type="button" class="btn danger small" data-delete-category="${escapeHtml(cat.slug)}">Fshi</button>`;
-            return `<li>
+            return `<li data-category-slug="${escapeHtml(cat.slug)}">
               <div class="cat-info">
                 <span class="cat-name">${escapeHtml(name)}</span>
                 <span class="cat-count">${countLabel}</span>
               </div>
-              ${deleteBtn}
+              <div class="cat-actions">
+                <button type="button" class="btn ghost small" data-edit-category="${escapeHtml(cat.slug)}">Ndrysho</button>
+                ${deleteBtn}
+              </div>
             </li>`;
           })
           .join('')
       : '<li class="cat-empty">Nuk ka kategori.</li>';
+  }
+
+  function beginCategoryEdit(slug) {
+    const cat = getProductCategoryOptions().find((c) => c.slug === slug);
+    const row = categoriesList.querySelector(`[data-category-slug="${slug}"]`);
+    if (!cat || !row) return;
+
+    // Cancel any other open edit rows first.
+    renderCategoriesList();
+    const freshRow = categoriesList.querySelector(`[data-category-slug="${slug}"]`);
+    if (!freshRow) return;
+
+    const currentName = decodeHtml(cat.name);
+    freshRow.classList.add('is-editing');
+    freshRow.innerHTML = `
+      <div class="cat-edit-row">
+        <input type="text" class="cat-edit-input" value="${escapeHtml(currentName)}" aria-label="Emri i ri i kategorisë">
+        <div class="cat-actions">
+          <button type="button" class="btn primary small" data-save-category="${escapeHtml(slug)}">Ruaj</button>
+          <button type="button" class="btn ghost small" data-cancel-category-edit>Anulo</button>
+        </div>
+      </div>`;
+    const input = freshRow.querySelector('.cat-edit-input');
+    input.focus();
+    input.select();
+  }
+
+  async function renameCategory(oldSlug, newName) {
+    const name = (newName || '').trim();
+    if (!name) {
+      showToast('Emri i kategorisë është i detyrueshëm');
+      return;
+    }
+
+    const oldCat = getProductCategoryOptions().find((c) => c.slug === oldSlug);
+    if (!oldCat) return;
+
+    const newSlug = slugify(name);
+    if (!newSlug) {
+      showToast('Emri i kategorisë është i pavlefshëm');
+      return;
+    }
+
+    if (
+      newSlug !== oldSlug &&
+      getProductCategoryOptions().some((cat) => cat.slug === newSlug)
+    ) {
+      showToast('Kjo kategori ekziston tashmë');
+      return;
+    }
+
+    if (decodeHtml(oldCat.name) === name && newSlug === oldSlug) {
+      renderCategoriesList();
+      return;
+    }
+
+    productsData.products.forEach((product) => {
+      const productSlug = slugify(product.cat || '');
+      if (productSlug === oldSlug) {
+        product.cat = name;
+        product.categories = [name];
+      } else if (Array.isArray(product.categories)) {
+        product.categories = product.categories.map((entry) =>
+          slugify(entry || '') === oldSlug ? name : entry
+        );
+      }
+    });
+
+    if (!Array.isArray(productsData.categories)) productsData.categories = [];
+    let found = false;
+    productsData.categories = productsData.categories.map((cat) => {
+      const slug = cat.slug || slugify(cat.name || '');
+      if (slug !== oldSlug) return cat;
+      found = true;
+      return { ...cat, name, slug: newSlug };
+    });
+    if (!found && oldCat.count === 0) {
+      productsData.categories.push({ name, slug: newSlug, count: 0 });
+    }
+
+    if (selectedProductCategorySlug === oldSlug) {
+      selectedProductCategorySlug = newSlug;
+    }
+
+    try {
+      await saveProducts();
+      renderCategoriesList();
+      renderProducts();
+      showToast(`Kategoria u riemërua në “${name}”`);
+    } catch (err) {
+      showToast(err.message || 'Gabim gjatë ndryshimit të kategorisë');
+    }
   }
 
   async function addCategory() {
@@ -1798,6 +1893,26 @@
     }
   });
   categoriesList.addEventListener('click', async (e) => {
+    const editBtn = e.target.closest('[data-edit-category]');
+    if (editBtn) {
+      beginCategoryEdit(editBtn.dataset.editCategory);
+      return;
+    }
+
+    const cancelBtn = e.target.closest('[data-cancel-category-edit]');
+    if (cancelBtn) {
+      renderCategoriesList();
+      return;
+    }
+
+    const saveBtn = e.target.closest('[data-save-category]');
+    if (saveBtn) {
+      const row = saveBtn.closest('[data-category-slug]');
+      const input = row && row.querySelector('.cat-edit-input');
+      await renameCategory(saveBtn.dataset.saveCategory, input ? input.value : '');
+      return;
+    }
+
     const btn = e.target.closest('[data-delete-category]');
     if (!btn) return;
     const slug = btn.dataset.deleteCategory;
@@ -1814,6 +1929,16 @@
     } catch (err) {
       showToast(err.message || 'Gabim gjatë fshirjes së kategorisë');
     }
+  });
+  categoriesList.addEventListener('keydown', async (e) => {
+    if (e.key !== 'Enter') return;
+    const input = e.target.closest('.cat-edit-input');
+    if (!input) return;
+    e.preventDefault();
+    const row = input.closest('[data-category-slug]');
+    const slug = row && row.dataset.categorySlug;
+    if (!slug) return;
+    await renameCategory(slug, input.value);
   });
   document.getElementById('add-post-btn').addEventListener('click', () => openPostEditor(-1));
   productSearch.addEventListener('input', renderProducts);

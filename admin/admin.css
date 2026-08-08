@@ -595,6 +595,33 @@ textarea {
   font-size: 0.8125rem;
 }
 
+.categories-list .cat-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.categories-list .cat-edit-row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+}
+
+.categories-list .cat-edit-input {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--gray-300);
+  border-radius: 10px;
+  padding: 0.5rem 0.75rem;
+  font: inherit;
+}
+
+.categories-list li.is-editing {
+  display: block;
+}
+
 .categories-list .cat-empty {
   justify-content: center;
   color: var(--gray-500);
