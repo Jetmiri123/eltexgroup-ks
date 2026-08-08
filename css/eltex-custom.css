@@ -669,7 +669,49 @@ body > section.main_section:first-of-type {
 
 /* Category image stack — Webflow IX2 handles desktop hover */
 
+/* Smaller labels so the longer real category names fit cleanly */
+.product-categories .service_link,
+.product-categories .service_link-1,
+.product-categories .service_link-2,
+.product-categories .service_link_3,
+.product-categories .service_link-4,
+.product-categories .service_link_5 {
+  align-items: center;
+  min-height: 64px;
+  max-height: none;
+  padding-top: 0.7rem;
+  padding-bottom: 0.7rem;
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+.product-categories .service,
+.product-categories .service > .service {
+  font-size: inherit;
+  line-height: inherit;
+  min-width: 0;
+}
+
+.product-categories .service > .service {
+  flex: 1;
+}
+
+.product-categories .arrow-image {
+  width: 36px;
+  flex-shrink: 0;
+}
+
 @media (max-width: 991px) {
+  .product-categories .service_link,
+  .product-categories .service_link-1,
+  .product-categories .service_link-2,
+  .product-categories .service_link_3,
+  .product-categories .service_link-4,
+  .product-categories .service_link_5,
+  .product-categories .service {
+    font-size: 17px;
+  }
+
   .product-categories .service_link.is-category-active .service > .service,
   .product-categories .service_link-1.is-category-active .service > .service,
   .product-categories .service_link-2.is-category-active .service > .service,
