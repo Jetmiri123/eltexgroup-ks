@@ -1057,10 +1057,25 @@ async function handleApi(req, res, pathname) {
       return;
     }
     const allowed = ['new', 'processing', 'done', 'cancelled'];
+    let changed = false;
     if (body.status && allowed.includes(body.status)) {
       order.status = body.status;
-      order.updatedAt = new Date().toISOString();
+      changed = true;
     }
+    if (Array.isArray(body.items) && Array.isArray(order.items)) {
+      let total = 0;
+      order.items = order.items.map((item, index) => {
+        const patch = body.items[index] || {};
+        const qty = Math.max(1, Math.min(999, Number(patch.qty != null ? patch.qty : item.qty) || 1));
+        const price = Number(item.price) || 0;
+        const lineTotal = Math.round(price * qty * 100) / 100;
+        total += lineTotal;
+        return { ...item, qty, lineTotal };
+      });
+      order.total = Math.round(total * 100) / 100;
+      changed = true;
+    }
+    if (changed) order.updatedAt = new Date().toISOString();
     writeOrders(orders);
     sendJson(res, 200, { ok: true, order });
     return;

@@ -704,6 +704,55 @@
       : emptyRow(6, ordersData.length ? 'Asnjë porosi nuk përputhet me kërkimin.' : 'Ende nuk ka porosi.');
   }
 
+  function normalizeOrderQty(value) {
+    const qty = parseInt(String(value == null ? 1 : value).trim(), 10);
+    if (!Number.isFinite(qty) || qty < 1) return 1;
+    return Math.min(999, qty);
+  }
+
+  function refreshOrderTotalsPreview() {
+    let total = 0;
+    editorFields.querySelectorAll('[data-order-item-row]').forEach((row) => {
+      const qtyInput = row.querySelector('[data-order-qty]');
+      const price = Number(row.dataset.price) || 0;
+      const qty = normalizeOrderQty(qtyInput && qtyInput.value);
+      if (qtyInput) qtyInput.value = String(qty);
+      const lineTotal = Math.round(price * qty * 100) / 100;
+      total += lineTotal;
+      const lineEl = row.querySelector('[data-order-line-total]');
+      if (lineEl) lineEl.textContent = '€' + lineTotal.toFixed(2);
+    });
+    const totalEl = editorFields.querySelector('[data-order-total]');
+    if (totalEl) totalEl.textContent = '€' + (Math.round(total * 100) / 100).toFixed(2);
+  }
+
+  function bindOrderQtyControls() {
+    editorFields.querySelectorAll('[data-order-qty-minus]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const input = editorFields.querySelector(
+          '[data-order-qty="' + btn.dataset.orderQtyMinus + '"]'
+        );
+        if (!input) return;
+        input.value = String(normalizeOrderQty(Number(input.value) - 1));
+        refreshOrderTotalsPreview();
+      });
+    });
+    editorFields.querySelectorAll('[data-order-qty-plus]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const input = editorFields.querySelector(
+          '[data-order-qty="' + btn.dataset.orderQtyPlus + '"]'
+        );
+        if (!input) return;
+        input.value = String(normalizeOrderQty(Number(input.value) + 1));
+        refreshOrderTotalsPreview();
+      });
+    });
+    editorFields.querySelectorAll('[data-order-qty]').forEach((input) => {
+      input.addEventListener('change', refreshOrderTotalsPreview);
+      input.addEventListener('blur', refreshOrderTotalsPreview);
+    });
+  }
+
   function openOrderViewer(orderId) {
     const order = ordersData.find((entry) => entry.id === orderId);
     if (!order) return;
@@ -714,18 +763,35 @@
     deleteItemBtn.hidden = false;
 
     const itemsHtml = (order.items || [])
-      .map(
-        (item) =>
-          '<tr><td>' +
+      .map((item, index) => {
+        const qty = normalizeOrderQty(item.qty);
+        const price = Number(item.price) || 0;
+        const lineTotal = Math.round(price * qty * 100) / 100;
+        return (
+          '<tr data-order-item-row data-price="' +
+          escapeHtml(String(price)) +
+          '"><td>' +
           escapeHtml(item.name) +
           '</td><td>' +
-          item.qty +
-          '</td><td>€' +
-          Number(item.price).toFixed(2) +
-          '</td><td>€' +
-          Number(item.lineTotal).toFixed(2) +
+          '<div class="order-qty-controls">' +
+          '<button type="button" class="order-qty-btn" data-order-qty-minus="' +
+          index +
+          '" aria-label="Zvogëlo">−</button>' +
+          '<input type="number" class="order-qty-input" data-order-qty="' +
+          index +
+          '" value="' +
+          qty +
+          '" min="1" max="999" inputmode="numeric" aria-label="Sasia">' +
+          '<button type="button" class="order-qty-btn" data-order-qty-plus="' +
+          index +
+          '" aria-label="Rrit">+</button>' +
+          '</div></td><td>€' +
+          price.toFixed(2) +
+          '</td><td data-order-line-total>€' +
+          lineTotal.toFixed(2) +
           '</td></tr>'
-      )
+        );
+      })
       .join('');
 
     const customer = order.customer || {};
@@ -747,7 +813,8 @@
           <thead><tr><th>Produkti</th><th>Sasia</th><th>Çmimi</th><th>Totali</th></tr></thead>
           <tbody>${itemsHtml}</tbody>
         </table>
-        <p><strong>Totali: €${Number(order.total || 0).toFixed(2)}</strong></p>
+        <p><strong>Totali: <span data-order-total>€${Number(order.total || 0).toFixed(2)}</span></strong></p>
+        <p class="field-hint">Ndryshoni sasinë me − / + dhe shtypni Ruaj.</p>
         <div class="field-grid">
           <div>
             <label for="order-status">Statusi</label>
@@ -760,15 +827,16 @@
           </div>
         </div>
       </div>`;
+    bindOrderQtyControls();
     editorDialog.showModal();
   }
 
-  async function saveOrderStatus(orderId, status) {
+  async function saveOrderEdits(orderId, status, items) {
     await api('/api/orders/' + encodeURIComponent(orderId), {
       method: 'PATCH',
-      body: JSON.stringify({ status }),
+      body: JSON.stringify({ status, items }),
     });
-    showToast('Statusi u përditësua');
+    showToast('Porosia u përditësua');
     ordersData = await api('/api/orders');
     renderOrders();
   }
@@ -1390,7 +1458,14 @@
       if (editorMode === 'order') {
         const order = ordersData[editorIndex];
         const status = editorFields.querySelector('[name="status"]').value;
-        await saveOrderStatus(order.id, status);
+        const items = (order.items || []).map((item, index) => {
+          const input = editorFields.querySelector('[data-order-qty="' + index + '"]');
+          return {
+            ...item,
+            qty: normalizeOrderQty(input ? input.value : item.qty),
+          };
+        });
+        await saveOrderEdits(order.id, status, items);
         editorDialog.close();
         return;
       }

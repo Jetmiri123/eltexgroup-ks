@@ -871,6 +871,53 @@ textarea {
   line-height: 1.6;
 }
 
+.order-qty-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.order-qty-btn {
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--gray-300);
+  background: var(--white);
+  border-radius: 8px;
+  font: inherit;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.order-qty-btn:hover {
+  border-color: var(--gray-500);
+}
+
+.order-qty-input {
+  width: 3.25rem;
+  height: 2rem;
+  padding: 0 0.25rem;
+  border: 1px solid var(--gray-300);
+  border-radius: 8px;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: center;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.order-qty-input:focus {
+  outline: none;
+  border-color: var(--orange, #f88837);
+}
+
+.order-qty-input::-webkit-outer-spin-button,
+.order-qty-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 .table-empty {
   text-align: center;
   color: var(--gray-500);
