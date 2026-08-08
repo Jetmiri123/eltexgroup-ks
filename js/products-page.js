@@ -31,14 +31,17 @@
   const FEATURED_CATEGORY_ORDER = [
     'Terminale (Papuçe) dhe Lidhëse për Kablla',
     'Aksesorë për Rrjete Ajrore ABC LV deri 1KV',
+    'Mufa & Aksesorë termo‑tkurrës, mbulesa izoluese LV/MV',
     'Elemente shpërndarëse për panele (Kleme & Ura shpërndarëse)',
-    'Kabllo',
+    'Terminale & Aksesorë Kabllosh për Panel',
+    'Mbrojtje & Kontroll Automatik Elektrik',
   ];
 
   function normalizeCategoryKey(name) {
     return String(name || '')
       .replace(/&amp;/gi, '&')
       .replace(/[\u00a0\u202f]/g, ' ')
+      .replace(/[\u2010-\u2015\u2212]/g, '-')
       .replace(/\s+/g, ' ')
       .trim()
       .toLowerCase();
