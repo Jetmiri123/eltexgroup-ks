@@ -840,6 +840,24 @@ body.products-filter-open {
   font-size: 0.85em;
 }
 
+.product-qty {
+  margin: 0 0 1rem;
+}
+
+.product-qty-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.product-qty-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
 .product-detail-actions {
   display: flex;
   flex-wrap: wrap;

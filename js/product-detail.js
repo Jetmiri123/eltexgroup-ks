@@ -30,10 +30,28 @@
   const skuEl = document.getElementById('product-sku');
   const variantsEl = document.getElementById('product-variants');
   const mainImage = document.getElementById('product-image');
+  const qtyInput = document.getElementById('product-qty-input');
+  const qtyMinus = document.getElementById('product-qty-minus');
+  const qtyPlus = document.getElementById('product-qty-plus');
 
   let currentProduct = null;
   let variantConfig = null;
   let selectedVariant = null;
+
+  function normalizeQty(value) {
+    const qty = parseInt(String(value == null ? 1 : value).trim(), 10);
+    if (!Number.isFinite(qty) || qty < 1) return 1;
+    return Math.min(999, qty);
+  }
+
+  function getSelectedQty() {
+    return normalizeQty(qtyInput ? qtyInput.value : 1);
+  }
+
+  function setSelectedQty(value) {
+    if (!qtyInput) return;
+    qtyInput.value = String(normalizeQty(value));
+  }
 
   function stripHtml(html) {
     return String(html || '')
@@ -365,6 +383,7 @@
 
   function renderProduct(product, all) {
     currentProduct = product;
+    setSelectedQty(1);
     document.title = product.name + ' — Eltex Group';
 
     const meta = document.querySelector('meta[name="description"]');
@@ -416,6 +435,17 @@
     document.title = 'Produkti nuk u gjet — Eltex Group';
   }
 
+  if (qtyMinus) {
+    qtyMinus.addEventListener('click', () => setSelectedQty(getSelectedQty() - 1));
+  }
+  if (qtyPlus) {
+    qtyPlus.addEventListener('click', () => setSelectedQty(getSelectedQty() + 1));
+  }
+  if (qtyInput) {
+    qtyInput.addEventListener('change', () => setSelectedQty(qtyInput.value));
+    qtyInput.addEventListener('blur', () => setSelectedQty(qtyInput.value));
+  }
+
   addBtn.addEventListener('click', () => {
     if (!currentProduct || !window.EltexCart) return;
     if (!canViewPrices()) {
@@ -423,7 +453,7 @@
       return;
     }
     if (variantConfig && !selectedVariant) return;
-    window.EltexCart.add(cartPayload(currentProduct, selectedVariant));
+    window.EltexCart.add(cartPayload(currentProduct, selectedVariant), getSelectedQty());
   });
 
   document.addEventListener('eltex-auth-ready', () => {

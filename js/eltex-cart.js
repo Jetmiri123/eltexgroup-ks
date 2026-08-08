@@ -82,7 +82,13 @@
     return entry;
   }
 
-  function addItem(product) {
+  function normalizeQty(value) {
+    const qty = parseInt(String(value == null ? 1 : value).trim(), 10);
+    if (!Number.isFinite(qty) || qty < 1) return 1;
+    return Math.min(999, qty);
+  }
+
+  function addItem(product, qty) {
     if (window.EltexProducts && typeof window.EltexProducts.canViewPrices === 'function') {
       if (!window.EltexProducts.canViewPrices()) {
         window.location.href = '/llogaria';
@@ -90,19 +96,24 @@
       }
     }
 
+    const amount = normalizeQty(qty != null ? qty : product && product.qty);
     const entry = normalizeCartProduct(product);
     const cart = readCart();
     const existing = cart.find((item) => sameItem(item, entry));
 
     if (existing) {
-      existing.qty += 1;
+      existing.qty = normalizeQty(existing.qty + amount);
       Object.assign(existing, entry, { qty: existing.qty });
     } else {
-      cart.push({ ...entry, qty: 1 });
+      cart.push({ ...entry, qty: amount });
     }
 
     writeCart(cart);
-    showToast('Produkti u shtua në shportë');
+    showToast(
+      amount > 1
+        ? amount + ' copë u shtuan në shportë'
+        : 'Produkti u shtua në shportë'
+    );
     return cart;
   }
 
