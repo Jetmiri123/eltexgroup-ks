@@ -197,7 +197,7 @@
         variants
           .map((variant) => {
             const parts = [variant.label];
-            if (variant.kod) parts.push('Kodi ' + variant.kod);
+            if (variant.kod) parts.push(variant.kod);
             if (canViewPrices()) parts.push(formatPrice(variant.price));
             return (
               '<option value="' +
@@ -235,7 +235,7 @@
               escapeHtml(variant.label) +
               '</span>' +
               (variant.kod
-                ? '<span class="variant-option-kod">Kodi ' + escapeHtml(variant.kod) + '</span>'
+                ? '<span class="variant-option-kod">' + escapeHtml(variant.kod) + '</span>'
                 : '') +
               '</span>' +
               (canViewPrices()
