@@ -1,6 +1,511 @@
 {
   "products": [
     {
+      "id": "1823",
+      "slug": "terminale-bakri-cu-papuce",
+      "name": "Terminale Bakri CU (Papuçe)",
+      "sku": "",
+      "price": 0.38,
+      "currency": "EUR",
+      "categories": [
+        "Terminale (Papuçe) dhe Lidhëse për Kablla"
+      ],
+      "cat": "Terminale (Papuçe) dhe Lidhëse për Kablla",
+      "image": "https://eltexgroup-ks.com/wp-content/uploads/2025/10/Papuqe-CU-10.6-e1776517200781.png",
+      "images": [
+        "https://eltexgroup-ks.com/wp-content/uploads/2025/10/Papuqe-CU-10.6-e1776517200781.png"
+      ],
+      "permalink": "/produkt/terminale-bakri-cu-papuce",
+      "short_description": "Terminalet (papuçet) prej bakri përdoren për përfundimin e përçuesve bakri, me lidhje përmes procesit të shtypjes. Kanë shenja që tregojnë numrin dhe gjerësinë e shtypjeve.",
+      "description": "Terminalet (papuçet) prej bakri përdoren për përfundimin e përçuesve bakri, me lidhje përmes procesit të shtypjes. Kanë shenja që tregojnë numrin dhe gjerësinë e shtypjeve.",
+      "short_description_html": "<p>Terminalet (papuçet) prej bakri përdoren për përfundimin e përçuesve bakri, me lidhje përmes procesit të shtypjes. Kanë shenja që tregojnë numrin dhe gjerësinë e shtypjeve.</p>",
+      "description_html": "<p>Terminalet (papuçet) prej bakri përdoren për përfundimin e përçuesve bakri, me lidhje përmes procesit të shtypjes. Kanë shenja që tregojnë numrin dhe gjerësinë e shtypjeve.</p>",
+      "attributes": [
+        {
+          "name": "Seksioni i Kabllos(mm²)/Vrima e Bulonit",
+          "value": "10.6, 10.8, 10.10, 16.6, 16.8, 16.10, 16.12, 25.6, 25.8, 25.10, 25.12, 35.8, 35.10, 35.12, 50.8, 50.10, 50.12, 50.16, 70.8, 70.10, 70.12, 70.16, 95.8, 95.10, 95.12, 95.16, 120.8, 120.10, 120.12, 120.16, 150.8, 150.10, 150.12, 150.16, 185.10, 185.12, 185.16, 240.10, 240.12, 240.16"
+        },
+        {
+          "name": "Kodi",
+          "value": "371301CU, 371302CU, 371303CU, 371304CU, 371305CU, 371306CU, 371307CU, 371308CU, 371309CU, 3713010CU, 3713011CU, 3713012CU, 3713013CU, 3713014CU, 3713015CU, 3713016CU, 3713017CU, 3713018CU, 3713019CU, 3713020CU, 3713021CU, 3713022CU, 3713023CU, 3713024CU, 3713025CU, 3713026CU, 3713027CU, 3713028CU, 3713029CU, 3713030CU, 3713031CU, 3713032CU, 3713033CU, 3713034CU, 3713035CU, 3713036CU, 3713037CU, 3713038CU, 3713039CU, 3713040CU"
+        }
+      ],
+      "in_stock": true,
+      "variant_prices": {
+        "10.6": 0.5,
+        "10.8": 0.5,
+        "10.10": 0.5,
+        "16.6": 0.53,
+        "16.8": 0.53,
+        "16.10": 0.53,
+        "16.12": 0.53,
+        "25.6": 0.7,
+        "25.8": 0.7,
+        "25.10": 0.7,
+        "25.12": 0.7,
+        "35.8": 1,
+        "35.10": 1,
+        "35.12": 1,
+        "50.8": 1.6,
+        "50.10": 1.6,
+        "50.12": 1.6,
+        "50.16": 1.6,
+        "70.8": 2.05,
+        "70.10": 2.05,
+        "70.12": 2.05,
+        "70.16": 2.05,
+        "95.8": 2.7,
+        "95.10": 2.7,
+        "95.12": 2.7,
+        "95.16": 2.7,
+        "120.8": 3.4,
+        "120.10": 3.4,
+        "120.12": 3.4,
+        "120.16": 3.4,
+        "150.8": 4.4,
+        "150.10": 4.4,
+        "150.12": 4.4,
+        "150.16": 4.4,
+        "185.10": 5.7,
+        "185.12": 5.7,
+        "185.16": 5.7,
+        "240.10": 6.9,
+        "240.12": 6.9,
+        "240.16": 7.56
+      }
+    },
+    {
+      "name": "Terminal Bakri CU (Paqpuqe) AUS",
+      "price": 0.3,
+      "cat": "Terminale (Papuçe) dhe Lidhëse për Kablla",
+      "image": "/media/uploads/1786193157483-b1d726.png",
+      "short_description": "Terminalet (papuçet) prej bakri përdoren për përfundimin e përçuesve bakri, me lidhje përmes procesit të shtypjes. Kanë shenja që tregojnë numrin dhe gjerësinë e shtypjeve.",
+      "description": "Terminalet (papuçet) prej bakri përdoren për përfundimin e përçuesve bakri, me lidhje përmes procesit të shtypjes. Kanë shenja që tregojnë numrin dhe gjerësinë e shtypjeve.",
+      "slug": "terminal-bakri-cu-paqpuqe-aus",
+      "id": "1786191722451",
+      "currency": "EUR",
+      "categories": [
+        "Terminale (Papuçe) dhe Lidhëse për Kablla"
+      ],
+      "permalink": "/produkt/terminal-bakri-cu-paqpuqe-aus",
+      "attributes": [
+        {
+          "name": "Seksioni i Kabllos(mm²)/Vrima e Bulonit",
+          "value": "6.6, 10.6, 10.8, 16.8, 16.10, 25.8, 25.10, 35.8, 35.10, 50.10, 50.12, 70.10, 70.12, 95.10, 95.12, 120.12, 150.12, 185.12, 240.12"
+        },
+        {
+          "name": "Kodi",
+          "value": "TBCP1881, TBCP1882, TBCP1883, TBCP1884, TBCP1885, TBCP1886, TBCP1887, TBCP1888, TBCP1889, TBCP18810, TBCP18811, TBCP18812, TBCP18813, TBCP18814, TBCP18815, TBCP18816, TBCP18817, TBCP18818, TBCP18819"
+        }
+      ],
+      "variant_prices": {
+        "6.6": 0.3,
+        "10.6": 0.3,
+        "10.8": 0.3,
+        "16.8": 0.45,
+        "16.10": 0.45,
+        "25.8": 0.55,
+        "25.10": 0.55,
+        "35.8": 0.8,
+        "35.10": 0.8,
+        "50.10": 1.4,
+        "50.12": 1.4,
+        "70.10": 1.8,
+        "70.12": 1.8,
+        "95.10": 2.6,
+        "95.12": 2.6,
+        "120.12": 3.2,
+        "150.12": 4.2,
+        "185.12": 5.7,
+        "240.12": 6.5
+      },
+      "short_description_html": "<p>Terminalet (papuçet) prej bakri përdoren për përfundimin e përçuesve bakri, me lidhje përmes procesit të shtypjes. Kanë shenja që tregojnë numrin dhe gjerësinë e shtypjeve.</p>",
+      "description_html": "<p>Terminalet (papuçet) prej bakri përdoren për përfundimin e përçuesve bakri, me lidhje përmes procesit të shtypjes. Kanë shenja që tregojnë numrin dhe gjerësinë e shtypjeve.</p>"
+    },
+    {
+      "id": "4667",
+      "slug": "terminal-dtl-f-alcu-papuce",
+      "name": "Terminal DTL-F  ALCU (Papuçe)",
+      "sku": "",
+      "price": 1.35,
+      "currency": "EUR",
+      "categories": [
+        "Terminale (Papuçe) dhe Lidhëse për Kablla"
+      ],
+      "cat": "Terminale (Papuçe) dhe Lidhëse për Kablla",
+      "image": "https://eltexgroup-ks.com/wp-content/uploads/2026/06/Copilot_20260608_141322.png",
+      "images": [
+        "https://eltexgroup-ks.com/wp-content/uploads/2026/06/Copilot_20260608_141322.png"
+      ],
+      "permalink": "/produkt/terminal-dtl-f-alcu-papuce",
+      "short_description": "Terminal DTL‑F AlCu (Papuçe) është një lidhës bimetalik i projektuar për kabllo alumini dhe pajisje me terminal bakri. Trupi i aluminit është i kallajisur për mbrojtje kundër korrozionit, ndërsa pjesa e bakrit siguron përçueshmëri të lartë dhe kontakt të sigurt elektrik. Ky produkt përdoret gjerësisht në rrjetet NN deri në 1 kV, duke ofruar instalim të lehtë dhe jetëgjatësi të lartë.Modeli: DTL‑FMateriali: Alumini + BakërSipërfaqja: e kallajisur për mbrojtje kundër oksidimitPërdorimi: Lidhje kabllo alumini me terminale bakriStandardi: DIN 46325 / IEC 61238Gama seksioneve: 16 mm² – 400 mm²",
+      "description": "",
+      "short_description_html": "<p><strong>Terminal DTL‑F AlCu (Papuçe)</strong> është një lidhës bimetalik i projektuar për kabllo alumini dhe pajisje me terminal bakri. Trupi i aluminit është i kallajisur për mbrojtje kundër korrozionit, ndërsa pjesa e bakrit siguron përçueshmëri të lartë dhe kontakt të sigurt elektrik. Ky produkt përdoret gjerësisht në rrjetet NN deri në 1 kV, duke ofruar instalim të lehtë dhe jetëgjatësi të lartë.</p><ul><li><strong>Modeli:</strong> DTL‑F</li><li><strong>Materiali:</strong> Alumini + Bakër</li><li><strong>Sipërfaqja:</strong> e kallajisur për mbrojtje kundër oksidimit</li><li><strong>Përdorimi:</strong> Lidhje kabllo alumini me terminale bakri</li><li><strong>Standardi:</strong> DIN 46325 / IEC 61238</li><li><strong>Gama seksioneve:</strong> 16 mm² – 400 mm²</li></ul>",
+      "description_html": "",
+      "attributes": [
+        {
+          "name": "Seksioni i Kabllos(mm²)/Vrima e Bulonit",
+          "value": "16.8, 25.8, 35.8, 50.10, 70.10, 95.10, 120.12, 150.12, 185.12, 240.12, 300.12"
+        },
+        {
+          "name": "Kodi",
+          "value": "TAPD18820, TAPD18821, TAPD18822, TAPD18823, TAPD18824, TAPD18825, TAPD18826, TAPD18827, TAPD18828, TAPD18829, TAPD18830"
+        }
+      ],
+      "in_stock": true,
+      "variant_prices": {
+        "16.8": 1.35,
+        "25.8": 1.35,
+        "35.8": 1.35,
+        "50.10": 2.05,
+        "70.10": 2.2,
+        "95.10": 2.4,
+        "120.12": 3.35,
+        "150.12": 3.5,
+        "185.12": 5.5,
+        "240.12": 5.5,
+        "300.12": 7.5
+      }
+    },
+    {
+      "id": "4432",
+      "slug": "terminale-bimetalike-alcu-papuce",
+      "name": "Terminale Bimetalike ALCU (Papuçe)",
+      "sku": "",
+      "price": 1.6,
+      "currency": "EUR",
+      "categories": [
+        "Terminale (Papuçe) dhe Lidhëse për Kablla"
+      ],
+      "cat": "Terminale (Papuçe) dhe Lidhëse për Kablla",
+      "image": "https://eltexgroup-ks.com/wp-content/uploads/2026/05/Copilot_20260507_100454.png",
+      "images": [
+        "https://eltexgroup-ks.com/wp-content/uploads/2026/05/Copilot_20260507_100454.png"
+      ],
+      "permalink": "/produkt/terminale-bimetalike-alcu-papuce",
+      "short_description": "Terminale bimetalike AlCu sigurojnë lidhje të qëndrueshme mes përçuesve alumini dhe bakri. Të përshtatshme për lidhje pa tension, me barrierë vaji",
+      "description": "Terminale bimetalike AlCu sigurojnë lidhje të qëndrueshme mes përçuesve alumini dhe bakri. Të përshtatshme për lidhje pa tension, me barrierë vaji",
+      "short_description_html": "<p>Terminale bimetalike AlCu sigurojnë lidhje të qëndrueshme mes përçuesve alumini dhe bakri. Të përshtatshme për lidhje pa tension, me barrierë vaji</p>",
+      "description_html": "<p>Terminale bimetalike AlCu sigurojnë lidhje të qëndrueshme mes përçuesve alumini dhe bakri. Të përshtatshme për lidhje pa tension, me barrierë vaji</p>",
+      "attributes": [
+        {
+          "name": "Seksioni i Kabllos(mm²)/Vrima e Bulonit",
+          "value": "16.8, 25.8, 35.16, 70.10, 70.12, 120.12, 150.12, 185.12, 240.12"
+        }
+      ],
+      "in_stock": true,
+      "variant_prices": {
+        "16.8": 1.6,
+        "25.8": 1.6,
+        "35.16": 1.6,
+        "70.10": 3.8,
+        "70.12": 1.6,
+        "120.12": 1.6,
+        "150.12": 4.4,
+        "185.12": 4.7,
+        "240.12": 4.7
+      }
+    },
+    {
+      "id": "2016",
+      "slug": "terminale-alumini-me-unaze-bakri-alcu-papuce",
+      "name": "Terminale Alumini me Unazë Bakri ALCU (Papuçe)",
+      "sku": "",
+      "price": 0.75,
+      "currency": "EUR",
+      "categories": [
+        "Terminale (Papuçe) dhe Lidhëse për Kablla"
+      ],
+      "cat": "Terminale (Papuçe) dhe Lidhëse për Kablla",
+      "image": "https://eltexgroup-ks.com/wp-content/uploads/2025/10/Copilot_20260508_142203-e1778242919436.png",
+      "images": [
+        "https://eltexgroup-ks.com/wp-content/uploads/2025/10/Copilot_20260508_142203-e1778242919436.png"
+      ],
+      "permalink": "/produkt/terminale-alumini-me-unaze-bakri-alcu-papuce",
+      "short_description": "",
+      "description": "",
+      "short_description_html": "",
+      "description_html": "",
+      "attributes": [
+        {
+          "name": "Papuqe me prese ALCU",
+          "value": "16.8, 25.8, 25.10, 25.12, 35.8, 35.10, 35.12, 50.8, 50.10, 50.12, 70.8, 70.10, 70.12, 95.8, 95.10, 95.12, 120.10, 120.12, 150.10, 150.12, 150.16, 185.12, 185.16, 240.12, 240.16, 300.16"
+        }
+      ],
+      "in_stock": true,
+      "variant_prices": {
+        "16.8": 0.75,
+        "25.8": 0.75,
+        "25.10": 0.75,
+        "25.12": 0.75,
+        "35.8": 0.75,
+        "35.10": 0.85,
+        "35.12": 0.85,
+        "50.8": 0.75,
+        "50.10": 0.75,
+        "50.12": 0.98,
+        "70.8": 1.1,
+        "70.10": 1.1,
+        "70.12": 1.1,
+        "95.8": 1.7,
+        "95.10": 0.75,
+        "95.12": 0.75,
+        "120.10": 0.75,
+        "120.12": 0.75,
+        "150.10": 0.75,
+        "150.12": 0.75,
+        "150.16": 2.2,
+        "185.12": 2.5,
+        "185.16": 2.5,
+        "240.12": 0,
+        "240.16": 0,
+        "300.16": 5.9
+      }
+    },
+    {
+      "id": "1956",
+      "slug": "terminale-me-bulona-vkp-papuce",
+      "name": "Terminale me Bulona VKP (Papuçe)",
+      "sku": "",
+      "price": 0.8,
+      "currency": "EUR",
+      "categories": [
+        "Terminale (Papuçe) dhe Lidhëse për Kablla"
+      ],
+      "cat": "Terminale (Papuçe) dhe Lidhëse për Kablla",
+      "image": "https://eltexgroup-ks.com/wp-content/uploads/2025/10/Copilot_20260508_143611-e1778243768962.png",
+      "images": [
+        "https://eltexgroup-ks.com/wp-content/uploads/2025/10/Copilot_20260508_143611-e1778243768962.png"
+      ],
+      "permalink": "/produkt/terminale-me-bulona-vkp-papuce",
+      "short_description": "Papuçet mekanike për kabllo me bulona prodhohen nga bakri elektrolitik dhe përdoren në raste kur saldimi nuk lejohet në skajet e përcjellësve. Papucët dhe bulonat janë të galvanizuara me zink, ndërsa fijet e përpunuara me cilësi të lartë garantojnë forcë të madhe shtrëngimi, duke siguruar një lidhje të qëndrueshme dhe të besueshme.Produktet janë testuar dhe të certifikuara sipas standardeve ndërkombëtare: DIN 46227 | EN 61238-1-1 | Me kërkesë të klientit, papucët mund të furnizohen me:Bulona prej bronziBulona të galvanizuara me zhytje të nxehtëBulona prej çeliku inoks",
+      "description": "Papuçet mekanike për kabllo me bulona prodhohen nga bakri elektrolitik dhe përdoren në raste kur saldimi nuk lejohet në skajet e përcjellësve. Papucët dhe bulonat janë të galvanizuara me zink, ndërsa fijet e përpunuara me cilësi të lartë garantojnë forcë të madhe shtrëngimi, duke siguruar një lidhje të qëndrueshme dhe të besueshme.Produktet janë testuar dhe të certifikuara sipas standardeve ndërkombëtare: DIN 46227 | EN 61238-1-1 | Me kërkesë të klientit, papucët mund të furnizohen me:Bulona prej bronziBulona të galvanizuara me zhytje të nxehtëBulona prej çeliku inoks",
+      "short_description_html": "<p>Papuçet mekanike për kabllo me bulona prodhohen nga <strong>bakri elektrolitik</strong> dhe përdoren në raste kur saldimi nuk lejohet në skajet e përcjellësve. Papucët dhe bulonat janë të galvanizuara me zink, ndërsa fijet e përpunuara me cilësi të lartë garantojnë forcë të madhe shtrëngimi, duke siguruar një lidhje të qëndrueshme dhe të besueshme.</p><p>Produktet janë testuar dhe të certifikuara sipas standardeve ndërkombëtare: <strong>DIN 46227 | EN 61238-1-1 |&nbsp;</strong></p><p>Me kërkesë të klientit, papucët mund të furnizohen me:</p><ul><li>Bulona prej bronzi</li><li>Bulona të galvanizuara me zhytje të nxehtë</li><li>Bulona prej çeliku inoks</li></ul>",
+      "description_html": "<p>Papuçet mekanike për kabllo me bulona prodhohen nga <strong>bakri elektrolitik</strong> dhe përdoren në raste kur saldimi nuk lejohet në skajet e përcjellësve. Papucët dhe bulonat janë të galvanizuara me zink, ndërsa fijet e përpunuara me cilësi të lartë garantojnë forcë të madhe shtrëngimi, duke siguruar një lidhje të qëndrueshme dhe të besueshme.</p><p>Produktet janë testuar dhe të certifikuara sipas standardeve ndërkombëtare: <strong>DIN 46227 | EN 61238-1-1 |&nbsp;</strong></p><p>Me kërkesë të klientit, papucët mund të furnizohen me:</p><ul><li>Bulona prej bronzi</li><li>Bulona të galvanizuara me zhytje të nxehtë</li><li>Bulona prej çeliku inoks</li></ul>",
+      "attributes": [
+        {
+          "name": "Seksioni i Kabllos (mm²) / Vrima e Bulonit (M)",
+          "value": "10.6, 10.8, 16.6, 16.8, 25.8, 25.10, 35.8, 35.10, 50.10, 50.12, 70.10, 70.12, 95.12, 95.16, 120.12, 120.16, 150.16"
+        }
+      ],
+      "in_stock": true,
+      "variant_prices": {
+        "10.6": 0.8,
+        "10.8": 0.8,
+        "16.6": 0.9,
+        "16.8": 0.9,
+        "25.8": 1,
+        "25.10": 1,
+        "35.8": 1.75,
+        "35.10": 1.75,
+        "50.10": 2.2,
+        "50.12": 2.2,
+        "70.10": 2.45,
+        "70.12": 2.55,
+        "95.12": 3.9,
+        "95.16": 4.1,
+        "120.12": 6.73,
+        "120.16": 6.73,
+        "150.16": 7.5
+      }
+    },
+    {
+      "name": "Lidhëse Alumini për kabllo AL (Qaura)",
+      "price": 0.16,
+      "cat": "Terminale (Papuçe) dhe Lidhëse për Kablla",
+      "image": "/media/uploads/1786175333588-1f2eb2.png",
+      "short_description": "Lidhëset e aluminit janë projektuar për të bashkuar përcjellësit prej alumini me seksion të njëjtë. Lidhja realizohet përmes procesit të presimit (crimping) dhe plotëson kërkesat e standardit EN 61238-1-1.Brendësia e lidhëses është e mbrojtur me yndyrë kontakti elektrik, e cila siguron qëndrueshmëri dhe besueshmëri afatgjatë. Çdo lidhëse është e pajisur me shenja identifikuese që tregojnë numrin dhe gjerësinë e presimeve të nevojshme.Këto lidhëse janë të përshtatshme për lidhje pa tension.",
+      "description": "Lidhëset e aluminit janë projektuar për të bashkuar përcjellësit prej alumini me seksion të njëjtë. Lidhja realizohet përmes procesit të presimit (crimping) dhe plotëson kërkesat e standardit EN 61238-1-1.Brendësia e lidhëses është e mbrojtur me yndyrë kontakti elektrik, e cila siguron qëndrueshmëri dhe besueshmëri afatgjatë. Çdo lidhëse është e pajisur me shenja identifikuese që tregojnë numrin dhe gjerësinë e presimeve të nevojshme.Këto lidhëse janë të përshtatshme për lidhje pa tension.",
+      "slug": "lidhese-alumini-per-kabllo-al-qaura",
+      "id": "1786175349045",
+      "currency": "EUR",
+      "categories": [
+        "Terminale (Papuçe) dhe Lidhëse për Kablla"
+      ],
+      "permalink": "/produkt/lidhese-alumini-per-kabllo-al-qaura",
+      "attributes": [
+        {
+          "name": "Seksioni i Kabllos (mm²)",
+          "value": "16, 25, 35, 50, 70, 95, 120, 150"
+        },
+        {
+          "name": "Kodi",
+          "value": "QAL 149750, QAL 149751, QAL 149752, QAL 149753, QAL 149754, QAL 149755, QAL 149756, QAL 149757"
+        }
+      ],
+      "variant_prices": {
+        "16": 0.16,
+        "25": 0.22,
+        "35": 0.25,
+        "50": 0.38,
+        "70": 0.48,
+        "95": 0.6,
+        "120": 0.8,
+        "150": 0.98
+      },
+      "short_description_html": "<p>Lidhëset e aluminit janë projektuar për të bashkuar përcjellësit prej alumini me seksion të njëjtë. Lidhja realizohet përmes procesit të presimit (<strong>crimping</strong>) dhe plotëson kërkesat e standardit <strong>EN 61238-1-1</strong>.</p><p>Brendësia e lidhëses është e mbrojtur me yndyrë kontakti elektrik, e cila siguron qëndrueshmëri dhe besueshmëri afatgjatë. Çdo lidhëse është e pajisur me shenja identifikuese që tregojnë numrin dhe gjerësinë e presimeve të nevojshme.</p><p>Këto lidhëse janë të përshtatshme për lidhje pa tension.</p>",
+      "description_html": "<p>Lidhëset e aluminit janë projektuar për të bashkuar përcjellësit prej alumini me seksion të njëjtë. Lidhja realizohet përmes procesit të presimit (<strong>crimping</strong>) dhe plotëson kërkesat e standardit <strong>EN 61238-1-1</strong>.</p><p>Brendësia e lidhëses është e mbrojtur me yndyrë kontakti elektrik, e cila siguron qëndrueshmëri dhe besueshmëri afatgjatë. Çdo lidhëse është e pajisur me shenja identifikuese që tregojnë numrin dhe gjerësinë e presimeve të nevojshme.</p><p>Këto lidhëse janë të përshtatshme për lidhje pa tension.</p>"
+    },
+    {
+      "id": "4537",
+      "slug": "lidhese-alumini-per-kabllo-al-qaura-2",
+      "name": "Lidhëse Alumini për kabllo AL (Qaura)",
+      "sku": "",
+      "price": 0.4,
+      "currency": "EUR",
+      "categories": [
+        "Terminale (Papuçe) dhe Lidhëse për Kablla"
+      ],
+      "cat": "Terminale (Papuçe) dhe Lidhëse për Kablla",
+      "image": "https://eltexgroup-ks.com/wp-content/uploads/2026/05/Copilot_20260507_140229-e1778238556707.png",
+      "images": [
+        "https://eltexgroup-ks.com/wp-content/uploads/2026/05/Copilot_20260507_140229-e1778238556707.png"
+      ],
+      "permalink": "/produkt/lidhese-alumini-per-kabllo-al-qaura-2",
+      "short_description": "Lidhëset e aluminit janë projektuar për të bashkuar përcjellësit prej alumini me seksion të njëjtë. Lidhja realizohet përmes procesit të presimit (crimping) dhe plotëson kërkesat e standardit EN 61238-1-1.Brendësia e lidhëses është e mbrojtur me yndyrë kontakti elektrik, e cila siguron qëndrueshmëri dhe besueshmëri afatgjatë. Çdo lidhëse është e pajisur me shenja identifikuese që tregojnë numrin dhe gjerësinë e presimeve të nevojshme.Këto lidhëse janë të përshtatshme për lidhje pa tension.",
+      "description": "Lidhëset e aluminit janë projektuar për të bashkuar përcjellësit prej alumini me seksion të njëjtë. Lidhja realizohet përmes procesit të presimit (crimping) dhe plotëson kërkesat e standardit EN 61238-1-1.Brendësia e lidhëses është e mbrojtur me yndyrë kontakti elektrik, e cila siguron qëndrueshmëri dhe besueshmëri afatgjatë. Çdo lidhëse është e pajisur me shenja identifikuese që tregojnë numrin dhe gjerësinë e presimeve të nevojshme.Këto lidhëse janë të përshtatshme për lidhje pa tension.",
+      "short_description_html": "<p>Lidhëset e aluminit janë projektuar për të bashkuar përcjellësit prej alumini me seksion të njëjtë. Lidhja realizohet përmes procesit të presimit (<strong>crimping</strong>) dhe plotëson kërkesat e standardit <strong>EN 61238-1-1</strong>.</p><p>Brendësia e lidhëses është e mbrojtur me yndyrë kontakti elektrik, e cila siguron qëndrueshmëri dhe besueshmëri afatgjatë. Çdo lidhëse është e pajisur me shenja identifikuese që tregojnë numrin dhe gjerësinë e presimeve të nevojshme.</p><p>Këto lidhëse janë të përshtatshme për lidhje pa tension.</p>",
+      "description_html": "<p>Lidhëset e aluminit janë projektuar për të bashkuar përcjellësit prej alumini me seksion të njëjtë. Lidhja realizohet përmes procesit të presimit (<strong>crimping</strong>) dhe plotëson kërkesat e standardit <strong>EN 61238-1-1</strong>.</p><p>Brendësia e lidhëses është e mbrojtur me yndyrë kontakti elektrik, e cila siguron qëndrueshmëri dhe besueshmëri afatgjatë. Çdo lidhëse është e pajisur me shenja identifikuese që tregojnë numrin dhe gjerësinë e presimeve të nevojshme.</p><p>Këto lidhëse janë të përshtatshme për lidhje pa tension.</p>",
+      "attributes": [
+        {
+          "name": "Seksioni i Kabllos (mm²)",
+          "value": "16, 25, 35, 50, 70, 95, 120, 150, 185, 240, 300"
+        },
+        {
+          "name": "Kodi",
+          "value": "370501 AL, 370502 AL, 370503 AL, 370504 AL, 370505 AL, 370506 AL, 370507 AL, 370508 AL, 370509 AL, 370510 AL, 370511 AL"
+        }
+      ],
+      "in_stock": true,
+      "variant_prices": {
+        "16": 0.35,
+        "25": 0.4,
+        "35": 0.45,
+        "50": 0.55,
+        "70": 0.65,
+        "95": 0.75,
+        "120": 1.1,
+        "150": 1.3,
+        "185": 1.5,
+        "240": 3.52,
+        "300": 3.95
+      }
+    },
+    {
+      "id": "2100",
+      "slug": "lidhese-bimetalike-per-kabllo-alcu-qaura",
+      "name": "Lidhëse Bimetalike për kabllo ALCU (Qaura)",
+      "sku": "",
+      "price": 2.8,
+      "currency": "EUR",
+      "categories": [
+        "Terminale (Papuçe) dhe Lidhëse për Kablla"
+      ],
+      "cat": "Terminale (Papuçe) dhe Lidhëse për Kablla",
+      "image": "https://eltexgroup-ks.com/wp-content/uploads/2025/10/Copilot_20260508_154606-e1778247957289.png",
+      "images": [
+        "https://eltexgroup-ks.com/wp-content/uploads/2025/10/Copilot_20260508_154606-e1778247957289.png"
+      ],
+      "permalink": "/produkt/lidhese-bimetalike-per-kabllo-alcu-qaura",
+      "short_description": "Lidhëset bimetalike AlCu janë projektuar për të bashkuar përcjellësit prej alumini dhe bakri. Ato janë të pajisura me shenja identifikuese që tregojnë numrin dhe gjerësinë e presimeve të nevojshme gjatë procesit të montimit. Këto lidhëse janë të përshtatshme për lidhje pa tension dhe përmbajnë barrierë vaji, e cila siguron mbrojtje shtesë kundër oksidimit dhe përmirëson qëndrueshmërinë e kontaktit elektrik.",
+      "description": "Lidhëset bimetalike AlCu janë projektuar për të bashkuar përcjellësit prej alumini dhe bakri. Ato janë të pajisura me shenja identifikuese që tregojnë numrin dhe gjerësinë e presimeve të nevojshme gjatë procesit të montimit. Këto lidhëse janë të përshtatshme për lidhje pa tension dhe përmbajnë barrierë vaji, e cila siguron mbrojtje shtesë kundër oksidimit dhe përmirëson qëndrueshmërinë e kontaktit elektrik.",
+      "short_description_html": "<p>Lidhëset bimetalike <strong>AlCu</strong> janë projektuar për të bashkuar përcjellësit prej <strong>alumini</strong> dhe <strong>bakri</strong>. Ato janë të pajisura me shenja identifikuese që tregojnë <strong>numrin dhe gjerësinë e presimeve</strong> të nevojshme gjatë procesit të montimit. Këto lidhëse janë të përshtatshme për <strong>lidhje pa tension</strong> dhe përmbajnë <strong>barrierë vaji</strong>, e cila siguron mbrojtje shtesë kundër oksidimit dhe përmirëson qëndrueshmërinë e kontaktit elektrik.</p>",
+      "description_html": "<p>Lidhëset bimetalike <strong>AlCu</strong> janë projektuar për të bashkuar përcjellësit prej <strong>alumini</strong> dhe <strong>bakri</strong>. Ato janë të pajisura me shenja identifikuese që tregojnë <strong>numrin dhe gjerësinë e presimeve</strong> të nevojshme gjatë procesit të montimit. Këto lidhëse janë të përshtatshme për <strong>lidhje pa tension</strong> dhe përmbajnë <strong>barrierë vaji</strong>, e cila siguron mbrojtje shtesë kundër oksidimit dhe përmirëson qëndrueshmërinë e kontaktit elektrik.</p>",
+      "attributes": [
+        {
+          "name": "Seksioni i Kabllos Al (mm²) / Seksioni i Kabllos Cu (mm²)",
+          "value": "35.16, 35.25, 35.35, 50.25, 50.50, 70.35, 70.70, 95.50, 95.95, 185.95"
+        }
+      ],
+      "in_stock": true,
+      "variant_prices": {
+        "35.16": 2.8,
+        "35.25": 2.8,
+        "35.35": 2.8,
+        "50.25": 3,
+        "50.50": 2.8,
+        "70.35": 3.5,
+        "70.70": 2.8,
+        "95.50": 4.15,
+        "95.95": 4.15,
+        "185.95": 2.8
+      }
+    },
+    {
+      "id": "2094",
+      "slug": "lidhese-alumin-baker-per-kabllo-alcu-mjpb-qaura",
+      "name": "Lidhëse Alumin Bakër për kabllo ALCU MJPB (Qaura)",
+      "sku": "",
+      "price": 1.2,
+      "currency": "EUR",
+      "categories": [
+        "Terminale (Papuçe) dhe Lidhëse për Kablla"
+      ],
+      "cat": "Terminale (Papuçe) dhe Lidhëse për Kablla",
+      "image": "https://eltexgroup-ks.com/wp-content/uploads/2025/10/Copilot_20260508_160727-e1778249242537.png",
+      "images": [
+        "https://eltexgroup-ks.com/wp-content/uploads/2025/10/Copilot_20260508_160727-e1778249242537.png"
+      ],
+      "permalink": "/produkt/lidhese-alumin-baker-per-kabllo-alcu-mjpb-qaura",
+      "short_description": "Lidhëset MJPB janë projektuar për lidhjen e përcjellësve të tensionit të ulët dhe ndriçimit publik me seksione nga 4 mm² deri në 35 mm². Presimi kryhet mbi mbështjellësen izoluese duke përdorur matricën E140. Mbështjellësja ka shenja të përhershme dhe të qarta që tregojnë rendin dhe numrin e presimeve, seksionin e përcjellësit dhe gjatësinë e zhveshjes.Rezistenca ndaj ujit sigurohet përmes kapakëve elastomerikë, të cilët prodhohen në ngjyra të ndryshme për identifikim të lehtë sipas seksionit të përcjellësit. Brendësia e lidhëses është e mbushur me yndyrë silikoni, që garanton mbrojtje dhe përçueshmëri të qëndrueshme. Forca dielektrike e lidhëses testohet në ujë për 1 minutë dhe tejkalon 6 kV.Lidhëset janë prodhuar nga materiale me cilësi të lartë, me forcë të madhe tërheqëse dhe rezistencë ndaj ndikimeve mjedisore dhe rrezatimit UV.",
+      "description": "Lidhëset MJPB janë projektuar për lidhjen e përcjellësve të tensionit të ulët dhe ndriçimit publik me seksione nga 4 mm² deri në 35 mm². Presimi kryhet mbi mbështjellësen izoluese duke përdorur matricën E140. Mbështjellësja ka shenja të përhershme dhe të qarta që tregojnë rendin dhe numrin e presimeve, seksionin e përcjellësit dhe gjatësinë e zhveshjes.Rezistenca ndaj ujit sigurohet përmes kapakëve elastomerikë, të cilët prodhohen në ngjyra të ndryshme për identifikim të lehtë sipas seksionit të përcjellësit. Brendësia e lidhëses është e mbushur me yndyrë silikoni, që garanton mbrojtje dhe përçueshmëri të qëndrueshme. Forca dielektrike e lidhëses testohet në ujë për 1 minutë dhe tejkalon 6 kV.Lidhëset janë prodhuar nga materiale me cilësi të lartë, me forcë të madhe tërheqëse dhe rezistencë ndaj ndikimeve mjedisore dhe rrezatimit UV.",
+      "short_description_html": "<p>Lidhëset <strong>MJPB</strong> janë projektuar për lidhjen e përcjellësve të tensionit të ulët dhe ndriçimit publik me seksione nga <strong>4 mm² deri në 35 mm²</strong>. Presimi kryhet mbi mbështjellësen izoluese duke përdorur <strong>matricën E140</strong>. Mbështjellësja ka shenja të përhershme dhe të qarta që tregojnë <strong>rendin dhe numrin e presimeve</strong>, <strong>seksionin e përcjellësit</strong> dhe <strong>gjatësinë e zhveshjes</strong>.</p><p>Rezistenca ndaj ujit sigurohet përmes <strong>kapakëve elastomerikë</strong>, të cilët prodhohen në <strong>ngjyra të ndryshme</strong> për identifikim të lehtë sipas seksionit të përcjellësit. Brendësia e lidhëses është e mbushur me <strong>yndyrë silikoni</strong>, që garanton mbrojtje dhe përçueshmëri të qëndrueshme. <strong>Forca dielektrike</strong> e lidhëses testohet në ujë për <strong>1 minutë</strong> dhe tejkalon <strong>6 kV</strong>.</p><p>Lidhëset janë prodhuar nga <strong>materiale me cilësi të lartë</strong>, me <strong>forcë të madhe tërheqëse</strong> dhe <strong>rezistencë ndaj ndikimeve mjedisore dhe rrezatimit UV</strong>.</p>",
+      "description_html": "<p>Lidhëset <strong>MJPB</strong> janë projektuar për lidhjen e përcjellësve të tensionit të ulët dhe ndriçimit publik me seksione nga <strong>4 mm² deri në 35 mm²</strong>. Presimi kryhet mbi mbështjellësen izoluese duke përdorur <strong>matricën E140</strong>. Mbështjellësja ka shenja të përhershme dhe të qarta që tregojnë <strong>rendin dhe numrin e presimeve</strong>, <strong>seksionin e përcjellësit</strong> dhe <strong>gjatësinë e zhveshjes</strong>.</p><p>Rezistenca ndaj ujit sigurohet përmes <strong>kapakëve elastomerikë</strong>, të cilët prodhohen në <strong>ngjyra të ndryshme</strong> për identifikim të lehtë sipas seksionit të përcjellësit. Brendësia e lidhëses është e mbushur me <strong>yndyrë silikoni</strong>, që garanton mbrojtje dhe përçueshmëri të qëndrueshme. <strong>Forca dielektrike</strong> e lidhëses testohet në ujë për <strong>1 minutë</strong> dhe tejkalon <strong>6 kV</strong>.</p><p>Lidhëset janë prodhuar nga <strong>materiale me cilësi të lartë</strong>, me <strong>forcë të madhe tërheqëse</strong> dhe <strong>rezistencë ndaj ndikimeve mjedisore dhe rrezatimit UV</strong>.</p>",
+      "attributes": [
+        {
+          "name": "Seksioni i Kabllos [mm²]",
+          "value": "16.16, 25.25"
+        }
+      ],
+      "in_stock": true,
+      "variant_prices": {
+        "16.16": 0.98,
+        "25.25": 0.98
+      }
+    },
+    {
+      "id": "2047",
+      "slug": "lidhese-bakri-per-kabllo-cu-qaura",
+      "name": "Lidhëse Bakri për kabllo CU (Qaura)",
+      "sku": "",
+      "price": 0.3,
+      "currency": "EUR",
+      "categories": [
+        "Terminale (Papuçe) dhe Lidhëse për Kablla"
+      ],
+      "cat": "Terminale (Papuçe) dhe Lidhëse për Kablla",
+      "image": "https://eltexgroup-ks.com/wp-content/uploads/2025/10/Copilot_20260508_141124-e1778242632445.png",
+      "images": [
+        "https://eltexgroup-ks.com/wp-content/uploads/2025/10/Copilot_20260508_141124-e1778242632445.png"
+      ],
+      "permalink": "/produkt/lidhese-bakri-per-kabllo-cu-qaura",
+      "short_description": "Lidhëset e bakrit prodhohen nga bakri elektrolitik, në përputhje me standardin EN 13600, dhe përdoren për të bashkuar përcjellësit prej bakri me seksion të njëjtë. Karakteristikat teknike mundësojnë instalim të lehtë dhe lidhje të përcjellësve pa tension.Çdo lidhëse është e pajisur me shenja identifikuese që tregojnë numrin dhe gjerësinë e presimeve të nevojshme.Me kërkesë të klientit, lidhëset mund të furnizohen të nikeluara ose të kallajuara, për mbrojtje shtesë dhe jetëgjatësi më të madhe.",
+      "description": "Lidhëset e bakrit prodhohen nga bakri elektrolitik, në përputhje me standardin EN 13600, dhe përdoren për të bashkuar përcjellësit prej bakri me seksion të njëjtë. Karakteristikat teknike mundësojnë instalim të lehtë dhe lidhje të përcjellësve pa tension.Çdo lidhëse është e pajisur me shenja identifikuese që tregojnë numrin dhe gjerësinë e presimeve të nevojshme.Me kërkesë të klientit, lidhëset mund të furnizohen të nikeluara ose të kallajuara, për mbrojtje shtesë dhe jetëgjatësi më të madhe.",
+      "short_description_html": "<p>Lidhëset e bakrit prodhohen nga <strong>bakri elektrolitik</strong>, në përputhje me standardin <strong>EN 13600</strong>, dhe përdoren për të bashkuar përcjellësit prej bakri me seksion të njëjtë. Karakteristikat teknike mundësojnë instalim të lehtë dhe lidhje të përcjellësve pa tension.</p><p>Çdo lidhëse është e pajisur me shenja identifikuese që tregojnë numrin dhe gjerësinë e presimeve të nevojshme.</p><p>Me kërkesë të klientit, lidhëset mund të furnizohen të <strong>nikeluara</strong> ose të <strong>kallajuara</strong>, për mbrojtje shtesë dhe jetëgjatësi më të madhe.</p>",
+      "description_html": "<p>Lidhëset e bakrit prodhohen nga <strong>bakri elektrolitik</strong>, në përputhje me standardin <strong>EN 13600</strong>, dhe përdoren për të bashkuar përcjellësit prej bakri me seksion të njëjtë. Karakteristikat teknike mundësojnë instalim të lehtë dhe lidhje të përcjellësve pa tension.</p><p>Çdo lidhëse është e pajisur me shenja identifikuese që tregojnë numrin dhe gjerësinë e presimeve të nevojshme.</p><p>Me kërkesë të klientit, lidhëset mund të furnizohen të <strong>nikeluara</strong> ose të <strong>kallajuara</strong>, për mbrojtje shtesë dhe jetëgjatësi më të madhe.</p>",
+      "attributes": [
+        {
+          "name": "Seksioni i Kabllos (mm²)",
+          "value": "10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240, 300"
+        }
+      ],
+      "in_stock": true,
+      "variant_prices": {
+        "10": 0.3,
+        "16": 0.3,
+        "25": 0.3,
+        "35": 0.3,
+        "50": 0.3,
+        "70": 1.52,
+        "95": 0.3,
+        "120": 2.5,
+        "150": 2.9,
+        "185": 3.5,
+        "240": 0.3,
+        "300": 0.3
+      }
+    },
+    {
       "name": "Tepih Izolues Elektrik 36 kV & 40 kV E Zezë  4mm & 5mm",
       "price": 17.5,
       "cat": "Terminale & Aksesorë Kabllosh për Panel",
@@ -1452,168 +1957,6 @@
         }
       ],
       "in_stock": true
-    },
-    {
-      "id": "4667",
-      "slug": "terminal-dtl-f-alcu-papuce",
-      "name": "Terminal DTL-F  ALCU (Papuçe)",
-      "sku": "",
-      "price": 1.35,
-      "currency": "EUR",
-      "categories": [
-        "Terminale (Papuçe) dhe Lidhëse për Kablla"
-      ],
-      "cat": "Terminale (Papuçe) dhe Lidhëse për Kablla",
-      "image": "https://eltexgroup-ks.com/wp-content/uploads/2026/06/Copilot_20260608_141322.png",
-      "images": [
-        "https://eltexgroup-ks.com/wp-content/uploads/2026/06/Copilot_20260608_141322.png"
-      ],
-      "permalink": "/produkt/terminal-dtl-f-alcu-papuce",
-      "short_description": "Terminal DTL‑F AlCu (Papuçe) është një lidhës bimetalik i projektuar për kabllo alumini dhe pajisje me terminal bakri. Trupi i aluminit është i kallajisur për mbrojtje kundër korrozionit, ndërsa pjesa e bakrit siguron përçueshmëri të lartë dhe kontakt të sigurt elektrik. Ky produkt përdoret gjerësisht në rrjetet NN deri në 1 kV, duke ofruar instalim të lehtë dhe jetëgjatësi të lartë.Modeli: DTL‑FMateriali: Alumini + BakërSipërfaqja: e kallajisur për mbrojtje kundër oksidimitPërdorimi: Lidhje kabllo alumini me terminale bakriStandardi: DIN 46325 / IEC 61238Gama seksioneve: 16 mm² – 400 mm²",
-      "description": "",
-      "short_description_html": "<p><strong>Terminal DTL‑F AlCu (Papuçe)</strong> është një lidhës bimetalik i projektuar për kabllo alumini dhe pajisje me terminal bakri. Trupi i aluminit është i kallajisur për mbrojtje kundër korrozionit, ndërsa pjesa e bakrit siguron përçueshmëri të lartë dhe kontakt të sigurt elektrik. Ky produkt përdoret gjerësisht në rrjetet NN deri në 1 kV, duke ofruar instalim të lehtë dhe jetëgjatësi të lartë.</p><ul><li><strong>Modeli:</strong> DTL‑F</li><li><strong>Materiali:</strong> Alumini + Bakër</li><li><strong>Sipërfaqja:</strong> e kallajisur për mbrojtje kundër oksidimit</li><li><strong>Përdorimi:</strong> Lidhje kabllo alumini me terminale bakri</li><li><strong>Standardi:</strong> DIN 46325 / IEC 61238</li><li><strong>Gama seksioneve:</strong> 16 mm² – 400 mm²</li></ul>",
-      "description_html": "",
-      "attributes": [
-        {
-          "name": "Seksioni i Kabllos(mm²)/Vrima e Bulonit",
-          "value": "16.8, 25.8, 35.8, 50.10, 70.10, 95.10, 120.12, 150.12, 185.12, 240.12, 300.12"
-        }
-      ],
-      "in_stock": true,
-      "variant_prices": {
-        "16.8": 1.35,
-        "25.8": 1.35,
-        "35.8": 1.35,
-        "50.10": 2.05,
-        "70.10": 2.2,
-        "95.10": 2.4,
-        "120.12": 3.35,
-        "150.12": 3.5,
-        "185.12": 5.5,
-        "240.12": 5.5,
-        "300.12": 7.5
-      }
-    },
-    {
-      "name": "Lidhëse Alumini për kabllo AL (Qaura)",
-      "price": 0.16,
-      "cat": "Terminale (Papuçe) dhe Lidhëse për Kablla",
-      "image": "/media/uploads/1786175333588-1f2eb2.png",
-      "short_description": "Lidhëset e aluminit janë projektuar për të bashkuar përcjellësit prej alumini me seksion të njëjtë. Lidhja realizohet përmes procesit të presimit (crimping) dhe plotëson kërkesat e standardit EN 61238-1-1.Brendësia e lidhëses është e mbrojtur me yndyrë kontakti elektrik, e cila siguron qëndrueshmëri dhe besueshmëri afatgjatë. Çdo lidhëse është e pajisur me shenja identifikuese që tregojnë numrin dhe gjerësinë e presimeve të nevojshme.Këto lidhëse janë të përshtatshme për lidhje pa tension.",
-      "description": "Lidhëset e aluminit janë projektuar për të bashkuar përcjellësit prej alumini me seksion të njëjtë. Lidhja realizohet përmes procesit të presimit (crimping) dhe plotëson kërkesat e standardit EN 61238-1-1.Brendësia e lidhëses është e mbrojtur me yndyrë kontakti elektrik, e cila siguron qëndrueshmëri dhe besueshmëri afatgjatë. Çdo lidhëse është e pajisur me shenja identifikuese që tregojnë numrin dhe gjerësinë e presimeve të nevojshme.Këto lidhëse janë të përshtatshme për lidhje pa tension.",
-      "slug": "lidhese-alumini-per-kabllo-al-qaura",
-      "id": "1786175349045",
-      "currency": "EUR",
-      "categories": [
-        "Terminale (Papuçe) dhe Lidhëse për Kablla"
-      ],
-      "permalink": "/produkt/lidhese-alumini-per-kabllo-al-qaura",
-      "attributes": [
-        {
-          "name": "Seksioni i Kabllos (mm²)",
-          "value": "16, 25, 35, 50, 70, 95, 120, 150"
-        },
-        {
-          "name": "Kodi",
-          "value": "QAL 149750, QAL 149751, QAL 149752, QAL 149753, QAL 149754, QAL 149755, QAL 149756, QAL 149757"
-        }
-      ],
-      "variant_prices": {
-        "16": 0.16,
-        "25": 0.22,
-        "35": 0.25,
-        "50": 0.38,
-        "70": 0.48,
-        "95": 0.6,
-        "120": 0.8,
-        "150": 0.98
-      },
-      "short_description_html": "<p>Lidhëset e aluminit janë projektuar për të bashkuar përcjellësit prej alumini me seksion të njëjtë. Lidhja realizohet përmes procesit të presimit (<strong>crimping</strong>) dhe plotëson kërkesat e standardit <strong>EN 61238-1-1</strong>.</p><p>Brendësia e lidhëses është e mbrojtur me yndyrë kontakti elektrik, e cila siguron qëndrueshmëri dhe besueshmëri afatgjatë. Çdo lidhëse është e pajisur me shenja identifikuese që tregojnë numrin dhe gjerësinë e presimeve të nevojshme.</p><p>Këto lidhëse janë të përshtatshme për lidhje pa tension.</p>",
-      "description_html": "<p>Lidhëset e aluminit janë projektuar për të bashkuar përcjellësit prej alumini me seksion të njëjtë. Lidhja realizohet përmes procesit të presimit (<strong>crimping</strong>) dhe plotëson kërkesat e standardit <strong>EN 61238-1-1</strong>.</p><p>Brendësia e lidhëses është e mbrojtur me yndyrë kontakti elektrik, e cila siguron qëndrueshmëri dhe besueshmëri afatgjatë. Çdo lidhëse është e pajisur me shenja identifikuese që tregojnë numrin dhe gjerësinë e presimeve të nevojshme.</p><p>Këto lidhëse janë të përshtatshme për lidhje pa tension.</p>"
-    },
-    {
-      "id": "4537",
-      "slug": "lidhese-alumini-per-kabllo-al-qaura-2",
-      "name": "Lidhëse Alumini për kabllo AL (Qaura)",
-      "sku": "",
-      "price": 0.4,
-      "currency": "EUR",
-      "categories": [
-        "Terminale (Papuçe) dhe Lidhëse për Kablla"
-      ],
-      "cat": "Terminale (Papuçe) dhe Lidhëse për Kablla",
-      "image": "https://eltexgroup-ks.com/wp-content/uploads/2026/05/Copilot_20260507_140229-e1778238556707.png",
-      "images": [
-        "https://eltexgroup-ks.com/wp-content/uploads/2026/05/Copilot_20260507_140229-e1778238556707.png"
-      ],
-      "permalink": "/produkt/lidhese-alumini-per-kabllo-al-qaura",
-      "short_description": "Lidhëset e aluminit janë projektuar për të bashkuar përcjellësit prej alumini me seksion të njëjtë. Lidhja realizohet përmes procesit të presimit (crimping) dhe plotëson kërkesat e standardit EN 61238-1-1.Brendësia e lidhëses është e mbrojtur me yndyrë kontakti elektrik, e cila siguron qëndrueshmëri dhe besueshmëri afatgjatë. Çdo lidhëse është e pajisur me shenja identifikuese që tregojnë numrin dhe gjerësinë e presimeve të nevojshme.Këto lidhëse janë të përshtatshme për lidhje pa tension.",
-      "description": "Lidhëset e aluminit janë projektuar për të bashkuar përcjellësit prej alumini me seksion të njëjtë. Lidhja realizohet përmes procesit të presimit (crimping) dhe plotëson kërkesat e standardit EN 61238-1-1.Brendësia e lidhëses është e mbrojtur me yndyrë kontakti elektrik, e cila siguron qëndrueshmëri dhe besueshmëri afatgjatë. Çdo lidhëse është e pajisur me shenja identifikuese që tregojnë numrin dhe gjerësinë e presimeve të nevojshme.Këto lidhëse janë të përshtatshme për lidhje pa tension.",
-      "short_description_html": "<p>Lidhëset e aluminit janë projektuar për të bashkuar përcjellësit prej alumini me seksion të njëjtë. Lidhja realizohet përmes procesit të presimit (<strong>crimping</strong>) dhe plotëson kërkesat e standardit <strong>EN 61238-1-1</strong>.</p><p>Brendësia e lidhëses është e mbrojtur me yndyrë kontakti elektrik, e cila siguron qëndrueshmëri dhe besueshmëri afatgjatë. Çdo lidhëse është e pajisur me shenja identifikuese që tregojnë numrin dhe gjerësinë e presimeve të nevojshme.</p><p>Këto lidhëse janë të përshtatshme për lidhje pa tension.</p>",
-      "description_html": "<p>Lidhëset e aluminit janë projektuar për të bashkuar përcjellësit prej alumini me seksion të njëjtë. Lidhja realizohet përmes procesit të presimit (<strong>crimping</strong>) dhe plotëson kërkesat e standardit <strong>EN 61238-1-1</strong>.</p><p>Brendësia e lidhëses është e mbrojtur me yndyrë kontakti elektrik, e cila siguron qëndrueshmëri dhe besueshmëri afatgjatë. Çdo lidhëse është e pajisur me shenja identifikuese që tregojnë numrin dhe gjerësinë e presimeve të nevojshme.</p><p>Këto lidhëse janë të përshtatshme për lidhje pa tension.</p>",
-      "attributes": [
-        {
-          "name": "Seksioni i Kabllos (mm²)",
-          "value": "16, 25, 35, 50, 70, 95, 120, 150, 185, 240, 300"
-        },
-        {
-          "name": "Kodi",
-          "value": "370501AL, , , , , , , , , , "
-        }
-      ],
-      "in_stock": true,
-      "variant_prices": {
-        "16": 0.4,
-        "25": 0.4,
-        "35": 0.4,
-        "50": 0.4,
-        "70": 0.77,
-        "95": 0.4,
-        "120": 1.43,
-        "150": 0.4,
-        "185": 2.37,
-        "240": 3.52,
-        "300": 0.4
-      }
-    },
-    {
-      "id": "4432",
-      "slug": "terminale-bimetalike-alcu-papuce",
-      "name": "Terminale Bimetalike ALCU (Papuçe)",
-      "sku": "",
-      "price": 1.6,
-      "currency": "EUR",
-      "categories": [
-        "Terminale (Papuçe) dhe Lidhëse për Kablla"
-      ],
-      "cat": "Terminale (Papuçe) dhe Lidhëse për Kablla",
-      "image": "https://eltexgroup-ks.com/wp-content/uploads/2026/05/Copilot_20260507_100454.png",
-      "images": [
-        "https://eltexgroup-ks.com/wp-content/uploads/2026/05/Copilot_20260507_100454.png"
-      ],
-      "permalink": "/produkt/terminale-bimetalike-alcu-papuce",
-      "short_description": "Terminale bimetalike AlCu sigurojnë lidhje të qëndrueshme mes përçuesve alumini dhe bakri. Të përshtatshme për lidhje pa tension, me barrierë vaji",
-      "description": "Terminale bimetalike AlCu sigurojnë lidhje të qëndrueshme mes përçuesve alumini dhe bakri. Të përshtatshme për lidhje pa tension, me barrierë vaji",
-      "short_description_html": "<p>Terminale bimetalike AlCu sigurojnë lidhje të qëndrueshme mes përçuesve alumini dhe bakri. Të përshtatshme për lidhje pa tension, me barrierë vaji</p>",
-      "description_html": "<p>Terminale bimetalike AlCu sigurojnë lidhje të qëndrueshme mes përçuesve alumini dhe bakri. Të përshtatshme për lidhje pa tension, me barrierë vaji</p>",
-      "attributes": [
-        {
-          "name": "Seksioni i Kabllos(mm²)/Vrima e Bulonit",
-          "value": "16.8, 25.8, 35.16, 70.10, 70.12, 120.12, 150.12, 185.12, 240.12"
-        }
-      ],
-      "in_stock": true,
-      "variant_prices": {
-        "16.8": 1.6,
-        "25.8": 1.6,
-        "35.16": 1.6,
-        "70.10": 3.8,
-        "70.12": 1.6,
-        "120.12": 1.6,
-        "150.12": 4.4,
-        "185.12": 4.7,
-        "240.12": 4.7
-      }
     },
     {
       "id": "4404",
@@ -4945,293 +5288,6 @@
       "in_stock": true
     },
     {
-      "id": "2100",
-      "slug": "lidhese-bimetalike-per-kabllo-alcu-qaura",
-      "name": "Lidhëse Bimetalike për kabllo ALCU (Qaura)",
-      "sku": "",
-      "price": 2.8,
-      "currency": "EUR",
-      "categories": [
-        "Terminale (Papuçe) dhe Lidhëse për Kablla"
-      ],
-      "cat": "Terminale (Papuçe) dhe Lidhëse për Kablla",
-      "image": "https://eltexgroup-ks.com/wp-content/uploads/2025/10/Copilot_20260508_154606-e1778247957289.png",
-      "images": [
-        "https://eltexgroup-ks.com/wp-content/uploads/2025/10/Copilot_20260508_154606-e1778247957289.png"
-      ],
-      "permalink": "/produkt/lidhese-bimetalike-per-kabllo-alcu-qaura",
-      "short_description": "Lidhëset bimetalike AlCu janë projektuar për të bashkuar përcjellësit prej alumini dhe bakri. Ato janë të pajisura me shenja identifikuese që tregojnë numrin dhe gjerësinë e presimeve të nevojshme gjatë procesit të montimit. Këto lidhëse janë të përshtatshme për lidhje pa tension dhe përmbajnë barrierë vaji, e cila siguron mbrojtje shtesë kundër oksidimit dhe përmirëson qëndrueshmërinë e kontaktit elektrik.",
-      "description": "Lidhëset bimetalike AlCu janë projektuar për të bashkuar përcjellësit prej alumini dhe bakri. Ato janë të pajisura me shenja identifikuese që tregojnë numrin dhe gjerësinë e presimeve të nevojshme gjatë procesit të montimit. Këto lidhëse janë të përshtatshme për lidhje pa tension dhe përmbajnë barrierë vaji, e cila siguron mbrojtje shtesë kundër oksidimit dhe përmirëson qëndrueshmërinë e kontaktit elektrik.",
-      "short_description_html": "<p>Lidhëset bimetalike <strong>AlCu</strong> janë projektuar për të bashkuar përcjellësit prej <strong>alumini</strong> dhe <strong>bakri</strong>. Ato janë të pajisura me shenja identifikuese që tregojnë <strong>numrin dhe gjerësinë e presimeve</strong> të nevojshme gjatë procesit të montimit. Këto lidhëse janë të përshtatshme për <strong>lidhje pa tension</strong> dhe përmbajnë <strong>barrierë vaji</strong>, e cila siguron mbrojtje shtesë kundër oksidimit dhe përmirëson qëndrueshmërinë e kontaktit elektrik.</p>",
-      "description_html": "<p>Lidhëset bimetalike <strong>AlCu</strong> janë projektuar për të bashkuar përcjellësit prej <strong>alumini</strong> dhe <strong>bakri</strong>. Ato janë të pajisura me shenja identifikuese që tregojnë <strong>numrin dhe gjerësinë e presimeve</strong> të nevojshme gjatë procesit të montimit. Këto lidhëse janë të përshtatshme për <strong>lidhje pa tension</strong> dhe përmbajnë <strong>barrierë vaji</strong>, e cila siguron mbrojtje shtesë kundër oksidimit dhe përmirëson qëndrueshmërinë e kontaktit elektrik.</p>",
-      "attributes": [
-        {
-          "name": "Seksioni i Kabllos Al (mm²) / Seksioni i Kabllos Cu (mm²)",
-          "value": "35.16, 35.25, 35.35, 50.25, 50.50, 70.35, 70.70, 95.50, 95.95, 185.95"
-        }
-      ],
-      "in_stock": true,
-      "variant_prices": {
-        "35.16": 2.8,
-        "35.25": 2.8,
-        "35.35": 2.8,
-        "50.25": 3,
-        "50.50": 2.8,
-        "70.35": 3.5,
-        "70.70": 2.8,
-        "95.50": 4.15,
-        "95.95": 4.15,
-        "185.95": 2.8
-      }
-    },
-    {
-      "id": "2094",
-      "slug": "lidhese-alumin-baker-per-kabllo-alcu-mjpb-qaura",
-      "name": "Lidhëse Alumin Bakër për kabllo ALCU MJPB (Qaura)",
-      "sku": "",
-      "price": 1.2,
-      "currency": "EUR",
-      "categories": [
-        "Terminale (Papuçe) dhe Lidhëse për Kablla"
-      ],
-      "cat": "Terminale (Papuçe) dhe Lidhëse për Kablla",
-      "image": "https://eltexgroup-ks.com/wp-content/uploads/2025/10/Copilot_20260508_160727-e1778249242537.png",
-      "images": [
-        "https://eltexgroup-ks.com/wp-content/uploads/2025/10/Copilot_20260508_160727-e1778249242537.png"
-      ],
-      "permalink": "/produkt/lidhese-alumin-baker-per-kabllo-alcu-mjpb-qaura",
-      "short_description": "Lidhëset MJPB janë projektuar për lidhjen e përcjellësve të tensionit të ulët dhe ndriçimit publik me seksione nga 4 mm² deri në 35 mm². Presimi kryhet mbi mbështjellësen izoluese duke përdorur matricën E140. Mbështjellësja ka shenja të përhershme dhe të qarta që tregojnë rendin dhe numrin e presimeve, seksionin e përcjellësit dhe gjatësinë e zhveshjes.Rezistenca ndaj ujit sigurohet përmes kapakëve elastomerikë, të cilët prodhohen në ngjyra të ndryshme për identifikim të lehtë sipas seksionit të përcjellësit. Brendësia e lidhëses është e mbushur me yndyrë silikoni, që garanton mbrojtje dhe përçueshmëri të qëndrueshme. Forca dielektrike e lidhëses testohet në ujë për 1 minutë dhe tejkalon 6 kV.Lidhëset janë prodhuar nga materiale me cilësi të lartë, me forcë të madhe tërheqëse dhe rezistencë ndaj ndikimeve mjedisore dhe rrezatimit UV.",
-      "description": "Lidhëset MJPB janë projektuar për lidhjen e përcjellësve të tensionit të ulët dhe ndriçimit publik me seksione nga 4 mm² deri në 35 mm². Presimi kryhet mbi mbështjellësen izoluese duke përdorur matricën E140. Mbështjellësja ka shenja të përhershme dhe të qarta që tregojnë rendin dhe numrin e presimeve, seksionin e përcjellësit dhe gjatësinë e zhveshjes.Rezistenca ndaj ujit sigurohet përmes kapakëve elastomerikë, të cilët prodhohen në ngjyra të ndryshme për identifikim të lehtë sipas seksionit të përcjellësit. Brendësia e lidhëses është e mbushur me yndyrë silikoni, që garanton mbrojtje dhe përçueshmëri të qëndrueshme. Forca dielektrike e lidhëses testohet në ujë për 1 minutë dhe tejkalon 6 kV.Lidhëset janë prodhuar nga materiale me cilësi të lartë, me forcë të madhe tërheqëse dhe rezistencë ndaj ndikimeve mjedisore dhe rrezatimit UV.",
-      "short_description_html": "<p>Lidhëset <strong>MJPB</strong> janë projektuar për lidhjen e përcjellësve të tensionit të ulët dhe ndriçimit publik me seksione nga <strong>4 mm² deri në 35 mm²</strong>. Presimi kryhet mbi mbështjellësen izoluese duke përdorur <strong>matricën E140</strong>. Mbështjellësja ka shenja të përhershme dhe të qarta që tregojnë <strong>rendin dhe numrin e presimeve</strong>, <strong>seksionin e përcjellësit</strong> dhe <strong>gjatësinë e zhveshjes</strong>.</p><p>Rezistenca ndaj ujit sigurohet përmes <strong>kapakëve elastomerikë</strong>, të cilët prodhohen në <strong>ngjyra të ndryshme</strong> për identifikim të lehtë sipas seksionit të përcjellësit. Brendësia e lidhëses është e mbushur me <strong>yndyrë silikoni</strong>, që garanton mbrojtje dhe përçueshmëri të qëndrueshme. <strong>Forca dielektrike</strong> e lidhëses testohet në ujë për <strong>1 minutë</strong> dhe tejkalon <strong>6 kV</strong>.</p><p>Lidhëset janë prodhuar nga <strong>materiale me cilësi të lartë</strong>, me <strong>forcë të madhe tërheqëse</strong> dhe <strong>rezistencë ndaj ndikimeve mjedisore dhe rrezatimit UV</strong>.</p>",
-      "description_html": "<p>Lidhëset <strong>MJPB</strong> janë projektuar për lidhjen e përcjellësve të tensionit të ulët dhe ndriçimit publik me seksione nga <strong>4 mm² deri në 35 mm²</strong>. Presimi kryhet mbi mbështjellësen izoluese duke përdorur <strong>matricën E140</strong>. Mbështjellësja ka shenja të përhershme dhe të qarta që tregojnë <strong>rendin dhe numrin e presimeve</strong>, <strong>seksionin e përcjellësit</strong> dhe <strong>gjatësinë e zhveshjes</strong>.</p><p>Rezistenca ndaj ujit sigurohet përmes <strong>kapakëve elastomerikë</strong>, të cilët prodhohen në <strong>ngjyra të ndryshme</strong> për identifikim të lehtë sipas seksionit të përcjellësit. Brendësia e lidhëses është e mbushur me <strong>yndyrë silikoni</strong>, që garanton mbrojtje dhe përçueshmëri të qëndrueshme. <strong>Forca dielektrike</strong> e lidhëses testohet në ujë për <strong>1 minutë</strong> dhe tejkalon <strong>6 kV</strong>.</p><p>Lidhëset janë prodhuar nga <strong>materiale me cilësi të lartë</strong>, me <strong>forcë të madhe tërheqëse</strong> dhe <strong>rezistencë ndaj ndikimeve mjedisore dhe rrezatimit UV</strong>.</p>",
-      "attributes": [
-        {
-          "name": "Seksioni i Kabllos [mm²]",
-          "value": "16.16, 25.25"
-        }
-      ],
-      "in_stock": true,
-      "variant_prices": {
-        "16.16": 0.98,
-        "25.25": 0.98
-      }
-    },
-    {
-      "id": "2047",
-      "slug": "lidhese-bakri-per-kabllo-cu-qaura",
-      "name": "Lidhëse Bakri për kabllo CU (Qaura)",
-      "sku": "",
-      "price": 0.3,
-      "currency": "EUR",
-      "categories": [
-        "Terminale (Papuçe) dhe Lidhëse për Kablla"
-      ],
-      "cat": "Terminale (Papuçe) dhe Lidhëse për Kablla",
-      "image": "https://eltexgroup-ks.com/wp-content/uploads/2025/10/Copilot_20260508_141124-e1778242632445.png",
-      "images": [
-        "https://eltexgroup-ks.com/wp-content/uploads/2025/10/Copilot_20260508_141124-e1778242632445.png"
-      ],
-      "permalink": "/produkt/lidhese-bakri-per-kabllo-cu-qaura",
-      "short_description": "Lidhëset e bakrit prodhohen nga bakri elektrolitik, në përputhje me standardin EN 13600, dhe përdoren për të bashkuar përcjellësit prej bakri me seksion të njëjtë. Karakteristikat teknike mundësojnë instalim të lehtë dhe lidhje të përcjellësve pa tension.Çdo lidhëse është e pajisur me shenja identifikuese që tregojnë numrin dhe gjerësinë e presimeve të nevojshme.Me kërkesë të klientit, lidhëset mund të furnizohen të nikeluara ose të kallajuara, për mbrojtje shtesë dhe jetëgjatësi më të madhe.",
-      "description": "Lidhëset e bakrit prodhohen nga bakri elektrolitik, në përputhje me standardin EN 13600, dhe përdoren për të bashkuar përcjellësit prej bakri me seksion të njëjtë. Karakteristikat teknike mundësojnë instalim të lehtë dhe lidhje të përcjellësve pa tension.Çdo lidhëse është e pajisur me shenja identifikuese që tregojnë numrin dhe gjerësinë e presimeve të nevojshme.Me kërkesë të klientit, lidhëset mund të furnizohen të nikeluara ose të kallajuara, për mbrojtje shtesë dhe jetëgjatësi më të madhe.",
-      "short_description_html": "<p>Lidhëset e bakrit prodhohen nga <strong>bakri elektrolitik</strong>, në përputhje me standardin <strong>EN 13600</strong>, dhe përdoren për të bashkuar përcjellësit prej bakri me seksion të njëjtë. Karakteristikat teknike mundësojnë instalim të lehtë dhe lidhje të përcjellësve pa tension.</p><p>Çdo lidhëse është e pajisur me shenja identifikuese që tregojnë numrin dhe gjerësinë e presimeve të nevojshme.</p><p>Me kërkesë të klientit, lidhëset mund të furnizohen të <strong>nikeluara</strong> ose të <strong>kallajuara</strong>, për mbrojtje shtesë dhe jetëgjatësi më të madhe.</p>",
-      "description_html": "<p>Lidhëset e bakrit prodhohen nga <strong>bakri elektrolitik</strong>, në përputhje me standardin <strong>EN 13600</strong>, dhe përdoren për të bashkuar përcjellësit prej bakri me seksion të njëjtë. Karakteristikat teknike mundësojnë instalim të lehtë dhe lidhje të përcjellësve pa tension.</p><p>Çdo lidhëse është e pajisur me shenja identifikuese që tregojnë numrin dhe gjerësinë e presimeve të nevojshme.</p><p>Me kërkesë të klientit, lidhëset mund të furnizohen të <strong>nikeluara</strong> ose të <strong>kallajuara</strong>, për mbrojtje shtesë dhe jetëgjatësi më të madhe.</p>",
-      "attributes": [
-        {
-          "name": "Seksioni i Kabllos (mm²)",
-          "value": "10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240, 300"
-        }
-      ],
-      "in_stock": true,
-      "variant_prices": {
-        "10": 0.3,
-        "16": 0.3,
-        "25": 0.3,
-        "35": 0.3,
-        "50": 0.3,
-        "70": 1.52,
-        "95": 0.3,
-        "120": 2.5,
-        "150": 2.9,
-        "185": 3.5,
-        "240": 0.3,
-        "300": 0.3
-      }
-    },
-    {
-      "id": "2016",
-      "slug": "terminale-alumini-me-unaze-bakri-alcu-papuce",
-      "name": "Terminale Alumini me Unazë Bakri ALCU (Papuçe)",
-      "sku": "",
-      "price": 0.75,
-      "currency": "EUR",
-      "categories": [
-        "Terminale (Papuçe) dhe Lidhëse për Kablla"
-      ],
-      "cat": "Terminale (Papuçe) dhe Lidhëse për Kablla",
-      "image": "https://eltexgroup-ks.com/wp-content/uploads/2025/10/Copilot_20260508_142203-e1778242919436.png",
-      "images": [
-        "https://eltexgroup-ks.com/wp-content/uploads/2025/10/Copilot_20260508_142203-e1778242919436.png"
-      ],
-      "permalink": "/produkt/terminale-alumini-me-unaze-bakri-alcu-papuce",
-      "short_description": "",
-      "description": "",
-      "short_description_html": "",
-      "description_html": "",
-      "attributes": [
-        {
-          "name": "Papuqe me prese ALCU",
-          "value": "16.8, 25.8, 25.10, 25.12, 35.8, 35.10, 35.12, 50.8, 50.10, 50.12, 70.8, 70.10, 70.12, 95.8, 95.10, 95.12, 120.10, 120.12, 150.10, 150.12, 150.16, 185.12, 185.16, 240.12, 240.16, 300.16"
-        }
-      ],
-      "in_stock": true,
-      "variant_prices": {
-        "16.8": 0.75,
-        "25.8": 0.75,
-        "25.10": 0.75,
-        "25.12": 0.75,
-        "35.8": 0.75,
-        "35.10": 0.85,
-        "35.12": 0.85,
-        "50.8": 0.75,
-        "50.10": 0.75,
-        "50.12": 0.98,
-        "70.8": 1.1,
-        "70.10": 1.1,
-        "70.12": 1.1,
-        "95.8": 1.7,
-        "95.10": 0.75,
-        "95.12": 0.75,
-        "120.10": 0.75,
-        "120.12": 0.75,
-        "150.10": 0.75,
-        "150.12": 0.75,
-        "150.16": 2.2,
-        "185.12": 2.5,
-        "185.16": 2.5,
-        "240.12": 0,
-        "240.16": 0,
-        "300.16": 5.9
-      }
-    },
-    {
-      "id": "1956",
-      "slug": "terminale-me-bulona-vkp-papuce",
-      "name": "Terminale me Bulona VKP (Papuçe)",
-      "sku": "",
-      "price": 0.8,
-      "currency": "EUR",
-      "categories": [
-        "Terminale (Papuçe) dhe Lidhëse për Kablla"
-      ],
-      "cat": "Terminale (Papuçe) dhe Lidhëse për Kablla",
-      "image": "https://eltexgroup-ks.com/wp-content/uploads/2025/10/Copilot_20260508_143611-e1778243768962.png",
-      "images": [
-        "https://eltexgroup-ks.com/wp-content/uploads/2025/10/Copilot_20260508_143611-e1778243768962.png"
-      ],
-      "permalink": "/produkt/terminale-me-bulona-vkp-papuce",
-      "short_description": "Papuçet mekanike për kabllo me bulona prodhohen nga bakri elektrolitik dhe përdoren në raste kur saldimi nuk lejohet në skajet e përcjellësve. Papucët dhe bulonat janë të galvanizuara me zink, ndërsa fijet e përpunuara me cilësi të lartë garantojnë forcë të madhe shtrëngimi, duke siguruar një lidhje të qëndrueshme dhe të besueshme.Produktet janë testuar dhe të certifikuara sipas standardeve ndërkombëtare: DIN 46227 | EN 61238-1-1 | Me kërkesë të klientit, papucët mund të furnizohen me:Bulona prej bronziBulona të galvanizuara me zhytje të nxehtëBulona prej çeliku inoks",
-      "description": "Papuçet mekanike për kabllo me bulona prodhohen nga bakri elektrolitik dhe përdoren në raste kur saldimi nuk lejohet në skajet e përcjellësve. Papucët dhe bulonat janë të galvanizuara me zink, ndërsa fijet e përpunuara me cilësi të lartë garantojnë forcë të madhe shtrëngimi, duke siguruar një lidhje të qëndrueshme dhe të besueshme.Produktet janë testuar dhe të certifikuara sipas standardeve ndërkombëtare: DIN 46227 | EN 61238-1-1 | Me kërkesë të klientit, papucët mund të furnizohen me:Bulona prej bronziBulona të galvanizuara me zhytje të nxehtëBulona prej çeliku inoks",
-      "short_description_html": "<p>Papuçet mekanike për kabllo me bulona prodhohen nga <strong>bakri elektrolitik</strong> dhe përdoren në raste kur saldimi nuk lejohet në skajet e përcjellësve. Papucët dhe bulonat janë të galvanizuara me zink, ndërsa fijet e përpunuara me cilësi të lartë garantojnë forcë të madhe shtrëngimi, duke siguruar një lidhje të qëndrueshme dhe të besueshme.</p><p>Produktet janë testuar dhe të certifikuara sipas standardeve ndërkombëtare: <strong>DIN 46227 | EN 61238-1-1 |&nbsp;</strong></p><p>Me kërkesë të klientit, papucët mund të furnizohen me:</p><ul><li>Bulona prej bronzi</li><li>Bulona të galvanizuara me zhytje të nxehtë</li><li>Bulona prej çeliku inoks</li></ul>",
-      "description_html": "<p>Papuçet mekanike për kabllo me bulona prodhohen nga <strong>bakri elektrolitik</strong> dhe përdoren në raste kur saldimi nuk lejohet në skajet e përcjellësve. Papucët dhe bulonat janë të galvanizuara me zink, ndërsa fijet e përpunuara me cilësi të lartë garantojnë forcë të madhe shtrëngimi, duke siguruar një lidhje të qëndrueshme dhe të besueshme.</p><p>Produktet janë testuar dhe të certifikuara sipas standardeve ndërkombëtare: <strong>DIN 46227 | EN 61238-1-1 |&nbsp;</strong></p><p>Me kërkesë të klientit, papucët mund të furnizohen me:</p><ul><li>Bulona prej bronzi</li><li>Bulona të galvanizuara me zhytje të nxehtë</li><li>Bulona prej çeliku inoks</li></ul>",
-      "attributes": [
-        {
-          "name": "Seksioni i Kabllos (mm²) / Vrima e Bulonit (M)",
-          "value": "10.6, 10.8, 16.6, 16.8, 25.8, 25.10, 35.8, 35.10, 50.10, 50.12, 70.10, 70.12, 95.12, 95.16, 120.12, 120.16, 150.16"
-        }
-      ],
-      "in_stock": true,
-      "variant_prices": {
-        "10.6": 0.8,
-        "10.8": 0.8,
-        "16.6": 0.9,
-        "16.8": 0.9,
-        "25.8": 1,
-        "25.10": 1,
-        "35.8": 1.75,
-        "35.10": 1.75,
-        "50.10": 2.2,
-        "50.12": 2.2,
-        "70.10": 2.45,
-        "70.12": 2.55,
-        "95.12": 3.9,
-        "95.16": 4.1,
-        "120.12": 6.73,
-        "120.16": 6.73,
-        "150.16": 7.5
-      }
-    },
-    {
-      "id": "1823",
-      "slug": "terminale-bakri-cu-papuce",
-      "name": "Terminale Bakri CU (Papuçe)",
-      "sku": "",
-      "price": 0.38,
-      "currency": "EUR",
-      "categories": [
-        "Terminale (Papuçe) dhe Lidhëse për Kablla"
-      ],
-      "cat": "Terminale (Papuçe) dhe Lidhëse për Kablla",
-      "image": "https://eltexgroup-ks.com/wp-content/uploads/2025/10/Papuqe-CU-10.6-e1776517200781.png",
-      "images": [
-        "https://eltexgroup-ks.com/wp-content/uploads/2025/10/Papuqe-CU-10.6-e1776517200781.png"
-      ],
-      "permalink": "/produkt/terminale-bakri-cu-papuce",
-      "short_description": "Terminalet (papuçet) prej bakri përdoren për përfundimin e përçuesve bakri, me lidhje përmes procesit të shtypjes. Kanë shenja që tregojnë numrin dhe gjerësinë e shtypjeve.",
-      "description": "Terminalet (papuçet) prej bakri përdoren për përfundimin e përçuesve bakri, me lidhje përmes procesit të shtypjes. Kanë shenja që tregojnë numrin dhe gjerësinë e shtypjeve.",
-      "short_description_html": "<p>Terminalet (papuçet) prej bakri përdoren për përfundimin e përçuesve bakri, me lidhje përmes procesit të shtypjes. Kanë shenja që tregojnë numrin dhe gjerësinë e shtypjeve.</p>",
-      "description_html": "<p>Terminalet (papuçet) prej bakri përdoren për përfundimin e përçuesve bakri, me lidhje përmes procesit të shtypjes. Kanë shenja që tregojnë numrin dhe gjerësinë e shtypjeve.</p>",
-      "attributes": [
-        {
-          "name": "Seksioni i Kabllos(mm²)/Vrima e Bulonit",
-          "value": "10.6, 10.8, 10.10, 16.6, 16.8, 16.10, 16.12, 25.6, 25.8, 25.10, 25.12, 35.8, 35.10, 35.12, 50.8, 50.10, 50.12, 50.16, 70.8, 70.10, 70.12, 70.16, 95.8, 95.10, 95.12, 95.16, 120.8, 120.10, 120.12, 120.16, 150.8, 150.10, 150.12, 150.16, 185.10, 185.12, 185.16, 240.10, 240.12, 240.16"
-        }
-      ],
-      "in_stock": true,
-      "variant_prices": {
-        "10.6": 0.38,
-        "10.8": 0.38,
-        "10.10": 0.38,
-        "16.6": 0.53,
-        "16.8": 0.53,
-        "16.10": 0.53,
-        "16.12": 0.53,
-        "25.6": 0.7,
-        "25.8": 0.7,
-        "25.10": 0.7,
-        "25.12": 0.7,
-        "35.8": 1,
-        "35.10": 1,
-        "35.12": 1,
-        "50.8": 1.75,
-        "50.10": 1.75,
-        "50.12": 1.75,
-        "50.16": 1.75,
-        "70.8": 2.05,
-        "70.10": 2.05,
-        "70.12": 2.05,
-        "70.16": 2.05,
-        "95.8": 2.9,
-        "95.10": 2.9,
-        "95.12": 2.9,
-        "95.16": 2.9,
-        "120.8": 3.6,
-        "120.10": 3.6,
-        "120.12": 3.6,
-        "120.16": 3.6,
-        "150.8": 4.56,
-        "150.10": 4.56,
-        "150.12": 4.56,
-        "150.16": 4.56,
-        "185.10": 6.5,
-        "185.12": 6.5,
-        "185.16": 6.5,
-        "240.10": 7.56,
-        "240.12": 7.56,
-        "240.16": 7.56
-      }
-    },
-    {
       "id": "1786150000001",
       "slug": "ura-tokezimi-1-polare-228-80-a1830",
       "name": "Ura Tokezimi 1 Polare 228-80",
@@ -5497,7 +5553,7 @@
     {
       "name": "Terminale (Papuçe) dhe Lidhëse për Kablla",
       "slug": "terminale-papuce-dhe-lidhese-per-kablla",
-      "count": 10
+      "count": 11
     },
     {
       "name": "Elemente shpërndarëse për panele (Kleme &amp; Ura shpërndarëse)",
