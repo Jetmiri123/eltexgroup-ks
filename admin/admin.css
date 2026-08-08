@@ -1112,6 +1112,18 @@ textarea {
   margin-bottom: 0.5rem;
 }
 
+.variant-price-grid-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) 120px;
+  gap: 0.75rem;
+  margin-bottom: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
 .variant-price-grid {
   display: grid;
   gap: 0.55rem;
@@ -1119,7 +1131,7 @@ textarea {
 
 .variant-price-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 120px;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) 120px;
   gap: 0.75rem;
   align-items: center;
 }
@@ -1132,4 +1144,16 @@ textarea {
 
 .variant-price-row input {
   width: 100%;
+}
+
+@media (max-width: 640px) {
+  .variant-price-grid-header,
+  .variant-price-row {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+  }
+
+  .variant-price-grid-header {
+    display: none;
+  }
 }

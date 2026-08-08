@@ -186,14 +186,22 @@
       return false;
     });
 
-    const kodAttr = attrs.find(
-      (attr) => attr !== primary && (/^kodi$/i.test(attr.name) || /kodi/i.test(attr.name))
-    );
+    const kodAttrRaw = (product.attributes || []).find((attr) => {
+      const name = String(attr && attr.name ? attr.name : '').trim();
+      if (!name || name === primary.name) return false;
+      return /^kodi$/i.test(name) || /kodi/i.test(name);
+    });
+    // Keep empty slots so codes stay aligned with variant values.
+    const kodValues = kodAttrRaw
+      ? String(kodAttrRaw.value || '')
+          .split(',')
+          .map((entry) => entry.trim())
+      : [];
 
     const variants = primary.values.map((value, index) => ({
       value,
       label: value,
-      kod: kodAttr && kodAttr.values[index] !== undefined ? kodAttr.values[index] : '',
+      kod: kodValues[index] || '',
       index,
       price: getVariantPrice(product, value),
     }));

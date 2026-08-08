@@ -160,6 +160,12 @@
       .filter(Boolean);
   }
 
+  // Keep empty slots so each code stays aligned with its variant.
+  function splitCsvKeepEmpty(value) {
+    if (value == null || value === '') return [];
+    return String(value).split(',').map((entry) => entry.trim());
+  }
+
   function parseAdminVariantState(product) {
     const attrs = (product.attributes || []).filter((attr) => attr && attr.name && attr.value);
     if (!attrs.length) {
@@ -167,6 +173,7 @@
         attributeName: '',
         values: '',
         kods: '',
+        kodMap: {},
         prices: product.variant_prices || {},
         otherAttributes: [],
       };
@@ -195,6 +202,7 @@
         attributeName: '',
         values: '',
         kods: '',
+        kodMap: {},
         prices: product.variant_prices || {},
         otherAttributes: attrs,
       };
@@ -206,11 +214,18 @@
         (/^kodi$/i.test(String(attr.name).trim()) || /kodi/i.test(String(attr.name).trim()))
     );
     const otherAttributes = attrs.filter((attr) => attr !== primary && attr !== kodAttr);
+    const values = splitCsv(primary.value);
+    const kodList = kodAttr ? splitCsvKeepEmpty(kodAttr.value) : [];
+    const kodMap = {};
+    values.forEach((value, index) => {
+      kodMap[value] = kodList[index] || '';
+    });
 
     return {
       attributeName: primary.name,
       values: primary.value,
       kods: kodAttr ? kodAttr.value : '',
+      kodMap,
       prices: product.variant_prices || {},
       otherAttributes,
     };
@@ -220,20 +235,33 @@
     const values = splitCsv(state.values);
     if (!values.length) return '';
 
+    const kodList = Array.isArray(state.kodList) ? state.kodList : splitCsvKeepEmpty(state.kods || '');
+    const kodMap = state.kodMap || {};
+
     const rows = values
-      .map((value) => {
+      .map((value, index) => {
         const price = state.prices[value] != null ? state.prices[value] : basePrice;
+        const kod =
+          kodMap[value] != null && kodMap[value] !== undefined
+            ? kodMap[value]
+            : kodList[index] || '';
         return `<div class="variant-price-row">
           <span class="variant-price-label">${escapeHtml(value)}</span>
+          <input type="text" data-variant-kod="${escapeHtml(value)}" value="${escapeHtml(kod)}" placeholder="p.sh. AL-16">
           <input type="number" step="0.01" min="0" data-variant-price="${escapeHtml(value)}" value="${Number(price || 0).toFixed(2)}" placeholder="0.00">
         </div>`;
       })
       .join('');
 
     return `<div class="variant-prices-editor" data-variant-prices-editor>
-      <label>Çmimet për secilin variant (EUR)</label>
+      <label>Kodi &amp; çmimi për secilin variant</label>
+      <div class="variant-price-grid-header" aria-hidden="true">
+        <span>Varianti</span>
+        <span>Kodi</span>
+        <span>Çmimi (EUR)</span>
+      </div>
       <div class="variant-price-grid">${rows}</div>
-      <p class="field-hint">Vendosni çmimin për çdo variant. Nëse mungon, përdoret çmimi bazë.</p>
+      <p class="field-hint">Shkruani kodin dhe çmimin për çdo variant. Nëse çmimi mungon, përdoret çmimi bazë.</p>
     </div>`;
   }
 
@@ -246,9 +274,12 @@
     const refreshVariantPrices = () => {
       const editor = container.querySelector('[data-variant-prices-editor]');
       if (!editor) return;
-      const state = { values: valuesInput.value, prices: {} };
+      const state = { values: valuesInput.value, prices: {}, kodMap: {} };
       editor.querySelectorAll('[data-variant-price]').forEach((input) => {
         state.prices[input.dataset.variantPrice] = Number(input.value) || 0;
+      });
+      editor.querySelectorAll('[data-variant-kod]').forEach((input) => {
+        state.kodMap[input.dataset.variantKod] = input.value.trim();
       });
       editor.outerHTML = variantPriceFieldsHtml(state, Number(basePriceInput?.value) || 0);
     };
@@ -265,6 +296,14 @@
     return prices;
   }
 
+  function readVariantKodsFromEditor(values) {
+    const kodMap = {};
+    editorFields.querySelectorAll('[data-variant-kod]').forEach((input) => {
+      kodMap[input.dataset.variantKod] = input.value.trim();
+    });
+    return values.map((value) => kodMap[value] || '');
+  }
+
   function buildAttributesFromEditor(existing, data) {
     const preserved = (existing.attributes || []).filter((attr) => {
       const name = String(attr.name || '').trim();
@@ -278,8 +317,8 @@
     const values = splitCsv(data.variant_values);
     if (data.variant_attribute && values.length) {
       next.unshift({ name: data.variant_attribute.trim(), value: values.join(', ') });
-      const kods = splitCsv(data.variant_kods);
-      if (kods.length) {
+      const kods = readVariantKodsFromEditor(values);
+      if (kods.some(Boolean)) {
         next.push({ name: 'Kodi', value: kods.join(', ') });
       }
     }
@@ -1247,11 +1286,10 @@
         ${categoryField('cat', 'Kategoria *', p.cat || '')}
         ${imageUploadField(p.image || '')}
         <div class="full product-variant-section">
-          <h3 class="product-variant-section-title">Variantet &amp; çmimet</h3>
-          <p class="field-hint">Për produkte me opsione (p.sh. madhësi, model), shkruani emrin e atributit dhe vlerat e ndara me presje.</p>
+          <h3 class="product-variant-section-title">Variantet, kodet &amp; çmimet</h3>
+          <p class="field-hint">Për produkte me opsione (p.sh. madhësi, model), shkruani emrin e atributit dhe vlerat e ndara me presje. Pastaj plotësoni kodin dhe çmimin për çdo variant.</p>
           ${field('variant_attribute', 'Emri i atributit (p.sh. Modeli/Tipi)', { full: true })}
           ${field('variant_values', 'Vlerat e variantit (të ndara me presje)', { full: true })}
-          ${field('variant_kods', 'Kodi për secilin variant (opsional, me presje)', { full: true })}
           ${variantPriceFieldsHtml(variantState, p.price ?? 0)}
         </div>
         ${richField('short_description', 'Përshkrim i shkurtër')}
@@ -1263,7 +1301,6 @@
       cat: p.cat || '',
       variant_attribute: variantState.attributeName || '',
       variant_values: variantState.values || '',
-      variant_kods: variantState.kods || '',
     });
     initRichEditors(editorFields, {
       short_description: richContentForEditor(p, 'short_description'),
