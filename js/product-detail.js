@@ -201,82 +201,47 @@
     }
 
     const { attributeName, variants } = variantConfig;
-    const useSelect = variants.length > 8;
 
     variantsEl.hidden = false;
+    variantsEl.innerHTML =
+      '<span class="product-variants-label">' +
+      escapeHtml(attributeName) +
+      '</span>' +
+      '<div class="product-variant-options" role="listbox" aria-label="' +
+      escapeHtml(attributeName) +
+      '">' +
+      variants
+        .map(
+          (variant) =>
+            '<button type="button" class="product-variant-option" data-variant-value="' +
+            escapeHtml(variant.value) +
+            '" role="option" aria-selected="false">' +
+            '<span class="variant-option-label">' +
+            escapeHtml(variant.label) +
+            '</span>' +
+            (variant.kod
+              ? '<span class="variant-option-kod">' + escapeHtml(variant.kod) + '</span>'
+              : '') +
+            (canViewPrices()
+              ? '<span class="variant-option-price">' + formatPrice(variant.price) + '</span>'
+              : '') +
+            '</button>'
+        )
+        .join('') +
+      '</div>';
 
-    if (useSelect) {
-      variantsEl.innerHTML =
-        '<label class="product-variants-label" for="product-variant-select">' +
-        escapeHtml(attributeName) +
-        '</label>' +
-        '<select class="product-variant-select" id="product-variant-select">' +
-        '<option value="">Zgjidhni një variant</option>' +
-        variants
-          .map((variant) => {
-            const parts = [variant.label];
-            if (variant.kod) parts.push(variant.kod);
-            if (canViewPrices()) parts.push(formatPrice(variant.price));
-            return (
-              '<option value="' +
-              escapeHtml(variant.value) +
-              '">' +
-              escapeHtml(parts.join(' — ')) +
-              '</option>'
-            );
-          })
-          .join('') +
-        '</select>';
-
-      const select = document.getElementById('product-variant-select');
-      select.addEventListener('change', () => {
-        const match = variants.find((variant) => variant.value === select.value);
+    variantsEl.querySelectorAll('.product-variant-option').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const match = variants.find((variant) => variant.value === btn.dataset.variantValue);
         selectedVariant = match ? { ...match, attributeName } : null;
+        variantsEl.querySelectorAll('.product-variant-option').forEach((el) => {
+          const isSelected = el === btn;
+          el.classList.toggle('is-selected', isSelected);
+          el.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+        });
         onVariantSelected();
       });
-    } else {
-      variantsEl.innerHTML =
-        '<span class="product-variants-label">' +
-        escapeHtml(attributeName) +
-        '</span>' +
-        '<div class="product-variant-options" role="listbox" aria-label="' +
-        escapeHtml(attributeName) +
-        '">' +
-        variants
-          .map(
-            (variant) =>
-              '<button type="button" class="product-variant-option" data-variant-value="' +
-              escapeHtml(variant.value) +
-              '" role="option" aria-selected="false">' +
-              '<span class="variant-option-main">' +
-              '<span class="variant-option-label">' +
-              escapeHtml(variant.label) +
-              '</span>' +
-              (variant.kod
-                ? '<span class="variant-option-kod">' + escapeHtml(variant.kod) + '</span>'
-                : '') +
-              '</span>' +
-              (canViewPrices()
-                ? '<span class="variant-option-price">' + formatPrice(variant.price) + '</span>'
-                : '') +
-              '</button>'
-          )
-          .join('') +
-        '</div>';
-
-      variantsEl.querySelectorAll('.product-variant-option').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          const match = variants.find((variant) => variant.value === btn.dataset.variantValue);
-          selectedVariant = match ? { ...match, attributeName } : null;
-          variantsEl.querySelectorAll('.product-variant-option').forEach((el) => {
-            const isSelected = el === btn;
-            el.classList.toggle('is-selected', isSelected);
-            el.setAttribute('aria-selected', isSelected ? 'true' : 'false');
-          });
-          onVariantSelected();
-        });
-      });
-    }
+    });
 
     updateAddButton();
     updateVariantSpecRow();

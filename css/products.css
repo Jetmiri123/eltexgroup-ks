@@ -462,38 +462,25 @@ body.products-filter-open {
   text-decoration: underline;
 }
 
-.product-variant-option {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.15rem;
-}
-
-.variant-option-main {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.1rem;
+.variant-option-label {
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.15;
+  color: #1a1a1a;
 }
 
 .variant-option-kod {
   font-size: 0.72rem;
   font-weight: 600;
   color: #636363;
-}
-
-.product-variant-option.is-selected .variant-option-kod {
-  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.2;
 }
 
 .variant-option-price {
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 700;
-  color: #b45309;
-}
-
-.product-variant-select option {
-  font-family: inherit;
+  color: var(--orange);
+  line-height: 1.2;
 }
 
 .products-grid {
@@ -795,25 +782,20 @@ body.products-filter-open {
   margin-bottom: 0.5rem;
 }
 
-.product-variant-select {
-  width: 100%;
-  max-width: 22rem;
-  padding: 0.65rem 0.75rem;
-  font-size: 0.875rem;
-  border: 1px solid #d8d8d8;
-  border-radius: 6px;
-  background: #fff;
-  color: #1a1a1a;
-}
-
 .product-variant-options {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.45rem;
+  gap: 0.55rem;
 }
 
 .product-variant-option {
-  padding: 0.45rem 0.75rem;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.12rem;
+  min-width: 5.5rem;
+  padding: 0.65rem 0.9rem;
   font-size: 0.8rem;
   line-height: 1.2;
   border: 1px solid #d8d8d8;
@@ -821,17 +803,28 @@ body.products-filter-open {
   background: #fff;
   color: #333;
   cursor: pointer;
-  transition: border-color 0.15s, background 0.15s, color 0.15s;
+  text-align: center;
+  transition: border-color 0.15s, background 0.15s, color 0.15s, box-shadow 0.15s;
 }
 
 .product-variant-option:hover {
   border-color: var(--orange);
+}
+
+.product-variant-option:hover .variant-option-label {
   color: var(--orange);
 }
 
 .product-variant-option.is-selected {
   border-color: var(--orange);
   background: var(--orange);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(248, 136, 55, 0.22);
+}
+
+.product-variant-option.is-selected .variant-option-label,
+.product-variant-option.is-selected .variant-option-kod,
+.product-variant-option.is-selected .variant-option-price {
   color: #fff;
 }
 
