@@ -1496,11 +1496,11 @@
     },
     {
       "name": "Lidhëse Alumini për kabllo AL (Qaura)",
-      "price": 0,
+      "price": 0.16,
       "cat": "Terminale (Papuçe) dhe Lidhëse për Kablla",
       "image": "/media/uploads/1786175333588-1f2eb2.png",
-      "short_description": "",
-      "description": "",
+      "short_description": "Lidhëset e aluminit janë projektuar për të bashkuar përcjellësit prej alumini me seksion të njëjtë. Lidhja realizohet përmes procesit të presimit (crimping) dhe plotëson kërkesat e standardit EN 61238-1-1.Brendësia e lidhëses është e mbrojtur me yndyrë kontakti elektrik, e cila siguron qëndrueshmëri dhe besueshmëri afatgjatë. Çdo lidhëse është e pajisur me shenja identifikuese që tregojnë numrin dhe gjerësinë e presimeve të nevojshme.Këto lidhëse janë të përshtatshme për lidhje pa tension.",
+      "description": "Lidhëset e aluminit janë projektuar për të bashkuar përcjellësit prej alumini me seksion të njëjtë. Lidhja realizohet përmes procesit të presimit (crimping) dhe plotëson kërkesat e standardit EN 61238-1-1.Brendësia e lidhëses është e mbrojtur me yndyrë kontakti elektrik, e cila siguron qëndrueshmëri dhe besueshmëri afatgjatë. Çdo lidhëse është e pajisur me shenja identifikuese që tregojnë numrin dhe gjerësinë e presimeve të nevojshme.Këto lidhëse janë të përshtatshme për lidhje pa tension.",
       "slug": "lidhese-alumini-per-kabllo-al-qaura",
       "id": "1786175349045",
       "currency": "EUR",
@@ -1512,11 +1512,24 @@
         {
           "name": "Seksioni i Kabllos (mm²)",
           "value": "16, 25, 35, 50, 70, 95, 120, 150"
+        },
+        {
+          "name": "Kodi",
+          "value": "QAL 149750, QAL 149751, QAL 149752, QAL 149753, QAL 149754, QAL 149755, QAL 149756, QAL 149757"
         }
       ],
-      "variant_prices": {},
-      "short_description_html": "",
-      "description_html": ""
+      "variant_prices": {
+        "16": 0.16,
+        "25": 0.22,
+        "35": 0.25,
+        "50": 0.38,
+        "70": 0.48,
+        "95": 0.6,
+        "120": 0.8,
+        "150": 0.98
+      },
+      "short_description_html": "<p>Lidhëset e aluminit janë projektuar për të bashkuar përcjellësit prej alumini me seksion të njëjtë. Lidhja realizohet përmes procesit të presimit (<strong>crimping</strong>) dhe plotëson kërkesat e standardit <strong>EN 61238-1-1</strong>.</p><p>Brendësia e lidhëses është e mbrojtur me yndyrë kontakti elektrik, e cila siguron qëndrueshmëri dhe besueshmëri afatgjatë. Çdo lidhëse është e pajisur me shenja identifikuese që tregojnë numrin dhe gjerësinë e presimeve të nevojshme.</p><p>Këto lidhëse janë të përshtatshme për lidhje pa tension.</p>",
+      "description_html": "<p>Lidhëset e aluminit janë projektuar për të bashkuar përcjellësit prej alumini me seksion të njëjtë. Lidhja realizohet përmes procesit të presimit (<strong>crimping</strong>) dhe plotëson kërkesat e standardit <strong>EN 61238-1-1</strong>.</p><p>Brendësia e lidhëses është e mbrojtur me yndyrë kontakti elektrik, e cila siguron qëndrueshmëri dhe besueshmëri afatgjatë. Çdo lidhëse është e pajisur me shenja identifikuese që tregojnë numrin dhe gjerësinë e presimeve të nevojshme.</p><p>Këto lidhëse janë të përshtatshme për lidhje pa tension.</p>"
     },
     {
       "id": "4537",
