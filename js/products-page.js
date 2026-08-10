@@ -38,6 +38,7 @@
     'Siguresa Industriale NH (Thikore & Cilindrike)',
     'Ormana elektrike plastike me kapak/Ormana KPO dhe Aksesore',
     'Izolator elektrik për zbarra / Bus-bar Insulator',
+    'Prza dhe Spina Industriale',
   ];
 
   function normalizeCategoryKey(name) {
