@@ -40,6 +40,7 @@
     'Izolator elektrik për zbarra / Bus-bar Insulator',
     'Spina dhe Priza Industriale',
     'Qelësa dhe Komponentë të kontrollit Industrial',
+    'Komande',
   ];
 
   function normalizeCategoryKey(name) {
