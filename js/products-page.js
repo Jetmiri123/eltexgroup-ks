@@ -35,6 +35,9 @@
     'Elemente shpërndarëse për panele (Kleme & Ura shpërndarëse)',
     'Terminale & Aksesorë Kabllosh për Panel',
     'Mbrojtje & Kontroll Automatik Elektrik',
+    'Siguresa Industriale NH (Thikore & Cilindrike)',
+    'Ormana elektrike plastike me kapak/Ormana KPO dhe Aksesore',
+    'Izolator elektrik për zbarra / Bus-bar Insulator',
   ];
 
   function normalizeCategoryKey(name) {
