@@ -39,6 +39,7 @@
     'Ormana elektrike plastike me kapak/Ormana KPO dhe Aksesore',
     'Izolator elektrik për zbarra / Bus-bar Insulator',
     'Spina dhe Priza Industriale',
+    'Qelësa dhe Komponentë të kontrollit Industrial',
   ];
 
   function normalizeCategoryKey(name) {
