@@ -68,6 +68,13 @@ body > section.main_section:first-of-type {
   margin-bottom: 3rem !important;
 }
 
+.hero_headline .big-text_hero {
+  font-size: clamp(3.25rem, 8vw, 7.5rem) !important;
+  line-height: 0.98 !important;
+  letter-spacing: -0.04em !important;
+  font-weight: 500 !important;
+}
+
 /* Floating USP — extra top pad on the section that follows */
 .hero-section.margin_down:has(.hero_slideshow_usp) + .main_section,
 .products-hero-section:has(.hero_slideshow_usp) + .main_section {
