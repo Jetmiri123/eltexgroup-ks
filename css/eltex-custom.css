@@ -69,7 +69,7 @@ body > section.main_section:first-of-type {
 }
 
 .hero_headline .big-text_hero {
-  font-size: clamp(3.25rem, 8vw, 7.5rem) !important;
+  font-size: clamp(2.75rem, 6.5vw, 6rem) !important;
   line-height: 0.98 !important;
   letter-spacing: -0.04em !important;
   font-weight: 500 !important;
