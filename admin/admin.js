@@ -830,7 +830,7 @@
 <body>
   <div class="head">
     <div>
-      <div class="brand">ELTEX <span>GROUP</span></div>
+      <img src="${location.origin}/images/eltex-logo.svg" alt="Eltex Group" style="height:52px;width:auto;display:block;margin-bottom:0.4rem;">
       <div style="font-size:0.85rem;color:#6b7280;">eltexgroup-rks.com · info@eltexgroup-rks.com</div>
     </div>
     <div class="meta">
