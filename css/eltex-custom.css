@@ -71,8 +71,9 @@ body > section.main_section:first-of-type {
 .hero_headline .big-text_hero {
   font-size: clamp(2.75rem, 6.5vw, 6rem) !important;
   line-height: 0.98 !important;
-  letter-spacing: -0.04em !important;
+  letter-spacing: -0.02em !important;
   font-weight: 500 !important;
+  text-transform: uppercase !important;
 }
 
 /* Floating USP — extra top pad on the section that follows */
