@@ -904,6 +904,9 @@ textarea {
   background: var(--gray-100, #f3f4f6);
   border-radius: 4px;
   padding: 0.1rem 0.35rem;
+  color: var(--gray-800, #1f2937);
+  font-size: 0.9375rem;
+  font-weight: 600;
 }
 
 .order-qty-controls {
