@@ -753,6 +753,31 @@
     });
   }
 
+  // Resolve the product code for an order line: use the stored variant code,
+  // otherwise look it up in the catalog (Kodi attribute, matched by variant).
+  function orderItemKod(item) {
+    if (item.variantKod) return item.variantKod;
+    const product = productsData.products.find(
+      (p) => String(p.id) === String(item.id) || (item.slug && p.slug === item.slug)
+    );
+    if (!product) return '';
+    const attrs = product.attributes || [];
+    const kodAttr = attrs.find((a) => a && /^kodi?$/i.test(String(a.name || '').trim()));
+    if (!kodAttr || !kodAttr.value) return '';
+    const kodList = splitCsvKeepEmpty(kodAttr.value);
+    const variant = decodeHtml(item.variant || '').trim();
+    if (!variant) {
+      return kodList.length === 1 ? kodList[0] : '';
+    }
+    const primary = attrs.find((a) => a && a !== kodAttr && a.value);
+    if (primary) {
+      const values = splitCsv(primary.value).map((v) => decodeHtml(v).trim());
+      const idx = values.indexOf(variant);
+      if (idx >= 0 && kodList[idx]) return kodList[idx];
+    }
+    return '';
+  }
+
   function openOrderViewer(orderId) {
     const order = ordersData.find((entry) => entry.id === orderId);
     if (!order) return;
@@ -767,11 +792,15 @@
         const qty = normalizeOrderQty(item.qty);
         const price = Number(item.price) || 0;
         const lineTotal = Math.round(price * qty * 100) / 100;
+        const kod = orderItemKod(item);
         return (
           '<tr data-order-item-row data-price="' +
           escapeHtml(String(price)) +
           '"><td>' +
           escapeHtml(item.name) +
+          (kod
+            ? ' <span class="muted-inline order-item-kod">' + escapeHtml(kod) + '</span>'
+            : '') +
           '</td><td>' +
           '<div class="order-qty-controls">' +
           '<button type="button" class="order-qty-btn" data-order-qty-minus="' +

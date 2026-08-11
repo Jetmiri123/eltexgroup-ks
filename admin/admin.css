@@ -898,6 +898,14 @@ textarea {
   line-height: 1.6;
 }
 
+.order-item-kod {
+  white-space: nowrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  background: var(--gray-100, #f3f4f6);
+  border-radius: 4px;
+  padding: 0.1rem 0.35rem;
+}
+
 .order-qty-controls {
   display: inline-flex;
   align-items: center;
