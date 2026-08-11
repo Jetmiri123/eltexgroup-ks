@@ -898,6 +898,10 @@ textarea {
   line-height: 1.6;
 }
 
+.order-print-wrap label {
+  display: block;
+}
+
 .order-item-kod {
   white-space: nowrap;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;

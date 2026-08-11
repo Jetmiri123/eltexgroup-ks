@@ -778,6 +778,96 @@
     return '';
   }
 
+  function printOrder(order) {
+    const customer = order.customer || {};
+    const createdAt = order.createdAt ? new Date(order.createdAt).toLocaleString('sq-AL') : '';
+    const rows = (order.items || [])
+      .map((item) => {
+        const qty = normalizeOrderQty(item.qty);
+        const price = Number(item.price) || 0;
+        const lineTotal = Math.round(price * qty * 100) / 100;
+        const kod = orderItemKod(item);
+        return (
+          '<tr><td>' +
+          escapeHtml(item.name) +
+          '</td><td class="kod">' +
+          escapeHtml(kod || '—') +
+          '</td><td class="num">' +
+          qty +
+          '</td><td class="num">€' +
+          price.toFixed(2) +
+          '</td><td class="num">€' +
+          lineTotal.toFixed(2) +
+          '</td></tr>'
+        );
+      })
+      .join('');
+
+    const html = `<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="utf-8">
+<title>Porosia ${escapeHtml(order.id.slice(-8).toUpperCase())}</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "Segoe UI", Arial, sans-serif; color: #111827; margin: 2rem; }
+  .head { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #f88837; padding-bottom: 1rem; margin-bottom: 1.5rem; }
+  .brand { font-size: 1.6rem; font-weight: 800; letter-spacing: 0.02em; }
+  .brand span { color: #f88837; }
+  .meta { text-align: right; font-size: 0.9rem; color: #4b5563; }
+  h1 { font-size: 1.15rem; margin: 0 0 0.25rem; }
+  .client { margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.55; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+  th { text-align: left; background: #f3f4f6; padding: 0.5rem 0.6rem; border-bottom: 2px solid #d1d5db; }
+  td { padding: 0.45rem 0.6rem; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+  td.kod { font-family: ui-monospace, Menlo, monospace; white-space: nowrap; }
+  th.num, td.num { text-align: right; white-space: nowrap; }
+  .total-row { margin-top: 1rem; text-align: right; font-size: 1.1rem; font-weight: 700; }
+  .footer { margin-top: 2.5rem; font-size: 0.8rem; color: #6b7280; border-top: 1px solid #e5e7eb; padding-top: 0.75rem; }
+  @media print { body { margin: 0.5cm; } }
+</style>
+</head>
+<body>
+  <div class="head">
+    <div>
+      <div class="brand">ELTEX <span>GROUP</span></div>
+      <div style="font-size:0.85rem;color:#6b7280;">eltexgroup-rks.com · info@eltexgroup-rks.com</div>
+    </div>
+    <div class="meta">
+      <h1>Porosia ${escapeHtml(order.id.slice(-8).toUpperCase())}</h1>
+      <div>Data: ${escapeHtml(createdAt)}</div>
+      <div>Statusi: ${escapeHtml(orderStatusLabel(order.status))}</div>
+    </div>
+  </div>
+  <div class="client">
+    <strong>Klienti:</strong> ${escapeHtml(customer.name || '')}<br>
+    ${customer.company ? '<strong>Kompania:</strong> ' + escapeHtml(customer.company) + '<br>' : ''}
+    <strong>Email:</strong> ${escapeHtml(customer.email || '')}<br>
+    <strong>Telefoni:</strong> ${escapeHtml(customer.phone || '')}
+    ${customer.notes ? '<br><strong>Shënime:</strong> ' + escapeHtml(customer.notes) : ''}
+  </div>
+  <table>
+    <thead>
+      <tr><th>Produkti</th><th>Kodi</th><th class="num">Sasia</th><th class="num">Çmimi</th><th class="num">Totali</th></tr>
+    </thead>
+    <tbody>${rows}</tbody>
+  </table>
+  <div class="total-row">Totali: €${Number(order.total || 0).toFixed(2)}</div>
+  <div class="footer">Eltex Group — Faleminderit për porosinë!</div>
+  <script>window.addEventListener('load', function () { window.print(); });</script>
+</body>
+</html>`;
+
+    const win = window.open('', '_blank');
+    if (!win) {
+      showToast('Lejoni dritaret pop-up për të printuar');
+      return;
+    }
+    win.document.write(html);
+    win.document.close();
+    win.focus();
+  }
+
   function openOrderViewer(orderId) {
     const order = ordersData.find((entry) => entry.id === orderId);
     if (!order) return;
@@ -854,9 +944,16 @@
               <option value="cancelled"${order.status === 'cancelled' ? ' selected' : ''}>Anuluar</option>
             </select>
           </div>
+          <div class="order-print-wrap">
+            <label>&nbsp;</label>
+            <button type="button" class="btn ghost" data-print-order>Printo porosinë</button>
+          </div>
         </div>
       </div>`;
     bindOrderQtyControls();
+    editorFields
+      .querySelector('[data-print-order]')
+      ?.addEventListener('click', () => printOrder(order));
     editorDialog.showModal();
   }
 
