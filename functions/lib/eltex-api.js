@@ -482,16 +482,44 @@ export async function handleApiRequest(context) {
       order.status = body.status;
       changed = true;
     }
-    if (Array.isArray(body.items) && Array.isArray(order.items)) {
+    if (body.customer && typeof body.customer === 'object') {
+      const current = order.customer || {};
+      order.customer = {
+        name: sanitizeText(body.customer.name, 120) || current.name || '',
+        email: sanitizeText(body.customer.email, 160) || current.email || '',
+        phone: sanitizeText(body.customer.phone, 40) || current.phone || '',
+        company: sanitizeText(body.customer.company, 120),
+        notes: sanitizeText(body.customer.notes, 500),
+      };
+      changed = true;
+    }
+    if (Array.isArray(body.items)) {
       let total = 0;
-      order.items = order.items.map((item, index) => {
-        const patch = body.items[index] || {};
-        const qty = Math.max(1, Math.min(999, Number(patch.qty != null ? patch.qty : item.qty) || 1));
-        const price = Number(item.price) || 0;
-        const lineTotal = Math.round(price * qty * 100) / 100;
-        total += lineTotal;
-        return { ...item, qty, lineTotal };
-      });
+      const previous = Array.isArray(order.items) ? order.items : [];
+      order.items = body.items
+        .map((patch, index) => {
+          if (!patch || patch.remove) return null;
+          const base = previous[index] || previous.find((item) => String(item.id) === String(patch.id)) || {};
+          const qty = Math.max(1, Math.min(999, Number(patch.qty != null ? patch.qty : base.qty) || 1));
+          const price = Math.max(0, Number(patch.price != null ? patch.price : base.price) || 0);
+          const lineTotal = Math.round(price * qty * 100) / 100;
+          total += lineTotal;
+          return {
+            ...base,
+            ...patch,
+            id: String(patch.id || base.id || ''),
+            slug: sanitizeText(patch.slug || base.slug, 120),
+            name: sanitizeText(patch.name || base.name, 200) || base.name || '',
+            cat: sanitizeText(patch.cat || base.cat, 120),
+            variant: sanitizeText(patch.variant || base.variant, 80),
+            variantKod: sanitizeText(patch.variantKod || base.variantKod, 40),
+            qty,
+            price,
+            lineTotal,
+            remove: undefined,
+          };
+        })
+        .filter(Boolean);
       order.total = Math.round(total * 100) / 100;
       changed = true;
     }

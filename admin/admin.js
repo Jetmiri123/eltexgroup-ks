@@ -713,10 +713,14 @@
   function refreshOrderTotalsPreview() {
     let total = 0;
     editorFields.querySelectorAll('[data-order-item-row]').forEach((row) => {
+      if (row.hidden) return;
       const qtyInput = row.querySelector('[data-order-qty]');
-      const price = Number(row.dataset.price) || 0;
+      const priceInput = row.querySelector('[data-order-price]');
+      const price = Math.max(0, Number(priceInput ? priceInput.value : row.dataset.price) || 0);
+      row.dataset.price = String(price);
       const qty = normalizeOrderQty(qtyInput && qtyInput.value);
       if (qtyInput) qtyInput.value = String(qty);
+      if (priceInput) priceInput.value = String(price);
       const lineTotal = Math.round(price * qty * 100) / 100;
       total += lineTotal;
       const lineEl = row.querySelector('[data-order-line-total]');
@@ -747,9 +751,19 @@
         refreshOrderTotalsPreview();
       });
     });
-    editorFields.querySelectorAll('[data-order-qty]').forEach((input) => {
+    editorFields.querySelectorAll('[data-order-qty], [data-order-price]').forEach((input) => {
       input.addEventListener('change', refreshOrderTotalsPreview);
       input.addEventListener('blur', refreshOrderTotalsPreview);
+      input.addEventListener('input', refreshOrderTotalsPreview);
+    });
+    editorFields.querySelectorAll('[data-order-remove]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const row = btn.closest('[data-order-item-row]');
+        if (!row) return;
+        row.hidden = true;
+        row.dataset.removed = '1';
+        refreshOrderTotalsPreview();
+      });
     });
   }
 
@@ -886,6 +900,8 @@
         return (
           '<tr data-order-item-row data-price="' +
           escapeHtml(String(price)) +
+          '" data-item-index="' +
+          index +
           '"><td>' +
           escapeHtml(item.name) +
           (kod
@@ -904,10 +920,20 @@
           '<button type="button" class="order-qty-btn" data-order-qty-plus="' +
           index +
           '" aria-label="Rrit">+</button>' +
-          '</div></td><td>€' +
+          '</div></td><td>' +
+          '<div class="order-price-wrap">' +
+          '<span class="order-price-prefix">€</span>' +
+          '<input type="number" class="order-price-input" data-order-price="' +
+          index +
+          '" value="' +
           price.toFixed(2) +
-          '</td><td data-order-line-total>€' +
+          '" min="0" step="0.01" inputmode="decimal" aria-label="Çmimi">' +
+          '</div></td><td data-order-line-total>€' +
           lineTotal.toFixed(2) +
+          '</td><td>' +
+          '<button type="button" class="btn danger small" data-order-remove="' +
+          index +
+          '" aria-label="Hiq produktin">Hiq</button>' +
           '</td></tr>'
         );
       })
@@ -917,23 +943,34 @@
 
     editorFields.innerHTML = `
       <div class="order-detail">
-        <p><strong>Klienti:</strong> ${escapeHtml(customer.name)}<br>
-        <strong>Email:</strong> ${escapeHtml(customer.email)}<br>
-        <strong>Telefoni:</strong> ${escapeHtml(customer.phone)}${
-          customer.company
-            ? '<br><strong>Kompania:</strong> ' + escapeHtml(customer.company)
-            : ''
-        }${
-          customer.notes
-            ? '<br><strong>Shënime:</strong> ' + escapeHtml(customer.notes)
-            : ''
-        }</p>
+        <div class="field-grid order-customer-grid">
+          <div>
+            <label for="order-customer-name">Klienti</label>
+            <input type="text" id="order-customer-name" name="customer_name" value="${escapeHtml(customer.name || '')}" required>
+          </div>
+          <div>
+            <label for="order-customer-email">Email</label>
+            <input type="email" id="order-customer-email" name="customer_email" value="${escapeHtml(customer.email || '')}">
+          </div>
+          <div>
+            <label for="order-customer-phone">Telefoni</label>
+            <input type="text" id="order-customer-phone" name="customer_phone" value="${escapeHtml(customer.phone || '')}">
+          </div>
+          <div>
+            <label for="order-customer-company">Kompania</label>
+            <input type="text" id="order-customer-company" name="customer_company" value="${escapeHtml(customer.company || '')}">
+          </div>
+          <div class="field-span-2">
+            <label for="order-customer-notes">Shënime</label>
+            <textarea id="order-customer-notes" name="customer_notes" rows="2">${escapeHtml(customer.notes || '')}</textarea>
+          </div>
+        </div>
         <table class="data-table compact">
-          <thead><tr><th>Produkti</th><th>Sasia</th><th>Çmimi</th><th>Totali</th></tr></thead>
-          <tbody>${itemsHtml}</tbody>
+          <thead><tr><th>Produkti</th><th>Sasia</th><th>Çmimi</th><th>Totali</th><th></th></tr></thead>
+          <tbody>${itemsHtml || '<tr><td colspan="5" class="muted-inline">Nuk ka produkte në këtë porosi.</td></tr>'}</tbody>
         </table>
         <p><strong>Totali: <span data-order-total>€${Number(order.total || 0).toFixed(2)}</span></strong></p>
-        <p class="field-hint">Ndryshoni sasinë me − / + dhe shtypni Ruaj.</p>
+        <p class="field-hint">Ndryshoni klientin, sasinë, çmimin, hiqni produkte, pastaj shtypni Ruaj.</p>
         <div class="field-grid">
           <div>
             <label for="order-status">Statusi</label>
@@ -953,14 +990,38 @@
     bindOrderQtyControls();
     editorFields
       .querySelector('[data-print-order]')
-      ?.addEventListener('click', () => printOrder(order));
+      ?.addEventListener('click', () => {
+        // Print with current on-screen edits so preview matches what they see.
+        const draft = {
+          ...order,
+          customer: {
+            name: editorFields.querySelector('[name="customer_name"]')?.value.trim() || '',
+            email: editorFields.querySelector('[name="customer_email"]')?.value.trim() || '',
+            phone: editorFields.querySelector('[name="customer_phone"]')?.value.trim() || '',
+            company: editorFields.querySelector('[name="customer_company"]')?.value.trim() || '',
+            notes: editorFields.querySelector('[name="customer_notes"]')?.value.trim() || '',
+          },
+          status: editorFields.querySelector('[name="status"]')?.value || order.status,
+          items: (order.items || [])
+            .map((item, index) => {
+              const row = editorFields.querySelector('[data-item-index="' + index + '"]');
+              if (!row || row.dataset.removed === '1') return null;
+              const qty = normalizeOrderQty(row.querySelector('[data-order-qty]')?.value);
+              const price = Math.max(0, Number(row.querySelector('[data-order-price]')?.value) || 0);
+              return { ...item, qty, price, lineTotal: Math.round(price * qty * 100) / 100 };
+            })
+            .filter(Boolean),
+        };
+        draft.total = draft.items.reduce((sum, item) => sum + (Number(item.lineTotal) || 0), 0);
+        printOrder(draft);
+      });
     editorDialog.showModal();
   }
 
-  async function saveOrderEdits(orderId, status, items) {
+  async function saveOrderEdits(orderId, status, items, customer) {
     await api('/api/orders/' + encodeURIComponent(orderId), {
       method: 'PATCH',
-      body: JSON.stringify({ status, items }),
+      body: JSON.stringify({ status, items, customer }),
     });
     showToast('Porosia u përditësua');
     ordersData = await api('/api/orders');
@@ -1584,14 +1645,28 @@
       if (editorMode === 'order') {
         const order = ordersData[editorIndex];
         const status = editorFields.querySelector('[name="status"]').value;
+        const customer = {
+          name: editorFields.querySelector('[name="customer_name"]')?.value.trim() || '',
+          email: editorFields.querySelector('[name="customer_email"]')?.value.trim() || '',
+          phone: editorFields.querySelector('[name="customer_phone"]')?.value.trim() || '',
+          company: editorFields.querySelector('[name="customer_company"]')?.value.trim() || '',
+          notes: editorFields.querySelector('[name="customer_notes"]')?.value.trim() || '',
+        };
+        if (!customer.name) throw new Error('Emri i klientit është i detyrueshëm');
         const items = (order.items || []).map((item, index) => {
-          const input = editorFields.querySelector('[data-order-qty="' + index + '"]');
+          const row = editorFields.querySelector('[data-item-index="' + index + '"]');
+          if (!row || row.dataset.removed === '1') {
+            return { ...item, remove: true };
+          }
+          const qtyInput = row.querySelector('[data-order-qty]');
+          const priceInput = row.querySelector('[data-order-price]');
           return {
             ...item,
-            qty: normalizeOrderQty(input ? input.value : item.qty),
+            qty: normalizeOrderQty(qtyInput ? qtyInput.value : item.qty),
+            price: Math.max(0, Number(priceInput ? priceInput.value : item.price) || 0),
           };
         });
-        await saveOrderEdits(order.id, status, items);
+        await saveOrderEdits(order.id, status, items, customer);
         editorDialog.close();
         return;
       }

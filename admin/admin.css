@@ -902,6 +902,40 @@ textarea {
   display: block;
 }
 
+.order-customer-grid {
+  margin-bottom: 1rem;
+}
+
+.field-span-2 {
+  grid-column: 1 / -1;
+}
+
+.order-price-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.order-price-prefix {
+  color: var(--gray-600, #4b5563);
+  font-weight: 600;
+}
+
+.order-price-input {
+  width: 4.75rem;
+  height: 2rem;
+  border: 1px solid var(--gray-300, #d1d5db);
+  border-radius: 6px;
+  padding: 0 0.4rem;
+  font: inherit;
+  text-align: right;
+}
+
+.order-price-input:focus {
+  outline: none;
+  border-color: var(--orange, #f88837);
+}
+
 .order-item-kod {
   white-space: nowrap;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
