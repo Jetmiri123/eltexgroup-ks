@@ -902,6 +902,12 @@ textarea {
   display: block;
 }
 
+.order-action-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
 .order-customer-grid {
   margin-bottom: 1rem;
 }

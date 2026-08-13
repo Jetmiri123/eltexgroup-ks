@@ -882,6 +882,121 @@
     win.focus();
   }
 
+  function csvCell(value) {
+    const text = String(value == null ? '' : value);
+    if (/[;"\n\r]/.test(text)) return '"' + text.replace(/"/g, '""') + '"';
+    return text;
+  }
+
+  function readOrderDraft(order) {
+    const draft = {
+      ...order,
+      customer: {
+        name: editorFields.querySelector('[name="customer_name"]')?.value.trim() || '',
+        email: editorFields.querySelector('[name="customer_email"]')?.value.trim() || '',
+        phone: editorFields.querySelector('[name="customer_phone"]')?.value.trim() || '',
+        company: editorFields.querySelector('[name="customer_company"]')?.value.trim() || '',
+        notes: editorFields.querySelector('[name="customer_notes"]')?.value.trim() || '',
+      },
+      status: editorFields.querySelector('[name="status"]')?.value || order.status,
+      items: (order.items || [])
+        .map((item, index) => {
+          const row = editorFields.querySelector('[data-item-index="' + index + '"]');
+          if (!row || row.dataset.removed === '1') return null;
+          const qty = normalizeOrderQty(row.querySelector('[data-order-qty]')?.value);
+          const price = Math.max(0, Number(row.querySelector('[data-order-price]')?.value) || 0);
+          return {
+            ...item,
+            qty,
+            price,
+            lineTotal: Math.round(price * qty * 100) / 100,
+            kod: orderItemKod(item),
+          };
+        })
+        .filter(Boolean),
+    };
+    draft.total = draft.items.reduce((sum, item) => sum + (Number(item.lineTotal) || 0), 0);
+    return draft;
+  }
+
+  function downloadTextFile(filename, content, mime) {
+    const blob = new Blob([content], { type: mime || 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  async function exportOrderToExpert(order) {
+    const customer = order.customer || {};
+    const orderId = String(order.id || '').slice(-8).toUpperCase();
+    const createdAt = order.createdAt ? new Date(order.createdAt).toLocaleString('sq-AL') : '';
+    const header = [
+      'Artikulli',
+      'Emërtimi',
+      'Barkodi',
+      'Njësia',
+      'Sasia',
+      'Çmimi',
+      'Vlera',
+      'Klienti',
+      'Kompania',
+      'Telefoni',
+      'Email',
+      'Shënime',
+      'Porosia',
+      'Data',
+    ];
+    const rows = (order.items || []).map((item) => {
+      const kod = item.kod || orderItemKod(item) || '';
+      const qty = normalizeOrderQty(item.qty);
+      const price = Number(item.price) || 0;
+      const lineTotal = Number(item.lineTotal) || Math.round(price * qty * 100) / 100;
+      return [
+        kod,
+        item.name || '',
+        kod,
+        'CP',
+        qty,
+        price.toFixed(2),
+        lineTotal.toFixed(2),
+        customer.name || '',
+        customer.company || '',
+        customer.phone || '',
+        customer.email || '',
+        customer.notes || '',
+        orderId,
+        createdAt,
+      ];
+    });
+
+    const csv =
+      '\uFEFF' +
+      [header, ...rows]
+        .map((line) => line.map(csvCell).join(';'))
+        .join('\r\n');
+    downloadTextFile(
+      'Porosia-' + orderId + '.csv',
+      csv,
+      'text/csv;charset=utf-8'
+    );
+
+    const pasteLines = rows.map((line) =>
+      [line[0], line[1], line[4], line[5]].join('\t')
+    );
+    const pasteText = pasteLines.join('\n');
+    try {
+      await navigator.clipboard.writeText(pasteText);
+      showToast('Porosia u shkarkua për EXPERT dhe u kopjua. Ngjiteni në program me Ctrl+V.');
+    } catch (err) {
+      showToast('Porosia u shkarkua për EXPERT. Hape skedarin Excel dhe importoje.');
+    }
+  }
+
   function openOrderViewer(orderId) {
     const order = ordersData.find((entry) => entry.id === orderId);
     if (!order) return;
@@ -983,38 +1098,20 @@
           </div>
           <div class="order-print-wrap">
             <label>&nbsp;</label>
-            <button type="button" class="btn ghost" data-print-order>Printo porosinë</button>
+            <div class="order-action-btns">
+              <button type="button" class="btn ghost" data-print-order>Printo porosinë</button>
+              <button type="button" class="btn primary" data-export-order>Dërgo te EXPERT</button>
+            </div>
           </div>
         </div>
       </div>`;
     bindOrderQtyControls();
-    editorFields
-      .querySelector('[data-print-order]')
-      ?.addEventListener('click', () => {
-        // Print with current on-screen edits so preview matches what they see.
-        const draft = {
-          ...order,
-          customer: {
-            name: editorFields.querySelector('[name="customer_name"]')?.value.trim() || '',
-            email: editorFields.querySelector('[name="customer_email"]')?.value.trim() || '',
-            phone: editorFields.querySelector('[name="customer_phone"]')?.value.trim() || '',
-            company: editorFields.querySelector('[name="customer_company"]')?.value.trim() || '',
-            notes: editorFields.querySelector('[name="customer_notes"]')?.value.trim() || '',
-          },
-          status: editorFields.querySelector('[name="status"]')?.value || order.status,
-          items: (order.items || [])
-            .map((item, index) => {
-              const row = editorFields.querySelector('[data-item-index="' + index + '"]');
-              if (!row || row.dataset.removed === '1') return null;
-              const qty = normalizeOrderQty(row.querySelector('[data-order-qty]')?.value);
-              const price = Math.max(0, Number(row.querySelector('[data-order-price]')?.value) || 0);
-              return { ...item, qty, price, lineTotal: Math.round(price * qty * 100) / 100 };
-            })
-            .filter(Boolean),
-        };
-        draft.total = draft.items.reduce((sum, item) => sum + (Number(item.lineTotal) || 0), 0);
-        printOrder(draft);
-      });
+    editorFields.querySelector('[data-print-order]')?.addEventListener('click', () => {
+      printOrder(readOrderDraft(order));
+    });
+    editorFields.querySelector('[data-export-order]')?.addEventListener('click', () => {
+      exportOrderToExpert(readOrderDraft(order));
+    });
     editorDialog.showModal();
   }
 
