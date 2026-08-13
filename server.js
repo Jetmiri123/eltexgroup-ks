@@ -395,8 +395,7 @@ function buildOrderFromRequest(body) {
   const notes = sanitizeText(customer.notes, 2000);
 
   if (!name) throw new Error('Emri është i detyrueshëm');
-  if (!isValidEmail(email)) throw new Error('Email i pavlefshëm');
-  if (!phone) throw new Error('Telefoni është i detyrueshëm');
+  if (email && !isValidEmail(email)) throw new Error('Email i pavlefshëm');
 
   const rawItems = Array.isArray(body.items) ? body.items : [];
   if (!rawItems.length) throw new Error('Shporta është bosh');
@@ -601,7 +600,7 @@ async function sendOrderEmail(order) {
   await transporter.sendMail({
     from: SMTP_FROM,
     to: ORDER_EMAIL,
-    replyTo: order.customer.email,
+    replyTo: order.customer.email || undefined,
     subject: adminSubject,
     text: formatOrderText(order),
     html: formatOrderHtml(order, {
@@ -611,17 +610,19 @@ async function sendOrderEmail(order) {
     }),
   });
 
-  await transporter.sendMail({
-    from: SMTP_FROM,
-    to: order.customer.email,
-    subject: 'Faleminderit! Porosia juaj #' + ref + ' u pranua — Eltex Group',
-    text: formatCustomerOrderText(order),
-    html: formatOrderHtml(order, {
-      title: 'Faleminderit për porosinë tuaj',
-      intro:
-        'Porosia juaj u pranua me sukses. Ekipi ynë do t\'ju kontaktojë së shpejti për konfirmim dhe detajet e dorëzimit.',
-    }),
-  });
+  if (order.customer.email) {
+    await transporter.sendMail({
+      from: SMTP_FROM,
+      to: order.customer.email,
+      subject: 'Faleminderit! Porosia juaj #' + ref + ' u pranua — Eltex Group',
+      text: formatCustomerOrderText(order),
+      html: formatOrderHtml(order, {
+        title: 'Faleminderit për porosinë tuaj',
+        intro:
+          'Porosia juaj u pranua me sukses. Ekipi ynë do t\'ju kontaktojë së shpejti për konfirmim dhe detajet e dorëzimit.',
+      }),
+    });
+  }
 
   return { sent: true };
 }

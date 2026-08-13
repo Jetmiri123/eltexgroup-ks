@@ -183,8 +183,7 @@ async function buildOrderFromRequest(env, request, body) {
   const notes = sanitizeText(customer.notes, 2000);
 
   if (!name) throw new Error('Emri është i detyrueshëm');
-  if (!isValidEmail(email)) throw new Error('Email i pavlefshëm');
-  if (!phone) throw new Error('Telefoni është i detyrueshëm');
+  if (email && !isValidEmail(email)) throw new Error('Email i pavlefshëm');
 
   const rawItems = Array.isArray(body.items) ? body.items : [];
   if (!rawItems.length) throw new Error('Shporta është bosh');

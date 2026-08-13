@@ -87,16 +87,18 @@ export async function sendOrderEmail(env, order) {
   const adminResult = await sendEmail(env, {
     subject: `Porosi e Reja #${ref} — Eltex Group`,
     text: adminText,
-    replyTo: order.customer.email,
+    replyTo: order.customer.email || undefined,
   });
 
   if (!adminResult.sent) return adminResult;
 
-  await sendEmail(env, {
-    to: order.customer.email,
-    subject: `Faleminderit! Porosia juaj #${ref} u pranua — Eltex Group`,
-    text: `Përshëndetje ${order.customer.name},\n\nFaleminderit për porosinë tuaj te Eltex Group.\nReferenca: #${ref}\nTotali: €${order.total.toFixed(2)}\n\nEkipi ynë do t'ju kontaktojë së shpejti.\n\nMe respekt,\nEltex Group`,
-  });
+  if (order.customer.email) {
+    await sendEmail(env, {
+      to: order.customer.email,
+      subject: `Faleminderit! Porosia juaj #${ref} u pranua — Eltex Group`,
+      text: `Përshëndetje ${order.customer.name},\n\nFaleminderit për porosinë tuaj te Eltex Group.\nReferenca: #${ref}\nTotali: €${order.total.toFixed(2)}\n\nEkipi ynë do t'ju kontaktojë së shpejti.\n\nMe respekt,\nEltex Group`,
+    });
+  }
 
   return { sent: true };
 }
