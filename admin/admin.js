@@ -971,69 +971,153 @@
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
+  function xmlCell(value, type) {
+    const text = String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+    return '<Cell><Data ss:Type="' + (type || 'String') + '">' + text + '</Data></Cell>';
+  }
+
+  function expertLine(item, orderItemKodFn) {
+    const kod = item.kod || (orderItemKodFn ? orderItemKodFn(item) : '') || '';
+    const qty = normalizeOrderQty(item.qty);
+    const price = Number(item.price) || 0;
+    const lineTotal = Number(item.lineTotal) || Math.round(price * qty * 100) / 100;
+    return {
+      artikulli: kod,
+      emertimi: item.name || '',
+      barkodi: kod,
+      njesia: 'CP',
+      sasia: qty,
+      cmimi: price,
+      vlera: lineTotal,
+    };
+  }
+
   async function exportOrderToExpert(order) {
     const customer = order.customer || {};
     const orderId = String(order.id || '').slice(-8).toUpperCase();
-    const createdAt = order.createdAt ? new Date(order.createdAt).toLocaleString('sq-AL') : '';
-    const header = [
+    const createdAt = order.createdAt
+      ? new Date(order.createdAt).toLocaleString('sq-AL')
+      : '';
+    const buyer = customer.company || customer.name || '';
+    const lines = (order.items || []).map((item) => expertLine(item, orderItemKod));
+
+    const detailHeaders = [
       'Artikulli',
       'Emërtimi',
+      'Artikulli tek furn.',
       'Barkodi',
-      'Njësia',
+      'Njësia matëse',
+      'Stoqet',
+      'Porositë e hapura',
       'Sasia',
-      'Çmimi',
-      'Vlera',
-      'Klienti',
-      'Kompania',
-      'Telefoni',
-      'Email',
-      'Shënime',
-      'Porosia',
-      'Data',
+      'Sasia në pako',
+      'Sasia në copë',
+      'Çmimi në valutë',
+      'Çmimi pa Tvsh',
+      'Vlera pa rabat',
+      'Rabati %',
+      'Rabati',
     ];
-    const rows = (order.items || []).map((item) => {
-      const kod = item.kod || orderItemKod(item) || '';
-      const qty = normalizeOrderQty(item.qty);
-      const price = Number(item.price) || 0;
-      const lineTotal = Number(item.lineTotal) || Math.round(price * qty * 100) / 100;
-      return [
-        kod,
-        item.name || '',
-        kod,
-        'CP',
-        qty,
-        price.toFixed(2),
-        lineTotal.toFixed(2),
-        customer.name || '',
-        customer.company || '',
-        customer.phone || '',
-        customer.email || '',
-        customer.notes || '',
-        orderId,
-        createdAt,
-      ];
-    });
+
+    const csvRows = lines.map((line) => [
+      line.artikulli,
+      line.emertimi,
+      '',
+      line.barkodi,
+      line.njesia,
+      '',
+      '',
+      line.sasia,
+      '',
+      '',
+      line.cmimi.toFixed(2),
+      line.cmimi.toFixed(2),
+      line.vlera.toFixed(2),
+      '0',
+      '0',
+    ]);
 
     const csv =
       '\uFEFF' +
-      [header, ...rows]
-        .map((line) => line.map(csvCell).join(';'))
+      [
+        ['Blerësi', buyer],
+        ['Telefoni', customer.phone || ''],
+        ['Email', customer.email || ''],
+        ['Komenti', customer.notes || ''],
+        ['Porosia web', orderId],
+        ['Data', createdAt],
+        ['Valuta', 'EUR'],
+        ['Pagesa', orderPaymentLabel(order.payment)],
+        [],
+        detailHeaders,
+        ...csvRows,
+      ]
+        .map((row) => row.map(csvCell).join(';'))
         .join('\r\n');
-    downloadTextFile(
-      'Porosia-' + orderId + '.csv',
-      csv,
-      'text/csv;charset=utf-8'
-    );
 
-    const pasteLines = rows.map((line) =>
-      [line[0], line[1], line[4], line[5]].join('\t')
-    );
-    const pasteText = pasteLines.join('\n');
+    const excelRows =
+      '<Row>' +
+      detailHeaders.map((h) => xmlCell(h)).join('') +
+      '</Row>' +
+      lines
+        .map((line) => {
+          return (
+            '<Row>' +
+            xmlCell(line.artikulli) +
+            xmlCell(line.emertimi) +
+            xmlCell('') +
+            xmlCell(line.barkodi) +
+            xmlCell(line.njesia) +
+            xmlCell('') +
+            xmlCell('') +
+            xmlCell(line.sasia, 'Number') +
+            xmlCell('') +
+            xmlCell('') +
+            xmlCell(line.cmimi.toFixed(2), 'Number') +
+            xmlCell(line.cmimi.toFixed(2), 'Number') +
+            xmlCell(line.vlera.toFixed(2), 'Number') +
+            xmlCell('0', 'Number') +
+            xmlCell('0', 'Number') +
+            '</Row>'
+          );
+        })
+        .join('');
+
+    const excel =
+      '<?xml version="1.0" encoding="UTF-8"?>' +
+      '<?mso-application progid="Excel.Sheet"?>' +
+      '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">' +
+      '<Worksheet ss:Name="Dokumenti"><Table>' +
+      '<Row>' + xmlCell('Fusha') + xmlCell('Vlera') + '</Row>' +
+      '<Row>' + xmlCell('Blerësi') + xmlCell(buyer) + '</Row>' +
+      '<Row>' + xmlCell('Telefoni') + xmlCell(customer.phone || '') + '</Row>' +
+      '<Row>' + xmlCell('Email') + xmlCell(customer.email || '') + '</Row>' +
+      '<Row>' + xmlCell('Komenti') + xmlCell(customer.notes || '') + '</Row>' +
+      '<Row>' + xmlCell('Porosia web') + xmlCell(orderId) + '</Row>' +
+      '<Row>' + xmlCell('Data') + xmlCell(createdAt) + '</Row>' +
+      '<Row>' + xmlCell('Valuta') + xmlCell('EUR') + '</Row>' +
+      '<Row>' + xmlCell('Pagesa') + xmlCell(orderPaymentLabel(order.payment)) + '</Row>' +
+      '</Table></Worksheet>' +
+      '<Worksheet ss:Name="Detalet"><Table>' +
+      excelRows +
+      '</Table></Worksheet>' +
+      '</Workbook>';
+
+    downloadTextFile('Porosia-' + orderId + '-EXPERT.xls', excel, 'application/vnd.ms-excel');
+    downloadTextFile('Porosia-' + orderId + '-EXPERT.csv', csv, 'text/csv;charset=utf-8');
+
+    const pasteText = csvRows.map((row) => row.join('\t')).join('\n');
     try {
       await navigator.clipboard.writeText(pasteText);
-      showToast('Porosia u shkarkua për EXPERT dhe u kopjua. Ngjiteni në program me Ctrl+V.');
+      showToast(
+        'U kopjua për EXPERT. Hape 030-Shitja Vendore, zgjidh Blerësin, kliko Artikulli, pastaj Ctrl+V.'
+      );
     } catch (err) {
-      showToast('Porosia u shkarkua për EXPERT. Hape skedarin Excel dhe importoje.');
+      showToast('Skedari EXPERT u shkarkua. Importoje Excel në 030-Shitja Vendore.');
     }
   }
 
@@ -1150,6 +1234,7 @@
               <button type="button" class="btn ghost" data-print-order>Printo porosinë</button>
               <button type="button" class="btn primary" data-export-order>Dërgo te EXPERT</button>
             </div>
+            <p class="field-hint">Hape EXPERT → 030-Shitja Vendore, zgjidh Blerësin, kliko kolonën Artikulli, pastaj Ctrl+V.</p>
           </div>
         </div>
       </div>`;
