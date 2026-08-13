@@ -476,7 +476,7 @@ export async function handleApiRequest(context) {
     const orders = await readOrders(env, request);
     const order = orders.find((entry) => entry.id === orderMatch[1]);
     if (!order) return json({ error: 'Porosia nuk u gjet' }, 404);
-    const allowed = ['new', 'processing', 'done', 'cancelled'];
+    const allowed = ['new', 'processing', 'done', 'cancelled', 'paid', 'unpaid_balance'];
     let changed = false;
     if (body.status && allowed.includes(body.status)) {
       order.status = body.status;

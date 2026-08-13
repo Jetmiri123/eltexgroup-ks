@@ -1056,7 +1056,7 @@ async function handleApi(req, res, pathname) {
       sendJson(res, 404, { error: 'Porosia nuk u gjet' });
       return;
     }
-    const allowed = ['new', 'processing', 'done', 'cancelled'];
+    const allowed = ['new', 'processing', 'done', 'cancelled', 'paid', 'unpaid_balance'];
     let changed = false;
     if (body.status && allowed.includes(body.status)) {
       order.status = body.status;

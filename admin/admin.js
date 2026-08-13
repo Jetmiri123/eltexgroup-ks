@@ -654,6 +654,8 @@
       processing: 'Në përpunim',
       done: 'Përfunduar',
       cancelled: 'Anuluar',
+      paid: 'E paguar',
+      unpaid_balance: 'Mbetje e pa paguar',
     };
     return map[status] || status;
   }
@@ -1094,6 +1096,8 @@
               <option value="processing"${order.status === 'processing' ? ' selected' : ''}>Në përpunim</option>
               <option value="done"${order.status === 'done' ? ' selected' : ''}>Përfunduar</option>
               <option value="cancelled"${order.status === 'cancelled' ? ' selected' : ''}>Anuluar</option>
+              <option value="paid"${order.status === 'paid' ? ' selected' : ''}>E paguar</option>
+              <option value="unpaid_balance"${order.status === 'unpaid_balance' ? ' selected' : ''}>Mbetje e pa paguar</option>
             </select>
           </div>
           <div class="order-print-wrap">
