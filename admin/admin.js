@@ -736,17 +736,29 @@
     return Math.min(999, qty);
   }
 
-  function refreshOrderTotalsPreview() {
+  function parsePrice(value) {
+    const raw = String(value == null ? '' : value)
+      .trim()
+      .replace(/\s/g, '')
+      .replace(',', '.');
+    if (!raw || raw === '.' || raw === '-') return 0;
+    const n = Number(raw);
+    if (!Number.isFinite(n) || n < 0) return 0;
+    return n;
+  }
+
+  function refreshOrderTotalsPreview(options) {
+    const commit = !!(options && options.commit);
     let total = 0;
     editorFields.querySelectorAll('[data-order-item-row]').forEach((row) => {
       if (row.hidden) return;
       const qtyInput = row.querySelector('[data-order-qty]');
       const priceInput = row.querySelector('[data-order-price]');
-      const price = Math.max(0, Number(priceInput ? priceInput.value : row.dataset.price) || 0);
+      const price = parsePrice(priceInput ? priceInput.value : row.dataset.price);
       row.dataset.price = String(price);
       const qty = normalizeOrderQty(qtyInput && qtyInput.value);
-      if (qtyInput) qtyInput.value = String(qty);
-      if (priceInput) priceInput.value = String(price);
+      if (commit && qtyInput) qtyInput.value = String(qty);
+      if (commit && priceInput) priceInput.value = price.toFixed(2);
       const lineTotal = Math.round(price * qty * 100) / 100;
       total += lineTotal;
       const lineEl = row.querySelector('[data-order-line-total]');
@@ -778,9 +790,9 @@
       });
     });
     editorFields.querySelectorAll('[data-order-qty], [data-order-price]').forEach((input) => {
-      input.addEventListener('change', refreshOrderTotalsPreview);
-      input.addEventListener('blur', refreshOrderTotalsPreview);
-      input.addEventListener('input', refreshOrderTotalsPreview);
+      input.addEventListener('input', () => refreshOrderTotalsPreview());
+      input.addEventListener('change', () => refreshOrderTotalsPreview({ commit: true }));
+      input.addEventListener('blur', () => refreshOrderTotalsPreview({ commit: true }));
     });
     editorFields.querySelectorAll('[data-order-remove]').forEach((btn) => {
       btn.addEventListener('click', () => {
@@ -932,7 +944,7 @@
           const row = editorFields.querySelector('[data-item-index="' + index + '"]');
           if (!row || row.dataset.removed === '1') return null;
           const qty = normalizeOrderQty(row.querySelector('[data-order-qty]')?.value);
-          const price = Math.max(0, Number(row.querySelector('[data-order-price]')?.value) || 0);
+              const price = parsePrice(row.querySelector('[data-order-price]')?.value);
           return {
             ...item,
             qty,
@@ -1066,11 +1078,11 @@
           '</div></td><td>' +
           '<div class="order-price-wrap">' +
           '<span class="order-price-prefix">€</span>' +
-          '<input type="number" class="order-price-input" data-order-price="' +
+          '<input type="text" class="order-price-input" data-order-price="' +
           index +
           '" value="' +
           price.toFixed(2) +
-          '" min="0" step="0.01" inputmode="decimal" aria-label="Çmimi">' +
+          '" inputmode="decimal" autocomplete="off" aria-label="Çmimi">' +
           '</div></td><td data-order-line-total>€' +
           lineTotal.toFixed(2) +
           '</td><td>' +
@@ -1797,7 +1809,7 @@
           return {
             ...item,
             qty: normalizeOrderQty(qtyInput ? qtyInput.value : item.qty),
-            price: Math.max(0, Number(priceInput ? priceInput.value : item.price) || 0),
+            price: parsePrice(priceInput ? priceInput.value : item.price),
           };
         });
         await saveOrderEdits(order.id, status, items, customer, payment);
