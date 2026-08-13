@@ -441,6 +441,7 @@ function buildOrderFromRequest(body) {
     id: 'ord_' + Date.now().toString(36) + crypto.randomBytes(3).toString('hex'),
     createdAt: new Date().toISOString(),
     status: 'new',
+    payment: 'unpaid',
     customer: { name, email, phone, company, notes },
     items: orderItems,
     total,
@@ -1056,10 +1057,15 @@ async function handleApi(req, res, pathname) {
       sendJson(res, 404, { error: 'Porosia nuk u gjet' });
       return;
     }
-    const allowed = ['new', 'processing', 'done', 'cancelled', 'paid', 'unpaid_balance'];
+    const allowed = ['new', 'processing', 'done', 'cancelled'];
     let changed = false;
     if (body.status && allowed.includes(body.status)) {
       order.status = body.status;
+      changed = true;
+    }
+    const payments = ['unpaid', 'paid', 'balance'];
+    if (body.payment && payments.includes(body.payment)) {
+      order.payment = body.payment;
       changed = true;
     }
     if (body.customer && typeof body.customer === 'object') {

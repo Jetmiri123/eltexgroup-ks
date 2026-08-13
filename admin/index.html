@@ -133,8 +133,12 @@
               <option value="processing">Në përpunim</option>
               <option value="done">Përfunduar</option>
               <option value="cancelled">Anuluar</option>
+            </select>
+            <select id="order-payment-filter" class="search order-filter">
+              <option value="">Të gjitha pagesat</option>
+              <option value="unpaid">E pa paguar</option>
               <option value="paid">E paguar</option>
-              <option value="unpaid_balance">Mbetje e pa paguar</option>
+              <option value="balance">Mbetje</option>
             </select>
           </div>
           <div class="table-wrap">
@@ -146,6 +150,7 @@
                   <th>Produkte</th>
                   <th>Totali</th>
                   <th>Statusi</th>
+                  <th>Pagesa</th>
                   <th></th>
                 </tr>
               </thead>

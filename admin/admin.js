@@ -14,6 +14,7 @@
   const postSearch = document.getElementById('post-search');
   const orderSearch = document.getElementById('order-search');
   const orderStatusFilter = document.getElementById('order-status-filter');
+  const orderPaymentFilter = document.getElementById('order-payment-filter');
   const ordersTable = document.getElementById('orders-table');
   const submissionSearch = document.getElementById('submission-search');
   const submissionTypeFilter = document.getElementById('submission-type-filter');
@@ -654,17 +655,39 @@
       processing: 'Në përpunim',
       done: 'Përfunduar',
       cancelled: 'Anuluar',
-      paid: 'E paguar',
-      unpaid_balance: 'Mbetje e pa paguar',
     };
     return map[status] || status;
   }
 
+  function orderPaymentLabel(payment) {
+    const map = {
+      unpaid: 'E pa paguar',
+      paid: 'E paguar',
+      balance: 'Mbetje',
+    };
+    return map[payment] || 'E pa paguar';
+  }
+
+  function normalizeOrderPayment(order) {
+    if (order.status === 'paid') {
+      order.payment = 'paid';
+      order.status = 'new';
+    } else if (order.status === 'unpaid_balance') {
+      order.payment = 'balance';
+      order.status = 'new';
+    }
+    if (!order.payment) order.payment = 'unpaid';
+    return order;
+  }
+
   function renderOrders() {
+    ordersData.forEach(normalizeOrderPayment);
     const q = orderSearch.value.trim().toLowerCase();
     const status = orderStatusFilter.value;
+    const payment = orderPaymentFilter ? orderPaymentFilter.value : '';
     const rows = ordersData.filter((order) => {
       if (status && order.status !== status) return false;
+      if (payment && (order.payment || 'unpaid') !== payment) return false;
       if (!q) return true;
       const hay = [
         order.id,
@@ -696,6 +719,7 @@
           <td>${itemCount} copë</td>
           <td>€${Number(order.total || 0).toFixed(2)}</td>
           <td><span class="status-badge status-${escapeHtml(order.status || 'new')}">${escapeHtml(orderStatusLabel(order.status))}</span></td>
+          <td><span class="status-badge status-${escapeHtml(order.payment || 'unpaid')}">${escapeHtml(orderPaymentLabel(order.payment))}</span></td>
           <td class="table-actions">
             <button type="button" class="btn ghost small" data-view-order="${escapeHtml(order.id)}">Shiko</button>
             <button type="button" class="btn danger small" data-delete-order="${escapeHtml(order.id)}">Fshi</button>
@@ -703,7 +727,7 @@
         </tr>`;
           })
           .join('')
-      : emptyRow(6, ordersData.length ? 'Asnjë porosi nuk përputhet me kërkimin.' : 'Ende nuk ka porosi.');
+      : emptyRow(7, ordersData.length ? 'Asnjë porosi nuk përputhet me kërkimin.' : 'Ende nuk ka porosi.');
   }
 
   function normalizeOrderQty(value) {
@@ -853,6 +877,7 @@
       <h1>Porosia ${escapeHtml(order.id.slice(-8).toUpperCase())}</h1>
       <div>Data: ${escapeHtml(createdAt)}</div>
       <div>Statusi: ${escapeHtml(orderStatusLabel(order.status))}</div>
+      <div>Pagesa: ${escapeHtml(orderPaymentLabel(order.payment))}</div>
     </div>
   </div>
   <div class="client">
@@ -901,6 +926,7 @@
         notes: editorFields.querySelector('[name="customer_notes"]')?.value.trim() || '',
       },
       status: editorFields.querySelector('[name="status"]')?.value || order.status,
+      payment: editorFields.querySelector('[name="payment"]')?.value || order.payment || 'unpaid',
       items: (order.items || [])
         .map((item, index) => {
           const row = editorFields.querySelector('[data-item-index="' + index + '"]');
@@ -1096,11 +1122,17 @@
               <option value="processing"${order.status === 'processing' ? ' selected' : ''}>Në përpunim</option>
               <option value="done"${order.status === 'done' ? ' selected' : ''}>Përfunduar</option>
               <option value="cancelled"${order.status === 'cancelled' ? ' selected' : ''}>Anuluar</option>
-              <option value="paid"${order.status === 'paid' ? ' selected' : ''}>E paguar</option>
-              <option value="unpaid_balance"${order.status === 'unpaid_balance' ? ' selected' : ''}>Mbetje e pa paguar</option>
             </select>
           </div>
-          <div class="order-print-wrap">
+          <div>
+            <label for="order-payment">Pagesa</label>
+            <select name="payment" id="order-payment">
+              <option value="unpaid"${(order.payment || 'unpaid') === 'unpaid' ? ' selected' : ''}>E pa paguar</option>
+              <option value="paid"${order.payment === 'paid' ? ' selected' : ''}>E paguar</option>
+              <option value="balance"${order.payment === 'balance' ? ' selected' : ''}>Mbetje</option>
+            </select>
+          </div>
+          <div class="order-print-wrap field-span-2">
             <label>&nbsp;</label>
             <div class="order-action-btns">
               <button type="button" class="btn ghost" data-print-order>Printo porosinë</button>
@@ -1119,10 +1151,10 @@
     editorDialog.showModal();
   }
 
-  async function saveOrderEdits(orderId, status, items, customer) {
+  async function saveOrderEdits(orderId, status, items, customer, payment) {
     await api('/api/orders/' + encodeURIComponent(orderId), {
       method: 'PATCH',
-      body: JSON.stringify({ status, items, customer }),
+      body: JSON.stringify({ status, items, customer, payment }),
     });
     showToast('Porosia u përditësua');
     ordersData = await api('/api/orders');
@@ -1746,6 +1778,7 @@
       if (editorMode === 'order') {
         const order = ordersData[editorIndex];
         const status = editorFields.querySelector('[name="status"]').value;
+        const payment = editorFields.querySelector('[name="payment"]')?.value || 'unpaid';
         const customer = {
           name: editorFields.querySelector('[name="customer_name"]')?.value.trim() || '',
           email: editorFields.querySelector('[name="customer_email"]')?.value.trim() || '',
@@ -1767,7 +1800,7 @@
             price: Math.max(0, Number(priceInput ? priceInput.value : item.price) || 0),
           };
         });
-        await saveOrderEdits(order.id, status, items, customer);
+        await saveOrderEdits(order.id, status, items, customer, payment);
         editorDialog.close();
         return;
       }
@@ -1914,6 +1947,7 @@
 
   orderSearch.addEventListener('input', renderOrders);
   orderStatusFilter.addEventListener('change', renderOrders);
+  orderPaymentFilter.addEventListener('change', renderOrders);
 
   submissionsTable.addEventListener('click', (e) => {
     const viewBtn = e.target.closest('[data-view-submission]');

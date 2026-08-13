@@ -885,7 +885,8 @@ textarea {
 .status-read { background: #eef4ff; color: #1d4ed8; }
 .status-done { background: #ecfdf3; color: #047857; }
 .status-paid { background: #ecfdf3; color: #047857; }
-.status-unpaid_balance { background: #fff7e6; color: #b45309; }
+.status-unpaid { background: #fff1f0; color: #b91c1c; }
+.status-balance { background: #fff7e6; color: #b45309; }
 .status-cancelled { background: var(--danger-soft); color: #b91c1c; }
 .status-archived { background: #f3f4f6; color: #6b7280; }
 

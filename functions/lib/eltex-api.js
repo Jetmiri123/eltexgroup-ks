@@ -227,6 +227,7 @@ async function buildOrderFromRequest(env, request, body) {
     id: randomOrderId(),
     createdAt: new Date().toISOString(),
     status: 'new',
+    payment: 'unpaid',
     customer: { name, email, phone, company, notes },
     items: orderItems,
     total: Math.round(total * 100) / 100,
@@ -476,10 +477,15 @@ export async function handleApiRequest(context) {
     const orders = await readOrders(env, request);
     const order = orders.find((entry) => entry.id === orderMatch[1]);
     if (!order) return json({ error: 'Porosia nuk u gjet' }, 404);
-    const allowed = ['new', 'processing', 'done', 'cancelled', 'paid', 'unpaid_balance'];
+    const allowed = ['new', 'processing', 'done', 'cancelled'];
     let changed = false;
     if (body.status && allowed.includes(body.status)) {
       order.status = body.status;
+      changed = true;
+    }
+    const payments = ['unpaid', 'paid', 'balance'];
+    if (body.payment && payments.includes(body.payment)) {
+      order.payment = body.payment;
       changed = true;
     }
     if (body.customer && typeof body.customer === 'object') {
