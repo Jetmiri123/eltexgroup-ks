@@ -1911,9 +1911,23 @@
       }
     });
 
-    return Array.from(map.values()).sort(
-      (a, b) => b.count - a.count || decodeHtml(a.name).localeCompare(decodeHtml(b.name), 'sq')
-    );
+    const orderMap = new Map();
+    (productsData.categories || []).forEach((cat) => {
+      if (!cat || !cat.name || typeof cat.order !== 'number') return;
+      orderMap.set(cat.slug || slugify(cat.name), cat.order);
+      orderMap.set(slugify(cat.name), cat.order);
+    });
+
+    return Array.from(map.values()).sort((a, b) => {
+      const aHas = orderMap.has(a.slug);
+      const bHas = orderMap.has(b.slug);
+      if (aHas && bHas && orderMap.get(a.slug) !== orderMap.get(b.slug)) {
+        return orderMap.get(a.slug) - orderMap.get(b.slug);
+      }
+      if (aHas && !bHas) return -1;
+      if (!aHas && bHas) return 1;
+      return b.count - a.count || decodeHtml(a.name).localeCompare(decodeHtml(b.name), 'sq');
+    });
   }
 
   function syncProductCategoryFilter() {
@@ -2536,7 +2550,8 @@
               cat.count > 0
                 ? `<button type="button" class="btn ghost small" disabled title="Zhvendosni produktet në një kategori tjetër fillimisht">Fshi</button>`
                 : `<button type="button" class="btn danger small" data-delete-category="${escapeHtml(cat.slug)}">Fshi</button>`;
-            return `<li data-category-slug="${escapeHtml(cat.slug)}">
+            return `<li data-category-slug="${escapeHtml(cat.slug)}" draggable="true">
+              <span class="cat-handle" title="Tërhiqeni për ta rirenditur" aria-hidden="true">⋮⋮</span>
               <div class="cat-info">
                 <span class="cat-name">${escapeHtml(name)}</span>
                 <span class="cat-count">${countLabel}</span>
@@ -2563,6 +2578,7 @@
 
     const currentName = decodeHtml(cat.name);
     freshRow.classList.add('is-editing');
+    freshRow.removeAttribute('draggable');
     freshRow.innerHTML = `
       <div class="cat-edit-row">
         <input type="text" class="cat-edit-input" value="${escapeHtml(currentName)}" aria-label="Emri i ri i kategorisë">
@@ -2574,6 +2590,30 @@
     const input = freshRow.querySelector('.cat-edit-input');
     input.focus();
     input.select();
+  }
+
+  async function saveCategoryOrder(orderedSlugs) {
+    if (!Array.isArray(productsData.categories)) productsData.categories = [];
+    const options = getProductCategoryOptions();
+    orderedSlugs.forEach((slug, index) => {
+      const existing = productsData.categories.find(
+        (c) => c && c.name && (c.slug || slugify(c.name)) === slug
+      );
+      if (existing) {
+        existing.order = index;
+        return;
+      }
+      const opt = options.find((o) => o.slug === slug);
+      if (opt) {
+        productsData.categories.push({
+          name: opt.name,
+          slug: opt.slug,
+          count: opt.count,
+          order: index,
+        });
+      }
+    });
+    await saveProducts();
   }
 
   async function renameCategory(oldSlug, newName) {
@@ -2714,6 +2754,91 @@
       showToast(err.message || 'Gabim gjatë fshirjes së kategorisë');
     }
   });
+  // ---- Drag & drop reordering of categories ----
+  let draggedCategorySlug = null;
+  let dropTarget = null; // { row, after }
+
+  function clearDropMarkers() {
+    categoriesList
+      .querySelectorAll('.drop-before, .drop-after')
+      .forEach((el) => el.classList.remove('drop-before', 'drop-after'));
+  }
+
+  categoriesList.addEventListener('dragstart', (e) => {
+    const row = e.target.closest && e.target.closest('li[data-category-slug]');
+    if (!row || row.classList.contains('is-editing')) {
+      e.preventDefault();
+      return;
+    }
+    draggedCategorySlug = row.dataset.categorySlug;
+    row.classList.add('is-dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    try {
+      e.dataTransfer.setData('text/plain', draggedCategorySlug);
+    } catch (_) {}
+  });
+
+  categoriesList.addEventListener('dragover', (e) => {
+    if (!draggedCategorySlug) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+
+    // Auto-scroll the dialog body when near its edges.
+    const scroller = categoriesList.closest('.dialog-body') || categoriesList.parentElement;
+    if (scroller) {
+      const rect = scroller.getBoundingClientRect();
+      if (e.clientY < rect.top + 40) scroller.scrollTop -= 12;
+      else if (e.clientY > rect.bottom - 40) scroller.scrollTop += 12;
+    }
+
+    const row = e.target.closest('li[data-category-slug]');
+    clearDropMarkers();
+    if (!row || row.dataset.categorySlug === draggedCategorySlug) {
+      dropTarget = null;
+      return;
+    }
+    const rect = row.getBoundingClientRect();
+    const after = e.clientY > rect.top + rect.height / 2;
+    row.classList.add(after ? 'drop-after' : 'drop-before');
+    dropTarget = { row, after };
+  });
+
+  categoriesList.addEventListener('drop', async (e) => {
+    if (!draggedCategorySlug) return;
+    e.preventDefault();
+    const target = dropTarget;
+    const movedSlug = draggedCategorySlug;
+    clearDropMarkers();
+    if (!target) return;
+
+    const slugs = getProductCategoryOptions().map((c) => c.slug);
+    const from = slugs.indexOf(movedSlug);
+    if (from === -1) return;
+    slugs.splice(from, 1);
+    let to = slugs.indexOf(target.row.dataset.categorySlug);
+    if (to === -1) return;
+    if (target.after) to += 1;
+    slugs.splice(to, 0, movedSlug);
+
+    try {
+      await saveCategoryOrder(slugs);
+      renderCategoriesList();
+      showToast('Renditja e kategorive u ruajt');
+    } catch (err) {
+      showToast(err.message || 'Gabim gjatë ruajtjes së renditjes');
+      renderCategoriesList();
+    }
+  });
+
+  categoriesList.addEventListener('dragend', () => {
+    draggedCategorySlug = null;
+    dropTarget = null;
+    clearDropMarkers();
+    categoriesList
+      .querySelectorAll('.is-dragging')
+      .forEach((el) => el.classList.remove('is-dragging'));
+  });
+
   categoriesList.addEventListener('keydown', async (e) => {
     if (e.key !== 'Enter') return;
     const input = e.target.closest('.cat-edit-input');
