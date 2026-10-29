@@ -12,29 +12,12 @@
 
     grid.innerHTML = products
       .slice(0, 4)
-      .map((product) => {
-        const hasVariants = !!utils.parseProductVariants(product);
-        const cartButton = !utils.canViewPrices()
-          ? `<a href="/llogaria" class="btn-add-cart btn-add-cart--link">Kyçu për çmime</a>`
-          : hasVariants
-            ? `<a href="${utils.productUrl(product)}" class="btn-add-cart btn-add-cart--link">Shiko opsionet</a>`
-            : `<button type="button" class="btn-add-cart" data-home-add="${utils.escapeHtml(product.id)}">Shto në Shportë</button>`;
-
-        return `
-      <article class="home-product-card">
-        <a href="${utils.productUrl(product)}" class="home-product-image-link">
-          <img src="${utils.escapeHtml(product.img)}" alt="${utils.escapeHtml(product.name)}" class="home-product-image" loading="lazy">
-        </a>
-        <div class="home-product-body">
-          ${utils.renderCategoryBadge(product.cat)}
-          <h3 class="small-text home-product-title">
-            <a href="${utils.productUrl(product)}">${utils.escapeHtml(product.name)}</a>
-          </h3>
-          <div class="home-product-price">${utils.renderProductPrice(product, { style: hasVariants ? 'from' : 'single' })}</div>
-          ${cartButton}
-        </div>
-      </article>`;
-      })
+      .map((product) =>
+        utils.renderCatalogCard(product, {
+          className: 'home-product-card',
+          addAttr: 'data-home-add',
+        })
+      )
       .join('');
 
     grid.querySelectorAll('[data-home-add]').forEach((button) => {

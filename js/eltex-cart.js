@@ -76,8 +76,8 @@
       entry.variant = product.variant;
       entry.variantLabel = product.variantLabel || product.variant;
       entry.variantAttribute = product.variantAttribute || '';
-      if (product.variantKod) entry.variantKod = product.variantKod;
     }
+    if (product.variantKod) entry.variantKod = product.variantKod;
 
     return entry;
   }
@@ -160,6 +160,12 @@
         synced.variantAttribute = item.variantAttribute || '';
         if (item.variantKod) synced.variantKod = item.variantKod;
         synced.name = product.name + ' — ' + synced.variantLabel;
+      } else {
+        const kod =
+          window.EltexProducts && typeof window.EltexProducts.getProductKod === 'function'
+            ? window.EltexProducts.getProductKod(product)
+            : String(product.sku || '').trim();
+        if (kod) synced.variantKod = kod;
       }
 
       synced.price = resolveLinePrice(product, synced);

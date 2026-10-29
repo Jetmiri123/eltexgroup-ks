@@ -219,6 +219,22 @@
     return variant ? id + '::' + variant : id;
   }
 
+  function getProductKod(product, variantSelection) {
+    if (variantSelection && variantSelection.kod) {
+      return String(variantSelection.kod).trim();
+    }
+    if (!product) return '';
+    const sku = String(product.sku || '').trim();
+    if (sku) return sku;
+    const kodAttr = (product.attributes || []).find((attr) => {
+      const name = String(attr && attr.name ? attr.name : '').trim();
+      return /^kodi$/i.test(name) || /kodi/i.test(name);
+    });
+    if (!kodAttr || !kodAttr.value) return '';
+    const list = splitAttributeValues(kodAttr.value);
+    return list.length === 1 ? list[0] : '';
+  }
+
   function cartPayload(product, variantSelection) {
     const payload = {
       id: product.id,
@@ -233,10 +249,12 @@
       payload.variant = variantSelection.value;
       payload.variantLabel = variantSelection.label || variantSelection.value;
       payload.variantAttribute = variantSelection.attributeName || '';
-      if (variantSelection.kod) payload.variantKod = variantSelection.kod;
       payload.price = getVariantPrice(product, variantSelection.value);
       payload.name = product.name + ' — ' + payload.variantLabel;
     }
+
+    const kod = getProductKod(product, variantSelection);
+    if (kod) payload.variantKod = kod;
 
     return payload;
   }
@@ -304,6 +322,106 @@
     return plainTextToRichHtml(plain || '');
   }
 
+  // Keep these products at the end of their category even if the catalog
+  // array order is overwritten by a later admin save.
+  const PINNED_LAST_SLUGS = {
+    'kleme-katrore-metalike-per-lidhje-shiriti-tokezimi': true,
+  };
+  const PINNED_LAST_IDS = {
+    '4719': true,
+  };
+
+  function isPinnedLast(product) {
+    if (!product) return false;
+    const slug = String(product.slug || '').toLowerCase();
+    const id = String(product.id || '');
+    return !!(PINNED_LAST_SLUGS[slug] || PINNED_LAST_IDS[id]);
+  }
+
+  function sortCatalogProducts(list) {
+    const kept = [];
+    const trailing = [];
+    (list || []).forEach((product) => {
+      if (isPinnedLast(product)) trailing.push(product);
+      else kept.push(product);
+    });
+    return kept.concat(trailing);
+  }
+
+  function isNewProduct(product) {
+    const id = Number(product && product.id);
+    if (!Number.isFinite(id) || id < 1e12) return false;
+    return id > Date.now() - 90 * 24 * 60 * 60 * 1000;
+  }
+
+  function renderPriceWithUnit(product, opts) {
+    const html = renderProductPrice(product, opts);
+    if (!canViewPrices()) return html;
+    return html + '<span class="price-unit"> / copë</span>';
+  }
+
+  function renderCatalogCard(product, opts) {
+    const options = opts || {};
+    const hasVariants = !!parseProductVariants(product);
+    const addKey = options.addAttr || 'data-add-cart';
+    const canSee = canViewPrices();
+    const cartAction = !canSee
+      ? '<a href="/llogaria" class="btn-add-cart btn-add-cart--link">Kyçu për çmime</a>'
+      : hasVariants
+        ? '<a href="' + productUrl(product) + '" class="btn-add-cart btn-add-cart--link">Zgjidh opsionin</a>'
+        : '<button type="button" class="btn-add-cart" ' +
+          addKey +
+          '="' +
+          escapeHtml(product.id) +
+          '">Shto në shportë</button>';
+
+    const badgeKind = options.badge || (isNewProduct(product) ? 'new' : '');
+    const badgeHtml =
+      badgeKind === 'recommended'
+        ? '<span class="product-card-badge">e rekomanduar</span>'
+        : badgeKind === 'new'
+          ? '<span class="product-card-badge product-card-badge--new">NEW</span>'
+          : '';
+
+    const kod = getProductKod(product);
+    const kodHtml = kod
+      ? '<div class="product-card-kod">Kodi: ' + escapeHtml(kod) + '</div>'
+      : '';
+
+    const extraClass = options.className ? ' ' + options.className : '';
+
+    return (
+      '<article class="product-card' +
+      extraClass +
+      '" data-category="' +
+      escapeHtml(product.cat) +
+      '">' +
+      '<a href="' +
+      productUrl(product) +
+      '" class="product-card-image-link">' +
+      badgeHtml +
+      '<img src="' +
+      escapeHtml(product.img) +
+      '" alt="' +
+      escapeHtml(product.name) +
+      '" class="product-card-image" loading="lazy">' +
+      '</a>' +
+      '<div class="product-card-body">' +
+      '<h3 class="product-card-title"><a href="' +
+      productUrl(product) +
+      '">' +
+      escapeHtml(product.name) +
+      '</a></h3>' +
+      kodHtml +
+      '<div class="product-card-footer">' +
+      '<div class="product-card-price">' +
+      renderPriceWithUnit(product, { style: hasVariants ? 'from' : 'single' }) +
+      '</div>' +
+      cartAction +
+      '</div></div></article>'
+    );
+  }
+
   root.EltexProducts = {
     decodeHtml,
     escapeHtml,
@@ -322,11 +440,17 @@
     normalizeProduct,
     splitAttributeValues,
     parseProductVariants,
+    getProductKod,
     cartLineKey,
     cartPayload,
     loadProducts,
     findProduct,
     plainTextToRichHtml,
     formatRichContent,
+    isPinnedLast,
+    sortCatalogProducts,
+    isNewProduct,
+    renderPriceWithUnit,
+    renderCatalogCard,
   };
 })(window);

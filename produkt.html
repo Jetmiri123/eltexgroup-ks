@@ -23,11 +23,11 @@
     <div class="wrapper">
       <nav class="product-breadcrumb" id="product-breadcrumb" aria-label="Breadcrumb">
         <a href="/">Home</a>
-        <span>/</span>
+        <span class="product-breadcrumb-sep" aria-hidden="true">›</span>
         <a href="/produkte">Produkte</a>
-        <span id="breadcrumb-category-sep" hidden>/</span>
+        <span class="product-breadcrumb-sep" id="breadcrumb-category-sep" hidden>›</span>
         <a href="/produkte" id="breadcrumb-category" hidden></a>
-        <span>/</span>
+        <span class="product-breadcrumb-sep">›</span>
         <span id="breadcrumb-current">Produkt</span>
       </nav>
 
@@ -43,16 +43,28 @@
       <div id="product-detail" class="product-detail" hidden>
         <div class="product-detail-grid">
           <div class="product-detail-media">
-            <img id="product-image" src="" alt="" class="product-detail-image">
+            <div class="product-detail-stage">
+              <span class="product-card-badge product-card-badge--new" id="product-new-badge" hidden>NEW</span>
+              <button type="button" class="product-gallery-nav product-gallery-nav--prev" id="product-gallery-prev" aria-label="Fotoja e mëparshme" hidden>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 5L8 12l7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <img id="product-image" src="" alt="" class="product-detail-image">
+              <button type="button" class="product-gallery-nav product-gallery-nav--next" id="product-gallery-next" aria-label="Fotoja tjetër" hidden>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
             <div id="product-gallery" class="product-gallery" hidden></div>
           </div>
           <div class="product-detail-info">
             <div class="product-detail-category" id="product-category"></div>
             <h1 class="product-detail-title" id="product-title"></h1>
+            <div class="product-detail-rating" aria-label="0 vlerësime">
+              <span class="product-stars" aria-hidden="true">★★★★★</span>
+              <span class="product-reviews-count">(0 vlerësime)</span>
+            </div>
             <div class="product-detail-summary product-description-body" id="product-summary" hidden></div>
             <div class="product-detail-meta">
               <div class="product-detail-price" id="product-price"></div>
-              <div class="product-detail-sku" id="product-sku" hidden></div>
             </div>
             <div class="product-variants" id="product-variants" hidden></div>
             <div class="product-qty" id="product-qty">
@@ -73,25 +85,78 @@
               </div>
             </div>
             <div class="product-detail-actions">
-              <button type="button" class="btn-add-cart btn-add-cart-lg" id="product-add-cart">Shto në Shportë</button>
-              <a href="/contact-us" class="product-contact-link">Porosi me shumicë →</a>
+              <button type="button" class="btn-add-cart btn-add-cart-lg" id="product-add-cart">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M6 6h15l-1.5 9h-12L5 3H2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="9" cy="20" r="1.4" fill="currentColor"/>
+                  <circle cx="18" cy="20" r="1.4" fill="currentColor"/>
+                </svg>
+                <span id="product-add-cart-label">Shto në shportë</span>
+              </button>
+              <a href="/contact-us" class="btn-quote" id="product-quote">Kërko ofertë për sasi të mëdha</a>
             </div>
+            <ul class="product-trust">
+              <li>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 7h11v10H3V7zm11 3h4.5L21 13.5V17h-7v-7z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="7" cy="18.5" r="1.5" fill="currentColor"/><circle cx="17.5" cy="18.5" r="1.5" fill="currentColor"/></svg>
+                <span>Furnizim i shpejtë në të gjithë Kosovën</span>
+              </li>
+              <li>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8.8 12.2l2.1 2.1 4.3-4.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span>Produkt cilësor me garanci</span>
+              </li>
+              <li>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M18 16.5v2a2 2 0 01-2 2H6a2 2 0 01-2-2V9a2 2 0 012-2h2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M8 12a4 4 0 118 0 4 4 0 01-8 0zm11.5-1.5v3M21 12h-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                <span>Mbështetje profesionale</span>
+              </li>
+            </ul>
           </div>
         </div>
 
-        <div class="product-detail-details" id="product-details" hidden>
-          <div class="product-detail-specs" id="product-specs" hidden>
-            <h2 class="product-detail-label">Specifikimet</h2>
-            <table class="product-specs-table" id="product-specs-table"></table>
+        <div class="product-tabs" id="product-tabs">
+          <div class="product-tabs-nav" role="tablist">
+            <button type="button" class="product-tab is-active" role="tab" aria-selected="true" data-tab="desc">Përshkrimi</button>
+            <button type="button" class="product-tab" role="tab" aria-selected="false" data-tab="specs">Specifikimet teknike</button>
+            <button type="button" class="product-tab" role="tab" aria-selected="false" data-tab="details">Detajet e produktit</button>
+            <button type="button" class="product-tab" role="tab" aria-selected="false" data-tab="docs">Dokumente</button>
           </div>
-          <div class="product-detail-description" id="product-description-wrap" hidden>
-            <h2 class="product-detail-label">Përshkrimi</h2>
-            <div class="product-description-body" id="product-description"></div>
+
+          <div class="product-tabs-panel" data-panel="desc" role="tabpanel">
+            <div class="product-tab-split">
+              <div class="product-detail-description" id="product-description-wrap" hidden>
+                <h2 class="product-tab-heading">Përshkrimi i produktit</h2>
+                <div class="product-description-body" id="product-description"></div>
+                <div class="product-info-note">
+                  <span class="product-info-note-icon" aria-hidden="true">i</span>
+                  <p>Për informata shtesë dhe porosi, kontaktoni ekipin e Eltex Group.</p>
+                </div>
+              </div>
+              <div class="product-detail-specs" id="product-specs" hidden>
+                <h2 class="product-tab-heading product-tab-heading--icon">Specifikimet teknike</h2>
+                <table class="product-specs-table" id="product-specs-table"></table>
+              </div>
+            </div>
+          </div>
+
+          <div class="product-tabs-panel" data-panel="specs" role="tabpanel" hidden>
+            <h2 class="product-tab-heading product-tab-heading--icon">Specifikimet teknike</h2>
+            <table class="product-specs-table" id="product-specs-table-full"></table>
+            <p class="product-tab-empty" id="product-specs-empty" hidden>Nuk ka specifikime teknike për këtë produkt.</p>
+          </div>
+
+          <div class="product-tabs-panel" data-panel="details" role="tabpanel" hidden>
+            <h2 class="product-tab-heading">Detajet e produktit</h2>
+            <table class="product-specs-table" id="product-details-table"></table>
+          </div>
+
+          <div class="product-tabs-panel" data-panel="docs" role="tabpanel" hidden>
+            <h2 class="product-tab-heading">Dokumente</h2>
+            <ul class="product-docs" id="product-docs"></ul>
+            <p class="product-tab-empty" id="product-docs-empty" hidden>Nuk ka dokumente të bashkëngjitura për këtë produkt.</p>
           </div>
         </div>
 
         <div class="product-related">
-          <h2 class="product-related-title">Produkte <span class="orange">të Ngjashme</span></h2>
+          <h2 class="product-related-title">Produkte të ngjashme</h2>
           <div class="products-grid product-related-grid" id="product-related"></div>
         </div>
       </div>

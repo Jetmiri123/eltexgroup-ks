@@ -5,6 +5,12 @@
   const success = form.parentElement.querySelector('.w-form-done');
   const error = form.parentElement.querySelector('.w-form-fail');
   const submitBtn = form.querySelector('[type="submit"]');
+  const messageInput = document.getElementById('Message');
+  const requestedProduct = new URLSearchParams(window.location.search).get('produkt');
+  if (requestedProduct && messageInput && !messageInput.value) {
+    messageInput.value =
+      'Përshëndetje, dëshiroj një ofertë për sasi të mëdha për: ' + requestedProduct;
+  }
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();

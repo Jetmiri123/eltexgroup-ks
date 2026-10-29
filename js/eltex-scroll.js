@@ -15,11 +15,11 @@
   }
 
   var PINPOINTS_HTML =
-    pinpoint('Cilësi e Certifikuar', false) +
+    pinpoint('Produkte të Certifikuara', false) +
     pinpoint('Këshillim Profesional', true) +
     pinpoint('Çmime Konkurruese', false) +
     pinpoint('Dërgesa të Shpejta', true) +
-    pinpoint('Partnerë Globalë', false) +
+    pinpoint('Standarde Globale', false) +
     pinpoint('Mbështetje B2B', true);
 
   var MOVEMENT_HTML =
@@ -73,6 +73,7 @@
       '.collection-item-2',
       '.collection-item-3',
       '.home-product-card',
+      '.product-card',
       '.product-detail-grid',
       '.cart-item',
       '.partners-section',

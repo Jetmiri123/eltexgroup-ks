@@ -47,6 +47,7 @@
   let editorIndex = -1;
   let richEditors = {};
   let selectedProductCategorySlug = '';
+  let orderAddPicked = null;
 
   function token() {
     return localStorage.getItem(TOKEN_KEY) || '';
@@ -768,45 +769,413 @@
     if (totalEl) totalEl.textContent = '€' + (Math.round(total * 100) / 100).toFixed(2);
   }
 
-  function bindOrderQtyControls() {
-    editorFields.querySelectorAll('[data-order-qty-minus]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const input = editorFields.querySelector(
-          '[data-order-qty="' + btn.dataset.orderQtyMinus + '"]'
+  function orderItemRowHtml(item, index, options) {
+    const opts = options || {};
+    const qty = normalizeOrderQty(item.qty);
+    const price = Number(item.price) || 0;
+    const lineTotal = Math.round(price * qty * 100) / 100;
+    const kod = item.kod || orderItemKod(item);
+    const extraAttrs = opts.isNew
+      ? ' data-new="1"' +
+        ' data-product-id="' +
+        escapeHtml(String(item.id || '')) +
+        '"' +
+        ' data-slug="' +
+        escapeHtml(String(item.slug || '')) +
+        '"' +
+        ' data-name="' +
+        escapeHtml(String(item.name || '')) +
+        '"' +
+        ' data-cat="' +
+        escapeHtml(String(item.cat || '')) +
+        '"' +
+        ' data-variant="' +
+        escapeHtml(String(item.variant || '')) +
+        '"' +
+        ' data-variant-kod="' +
+        escapeHtml(String(item.variantKod || '')) +
+        '"'
+      : '';
+    return (
+      '<tr data-order-item-row data-price="' +
+      escapeHtml(String(price)) +
+      '" data-item-index="' +
+      index +
+      '"' +
+      extraAttrs +
+      '><td>' +
+      escapeHtml(item.name) +
+      (kod
+        ? ' <span class="muted-inline order-item-kod">' + escapeHtml(kod) + '</span>'
+        : '') +
+      '</td><td>' +
+      '<div class="order-qty-controls">' +
+      '<button type="button" class="order-qty-btn" data-order-qty-minus="' +
+      index +
+      '" aria-label="Zvogëlo">−</button>' +
+      '<input type="number" class="order-qty-input" data-order-qty="' +
+      index +
+      '" value="' +
+      qty +
+      '" min="1" max="999" inputmode="numeric" aria-label="Sasia">' +
+      '<button type="button" class="order-qty-btn" data-order-qty-plus="' +
+      index +
+      '" aria-label="Rrit">+</button>' +
+      '</div></td><td>' +
+      '<div class="order-price-wrap">' +
+      '<span class="order-price-prefix">€</span>' +
+      '<input type="text" class="order-price-input" data-order-price="' +
+      index +
+      '" value="' +
+      price.toFixed(2) +
+      '" inputmode="decimal" autocomplete="off" aria-label="Çmimi">' +
+      '</div></td><td data-order-line-total>€' +
+      lineTotal.toFixed(2) +
+      '</td><td>' +
+      '<button type="button" class="btn danger small" data-order-remove="' +
+      index +
+      '" aria-label="Hiq produktin">Hiq</button>' +
+      '</td></tr>'
+    );
+  }
+
+  function nextOrderRowIndex() {
+    let max = -1;
+    editorFields.querySelectorAll('[data-order-item-row]').forEach((row) => {
+      const n = Number(row.dataset.itemIndex);
+      if (Number.isFinite(n) && n > max) max = n;
+    });
+    return max + 1;
+  }
+
+  function orderRowQtyPrice(row, fallback) {
+    const qty = normalizeOrderQty(
+      row.querySelector('[data-order-qty]')?.value ?? (fallback && fallback.qty)
+    );
+    const price = parsePrice(
+      row.querySelector('[data-order-price]')?.value ?? (fallback && fallback.price)
+    );
+    return { qty, price };
+  }
+
+  function itemFromNewRow(row) {
+    const { qty, price } = orderRowQtyPrice(row);
+    const item = {
+      id: row.dataset.productId || '',
+      slug: row.dataset.slug || '',
+      name: row.dataset.name || '',
+      cat: row.dataset.cat || '',
+      variant: row.dataset.variant || '',
+      variantKod: row.dataset.variantKod || '',
+      qty,
+      price,
+      lineTotal: Math.round(price * qty * 100) / 100,
+    };
+    item.kod = orderItemKod(item);
+    return item;
+  }
+
+  function collectOrderItemsForSave(order) {
+    const original = order.items || [];
+    const items = original.map((item, index) => {
+      const row = editorFields.querySelector(
+        '[data-order-item-row][data-item-index="' + index + '"]:not([data-new])'
+      );
+      if (!row || row.dataset.removed === '1') {
+        return { ...item, remove: true };
+      }
+      const { qty, price } = orderRowQtyPrice(row, item);
+      return { ...item, qty, price };
+    });
+    editorFields.querySelectorAll('[data-order-item-row][data-new="1"]').forEach((row) => {
+      if (row.dataset.removed === '1') return;
+      items.push(itemFromNewRow(row));
+    });
+    return items;
+  }
+
+  function productSearchHaystack(product) {
+    const name = decodeHtml(product.name || '').toLowerCase();
+    const slug = String(product.slug || '').toLowerCase();
+    const id = String(product.id || '').toLowerCase();
+    const cat = decodeHtml(product.cat || '').toLowerCase();
+    const sku = String(product.sku || '').toLowerCase();
+    const kods = (product.attributes || [])
+      .filter((attr) => attr && /kodi/i.test(String(attr.name || '')))
+      .map((attr) => String(attr.value || '').toLowerCase())
+      .join(' ');
+    return name + ' ' + slug + ' ' + id + ' ' + cat + ' ' + sku + ' ' + kods;
+  }
+
+  function searchCatalogProducts(query) {
+    const q = String(query || '').trim().toLowerCase();
+    const products = productsData.products || [];
+    if (!q) return products.slice(0, 8);
+    const matches = [];
+    products.forEach((product) => {
+      if (productSearchHaystack(product).includes(q)) matches.push(product);
+    });
+    return matches.slice(0, 12);
+  }
+
+  function orderAddVariantOptions(product) {
+    if (!product) return [];
+    const state = parseAdminVariantState(product);
+    return splitCsv(state.values).map((value) => ({
+      value,
+      kod: (state.kodMap && state.kodMap[value]) || '',
+      price:
+        state.prices && state.prices[value] != null
+          ? Number(state.prices[value]) || 0
+          : Number(product.price) || 0,
+    }));
+  }
+
+  function hideOrderAddResults() {
+    const box = editorFields.querySelector('[data-order-add-results]');
+    if (box) {
+      box.hidden = true;
+      box.innerHTML = '';
+    }
+  }
+
+  function renderOrderAddResults(query) {
+    const box = editorFields.querySelector('[data-order-add-results]');
+    if (!box) return;
+    const matches = searchCatalogProducts(query);
+    if (!String(query || '').trim() || !matches.length) {
+      box.hidden = !String(query || '').trim();
+      box.innerHTML = String(query || '').trim()
+        ? '<div class="order-add-empty">Nuk u gjet asnjë produkt.</div>'
+        : '';
+      return;
+    }
+    box.hidden = false;
+    box.innerHTML = matches
+      .map((product) => {
+        const name = decodeHtml(product.name || '');
+        const kod = productKod(product);
+        const price = Number(product.price) || 0;
+        return (
+          '<button type="button" class="order-add-result" data-order-add-pick="' +
+          escapeHtml(String(product.id)) +
+          '"><span>' +
+          escapeHtml(name) +
+          (kod ? ' <span class="order-item-kod">' + escapeHtml(kod) + '</span>' : '') +
+          '</span><span class="muted-inline">€' +
+          price.toFixed(2) +
+          '</span></button>'
         );
+      })
+      .join('');
+  }
+
+  function resetOrderAddPicker() {
+    orderAddPicked = null;
+    const search = editorFields.querySelector('[data-order-add-search]');
+    const variantWrap = editorFields.querySelector('[data-order-add-variant-wrap]');
+    const variantSelect = editorFields.querySelector('[data-order-add-variant]');
+    if (search) search.value = '';
+    if (variantSelect) variantSelect.innerHTML = '';
+    if (variantWrap) variantWrap.hidden = true;
+    hideOrderAddResults();
+  }
+
+  function pickOrderAddProduct(productId) {
+    const product = (productsData.products || []).find(
+      (entry) => String(entry.id) === String(productId)
+    );
+    if (!product) return;
+    orderAddPicked = product;
+    const search = editorFields.querySelector('[data-order-add-search]');
+    const variantWrap = editorFields.querySelector('[data-order-add-variant-wrap]');
+    const variantSelect = editorFields.querySelector('[data-order-add-variant]');
+    if (search) search.value = decodeHtml(product.name || '');
+    hideOrderAddResults();
+    const variants = orderAddVariantOptions(product);
+    if (variantSelect && variantWrap) {
+      if (variants.length) {
+        variantWrap.hidden = false;
+        variantSelect.innerHTML = variants
+          .map((variant) => {
+            return (
+              '<option value="' +
+              escapeHtml(variant.value) +
+              '" data-kod="' +
+              escapeHtml(variant.kod) +
+              '" data-price="' +
+              escapeHtml(String(variant.price)) +
+              '">' +
+              escapeHtml(variant.value) +
+              (variant.kod ? ' (' + escapeHtml(variant.kod) + ')' : '') +
+              ' — €' +
+              Number(variant.price || 0).toFixed(2) +
+              '</option>'
+            );
+          })
+          .join('');
+        variantSelect.focus();
+      } else {
+        variantWrap.hidden = true;
+        variantSelect.innerHTML = '';
+      }
+    }
+  }
+
+  function addSelectedProductToOrder() {
+    if (!orderAddPicked) {
+      const search = editorFields.querySelector('[data-order-add-search]');
+      const matches = searchCatalogProducts(search ? search.value : '');
+      if (matches.length === 1) {
+        pickOrderAddProduct(matches[0].id);
+      } else {
+        showToast('Zgjidhni një produkt nga lista, pastaj shtypni Shto.');
+        if (search) renderOrderAddResults(search.value);
+        return;
+      }
+    }
+    const product = orderAddPicked;
+    if (!product) return;
+    const variants = orderAddVariantOptions(product);
+    const variantSelect = editorFields.querySelector('[data-order-add-variant]');
+    let variant = '';
+    let variantKod = '';
+    let price = Number(product.price) || 0;
+    if (variants.length) {
+      const selected = variantSelect && variantSelect.selectedOptions[0];
+      variant = selected ? selected.value : variants[0].value;
+      const match = variants.find((entry) => entry.value === variant) || variants[0];
+      variantKod = match.kod || '';
+      price = Number(match.price) || 0;
+    }
+    const displayName = variant
+      ? decodeHtml(product.name || '') + ' — ' + variant
+      : decodeHtml(product.name || '');
+    const item = {
+      id: String(product.id || ''),
+      slug: product.slug || '',
+      name: displayName,
+      cat: decodeHtml(product.cat || ''),
+      variant,
+      variantKod,
+      qty: 1,
+      price,
+    };
+    if (!item.variantKod) item.variantKod = orderItemKod(item);
+    const tbody = editorFields.querySelector('[data-order-items-body]');
+    if (!tbody) return;
+    const empty = tbody.querySelector('[data-order-empty-row]');
+    if (empty) empty.remove();
+    tbody.insertAdjacentHTML('beforeend', orderItemRowHtml(item, nextOrderRowIndex(), { isNew: true }));
+    refreshOrderTotalsPreview();
+    resetOrderAddPicker();
+    const search = editorFields.querySelector('[data-order-add-search]');
+    if (search) search.focus();
+  }
+
+  function bindOrderEditorDelegation() {
+    if (editorFields.dataset.orderDelegation === '1') return;
+    editorFields.dataset.orderDelegation = '1';
+
+    editorFields.addEventListener('click', (e) => {
+      const pickBtn = e.target.closest('[data-order-add-pick]');
+      if (pickBtn) {
+        pickOrderAddProduct(pickBtn.dataset.orderAddPick);
+        return;
+      }
+      const addBtn = e.target.closest('[data-order-add-btn]');
+      if (addBtn) {
+        e.preventDefault();
+        addSelectedProductToOrder();
+        return;
+      }
+      const minus = e.target.closest('[data-order-qty-minus]');
+      if (minus) {
+        const row = minus.closest('[data-order-item-row]');
+        const input = row && row.querySelector('[data-order-qty]');
         if (!input) return;
         input.value = String(normalizeOrderQty(Number(input.value) - 1));
         refreshOrderTotalsPreview();
-      });
-    });
-    editorFields.querySelectorAll('[data-order-qty-plus]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const input = editorFields.querySelector(
-          '[data-order-qty="' + btn.dataset.orderQtyPlus + '"]'
-        );
+        return;
+      }
+      const plus = e.target.closest('[data-order-qty-plus]');
+      if (plus) {
+        const row = plus.closest('[data-order-item-row]');
+        const input = row && row.querySelector('[data-order-qty]');
         if (!input) return;
         input.value = String(normalizeOrderQty(Number(input.value) + 1));
         refreshOrderTotalsPreview();
-      });
-    });
-    editorFields.querySelectorAll('[data-order-qty], [data-order-price]').forEach((input) => {
-      input.addEventListener('input', () => refreshOrderTotalsPreview());
-      input.addEventListener('change', () => refreshOrderTotalsPreview({ commit: true }));
-      input.addEventListener('blur', () => refreshOrderTotalsPreview({ commit: true }));
-    });
-    editorFields.querySelectorAll('[data-order-remove]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const row = btn.closest('[data-order-item-row]');
+        return;
+      }
+      const remove = e.target.closest('[data-order-remove]');
+      if (remove) {
+        const row = remove.closest('[data-order-item-row]');
         if (!row) return;
         row.hidden = true;
         row.dataset.removed = '1';
         refreshOrderTotalsPreview();
-      });
+      }
+    });
+
+    editorFields.addEventListener('input', (e) => {
+      if (e.target.matches('[data-order-qty], [data-order-price]')) {
+        refreshOrderTotalsPreview();
+      }
+      if (e.target.matches('[data-order-add-search]')) {
+        orderAddPicked = null;
+        const variantWrap = editorFields.querySelector('[data-order-add-variant-wrap]');
+        if (variantWrap) variantWrap.hidden = true;
+        renderOrderAddResults(e.target.value);
+      }
+    });
+
+    editorFields.addEventListener('change', (e) => {
+      if (e.target.matches('[data-order-qty], [data-order-price]')) {
+        refreshOrderTotalsPreview({ commit: true });
+      }
+    });
+
+    editorFields.addEventListener(
+      'blur',
+      (e) => {
+        if (e.target.matches('[data-order-qty], [data-order-price]')) {
+          refreshOrderTotalsPreview({ commit: true });
+        }
+      },
+      true
+    );
+
+    editorFields.addEventListener('keydown', (e) => {
+      if (!e.target.matches('[data-order-add-search]')) return;
+      if (e.key === 'Escape') {
+        hideOrderAddResults();
+        return;
+      }
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const first = editorFields.querySelector('[data-order-add-pick]');
+        if (!orderAddPicked && first) {
+          pickOrderAddProduct(first.dataset.orderAddPick);
+          return;
+        }
+        addSelectedProductToOrder();
+      }
     });
   }
 
+  function productKod(product) {
+    if (!product) return '';
+    const sku = String(product.sku || '').trim();
+    if (sku) return sku;
+    const attrs = product.attributes || [];
+    const kodAttr = attrs.find((a) => a && /^kodi?$/i.test(String(a.name || '').trim()));
+    if (!kodAttr || !kodAttr.value) return '';
+    const kodList = splitCsvKeepEmpty(kodAttr.value).filter(Boolean);
+    return kodList.length === 1 ? kodList[0] : '';
+  }
+
   // Resolve the product code for an order line: use the stored variant code,
-  // otherwise look it up in the catalog (Kodi attribute, matched by variant).
+  // otherwise look it up in the catalog (variant Kodi, or the product SKU).
   function orderItemKod(item) {
     if (item.variantKod) return item.variantKod;
     const product = productsData.products.find(
@@ -815,19 +1184,19 @@
     if (!product) return '';
     const attrs = product.attributes || [];
     const kodAttr = attrs.find((a) => a && /^kodi?$/i.test(String(a.name || '').trim()));
-    if (!kodAttr || !kodAttr.value) return '';
-    const kodList = splitCsvKeepEmpty(kodAttr.value);
+    const kodList = kodAttr ? splitCsvKeepEmpty(kodAttr.value) : [];
     const variant = decodeHtml(item.variant || '').trim();
-    if (!variant) {
-      return kodList.length === 1 ? kodList[0] : '';
+    if (variant && kodAttr) {
+      const primary = attrs.find((a) => a && a !== kodAttr && a.value);
+      if (primary) {
+        const values = splitCsv(primary.value).map((v) => decodeHtml(v).trim());
+        const idx = values.indexOf(variant);
+        if (idx >= 0 && kodList[idx]) return kodList[idx];
+      }
+      return '';
     }
-    const primary = attrs.find((a) => a && a !== kodAttr && a.value);
-    if (primary) {
-      const values = splitCsv(primary.value).map((v) => decodeHtml(v).trim());
-      const idx = values.indexOf(variant);
-      if (idx >= 0 && kodList[idx]) return kodList[idx];
-    }
-    return '';
+    if (kodList.filter(Boolean).length === 1) return kodList.filter(Boolean)[0];
+    return productKod(product);
   }
 
   function printOrder(order) {
@@ -941,10 +1310,11 @@
       payment: editorFields.querySelector('[name="payment"]')?.value || order.payment || 'unpaid',
       items: (order.items || [])
         .map((item, index) => {
-          const row = editorFields.querySelector('[data-item-index="' + index + '"]');
+          const row = editorFields.querySelector(
+            '[data-order-item-row][data-item-index="' + index + '"]:not([data-new])'
+          );
           if (!row || row.dataset.removed === '1') return null;
-          const qty = normalizeOrderQty(row.querySelector('[data-order-qty]')?.value);
-              const price = parsePrice(row.querySelector('[data-order-price]')?.value);
+          const { qty, price } = orderRowQtyPrice(row, item);
           return {
             ...item,
             qty,
@@ -953,7 +1323,12 @@
             kod: orderItemKod(item),
           };
         })
-        .filter(Boolean),
+        .filter(Boolean)
+        .concat(
+          Array.from(editorFields.querySelectorAll('[data-order-item-row][data-new="1"]'))
+            .filter((row) => row.dataset.removed !== '1')
+            .map(itemFromNewRow)
+        ),
     };
     draft.total = draft.items.reduce((sum, item) => sum + (Number(item.lineTotal) || 0), 0);
     return draft;
@@ -1130,52 +1505,9 @@
     editorTitle.textContent = 'Porosia ' + order.id.slice(-8).toUpperCase();
     deleteItemBtn.hidden = false;
 
+    orderAddPicked = null;
     const itemsHtml = (order.items || [])
-      .map((item, index) => {
-        const qty = normalizeOrderQty(item.qty);
-        const price = Number(item.price) || 0;
-        const lineTotal = Math.round(price * qty * 100) / 100;
-        const kod = orderItemKod(item);
-        return (
-          '<tr data-order-item-row data-price="' +
-          escapeHtml(String(price)) +
-          '" data-item-index="' +
-          index +
-          '"><td>' +
-          escapeHtml(item.name) +
-          (kod
-            ? ' <span class="muted-inline order-item-kod">' + escapeHtml(kod) + '</span>'
-            : '') +
-          '</td><td>' +
-          '<div class="order-qty-controls">' +
-          '<button type="button" class="order-qty-btn" data-order-qty-minus="' +
-          index +
-          '" aria-label="Zvogëlo">−</button>' +
-          '<input type="number" class="order-qty-input" data-order-qty="' +
-          index +
-          '" value="' +
-          qty +
-          '" min="1" max="999" inputmode="numeric" aria-label="Sasia">' +
-          '<button type="button" class="order-qty-btn" data-order-qty-plus="' +
-          index +
-          '" aria-label="Rrit">+</button>' +
-          '</div></td><td>' +
-          '<div class="order-price-wrap">' +
-          '<span class="order-price-prefix">€</span>' +
-          '<input type="text" class="order-price-input" data-order-price="' +
-          index +
-          '" value="' +
-          price.toFixed(2) +
-          '" inputmode="decimal" autocomplete="off" aria-label="Çmimi">' +
-          '</div></td><td data-order-line-total>€' +
-          lineTotal.toFixed(2) +
-          '</td><td>' +
-          '<button type="button" class="btn danger small" data-order-remove="' +
-          index +
-          '" aria-label="Hiq produktin">Hiq</button>' +
-          '</td></tr>'
-        );
-      })
+      .map((item, index) => orderItemRowHtml(item, index))
       .join('');
 
     const customer = order.customer || {};
@@ -1206,10 +1538,28 @@
         </div>
         <table class="data-table compact">
           <thead><tr><th>Produkti</th><th>Sasia</th><th>Çmimi</th><th>Totali</th><th></th></tr></thead>
-          <tbody>${itemsHtml || '<tr><td colspan="5" class="muted-inline">Nuk ka produkte në këtë porosi.</td></tr>'}</tbody>
+          <tbody data-order-items-body>${itemsHtml || '<tr data-order-empty-row><td colspan="5" class="muted-inline">Nuk ka produkte në këtë porosi.</td></tr>'}</tbody>
         </table>
+        <div class="order-add-product">
+          <div class="order-add-product-title">Shto produkt</div>
+          <div class="order-add-product-row">
+            <div class="order-add-search-wrap">
+              <label for="order-add-search">Kërko produktin</label>
+              <input type="search" id="order-add-search" data-order-add-search placeholder="Emri ose kodi..." autocomplete="off">
+              <div class="order-add-results" data-order-add-results hidden></div>
+            </div>
+            <div class="order-add-variant-wrap" data-order-add-variant-wrap hidden>
+              <label for="order-add-variant">Varianti</label>
+              <select id="order-add-variant" data-order-add-variant></select>
+            </div>
+            <div class="order-add-btn-wrap">
+              <label>&nbsp;</label>
+              <button type="button" class="btn primary" data-order-add-btn>Shto</button>
+            </div>
+          </div>
+        </div>
         <p><strong>Totali: <span data-order-total>€${Number(order.total || 0).toFixed(2)}</span></strong></p>
-        <p class="field-hint">Ndryshoni klientin, sasinë, çmimin, hiqni produkte, pastaj shtypni Ruaj.</p>
+        <p class="field-hint">Ndryshoni klientin, sasinë, çmimin, shtoni ose hiqni produkte, pastaj shtypni Ruaj.</p>
         <div class="field-grid">
           <div>
             <label for="order-status">Statusi</label>
@@ -1238,7 +1588,7 @@
           </div>
         </div>
       </div>`;
-    bindOrderQtyControls();
+    bindOrderEditorDelegation();
     editorFields.querySelector('[data-print-order]')?.addEventListener('click', () => {
       printOrder(readOrderDraft(order));
     });
@@ -1727,7 +2077,13 @@
     if (type === 'textarea') {
       return `<div class="${cls}"><label>${escapeHtml(label)}</label><textarea name="${name}" rows="${opts.rows || 5}"></textarea></div>`;
     }
-    return `<div class="${cls}"><label>${escapeHtml(label)}</label><input type="${type}" name="${name}" ${opts.step ? `step="${opts.step}"` : ''}></div>`;
+    const extra = [
+      opts.step ? `step="${opts.step}"` : '',
+      opts.placeholder ? `placeholder="${escapeHtml(opts.placeholder)}"` : '',
+    ]
+      .filter(Boolean)
+      .join(' ');
+    return `<div class="${cls}"><label>${escapeHtml(label)}</label><input type="${type}" name="${name}" ${extra}></div>`;
   }
 
   function fillEditorFields(values) {
@@ -1751,6 +2107,7 @@
           name: '',
           cat: '',
           price: 0,
+          sku: '',
           image: '',
           short_description: '',
           description: '',
@@ -1768,11 +2125,12 @@
       <div class="field-grid">
         ${field('name', 'Emri i produktit *', { full: true })}
         ${field('price', 'Çmimi bazë (EUR)', { type: 'number', step: '0.01' })}
+        ${field('sku', 'Kodi', { placeholder: 'p.sh. LC1-D25' })}
         ${categoryField('cat', 'Kategoria *', p.cat || '')}
         ${imageUploadField(p.image || '')}
         <div class="full product-variant-section">
           <h3 class="product-variant-section-title">Variantet, kodet &amp; çmimet</h3>
-          <p class="field-hint">Për produkte me opsione (p.sh. madhësi, model), shkruani emrin e atributit dhe vlerat e ndara me presje. Pastaj plotësoni kodin dhe çmimin për çdo variant.</p>
+          <p class="field-hint">Për produkte pa variante, shkruani kodin te fusha Kodi më sipër. Për produkte me opsione (p.sh. madhësi, model), shkruani emrin e atributit dhe vlerat e ndara me presje. Pastaj plotësoni kodin dhe çmimin për çdo variant.</p>
           ${field('variant_attribute', 'Emri i atributit (p.sh. Modeli/Tipi)', { full: true })}
           ${field('variant_values', 'Vlerat e variantit (të ndara me presje)', { full: true })}
           ${variantPriceFieldsHtml(variantState, p.price ?? 0)}
@@ -1783,6 +2141,7 @@
     fillEditorFields({
       name: p.name || '',
       price: p.price ?? 0,
+      sku: p.sku || '',
       cat: p.cat || '',
       variant_attribute: variantState.attributeName || '',
       variant_values: variantState.values || '',
@@ -1884,19 +2243,10 @@
           notes: editorFields.querySelector('[name="customer_notes"]')?.value.trim() || '',
         };
         if (!customer.name) throw new Error('Emri i klientit është i detyrueshëm');
-        const items = (order.items || []).map((item, index) => {
-          const row = editorFields.querySelector('[data-item-index="' + index + '"]');
-          if (!row || row.dataset.removed === '1') {
-            return { ...item, remove: true };
-          }
-          const qtyInput = row.querySelector('[data-order-qty]');
-          const priceInput = row.querySelector('[data-order-price]');
-          return {
-            ...item,
-            qty: normalizeOrderQty(qtyInput ? qtyInput.value : item.qty),
-            price: parsePrice(priceInput ? priceInput.value : item.price),
-          };
-        });
+        const items = collectOrderItemsForSave(order);
+        if (!items.some((item) => !item.remove)) {
+          throw new Error('Porosia duhet të ketë të paktën një produkt');
+        }
         await saveOrderEdits(order.id, status, items, customer, payment);
         editorDialog.close();
         return;
@@ -1923,6 +2273,7 @@
         }
         data.currency = 'EUR';
         data.price = Number(data.price) || 0;
+        data.sku = String(data.sku || '').trim();
         data.categories = data.cat ? [data.cat] : [];
         data.permalink = '/produkt/' + data.slug;
         data.image = editorFields.querySelector('[name="image"]')?.value.trim() || '';

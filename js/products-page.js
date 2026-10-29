@@ -84,7 +84,7 @@
   }
 
   function filteredProducts() {
-    return products.filter((product) => {
+    const list = products.filter((product) => {
       const matchesCategory = activeCategory === 'Të Gjitha' || product.cat === activeCategory;
       const q = searchQuery.trim().toLowerCase();
       const matchesSearch =
@@ -94,6 +94,7 @@
         (product.sku || '').toLowerCase().includes(q);
       return matchesCategory && matchesSearch;
     });
+    return utils.sortCatalogProducts(list);
   }
 
   function escapeHtml(text) {
@@ -267,29 +268,7 @@
   }
 
   function renderProductCard(product) {
-    const hasVariants = !!utils.parseProductVariants(product);
-    const cartAction = !utils.canViewPrices()
-      ? `<a href="/llogaria" class="btn-add-cart btn-add-cart--link">Kyçu për çmime</a>`
-      : hasVariants
-        ? `<a href="${utils.productUrl(product)}" class="btn-add-cart btn-add-cart--link">Zgjidh opsionin</a>`
-        : `<button type="button" class="btn-add-cart" data-add-cart="${escapeHtml(product.id)}">Shto në Shportë</button>`;
-
-    return `
-      <article class="product-card" data-category="${escapeHtml(product.cat)}">
-        <a href="${utils.productUrl(product)}" class="product-card-image-link">
-          <img src="${product.img}" alt="${escapeHtml(product.name)}" class="product-card-image" loading="lazy">
-        </a>
-        <div class="product-card-body">
-          ${utils.renderCategoryBadge(product.cat)}
-          <h3 class="product-card-title">
-            <a href="${utils.productUrl(product)}">${escapeHtml(product.name)}</a>
-          </h3>
-          <div class="product-card-footer">
-            <div class="product-card-price">${utils.renderProductPrice(product, { style: hasVariants ? 'from' : 'single' })}</div>
-            ${cartAction}
-          </div>
-        </div>
-      </article>`;
+    return utils.renderCatalogCard(product);
   }
 
   function renderProducts() {

@@ -174,6 +174,35 @@ function getCatalogVariantPrice(product, variantValue) {
   return Number(product.price) || 0;
 }
 
+function catalogProductKod(product, variantValue) {
+  const attrs = (product && product.attributes) || [];
+  const kodAttr = attrs.find((attr) => {
+    const name = String(attr && attr.name ? attr.name : '').trim();
+    return /^kodi$/i.test(name) || /kodi/i.test(name);
+  });
+  const kodList = kodAttr
+    ? String(kodAttr.value || '')
+        .split(',')
+        .map((entry) => entry.trim())
+    : [];
+  const variant = String(variantValue || '').trim();
+  if (variant && kodAttr) {
+    const primary = attrs.find((attr) => attr && attr !== kodAttr && attr.value);
+    if (primary) {
+      const values = String(primary.value || '')
+        .split(',')
+        .map((entry) => entry.trim());
+      const idx = values.indexOf(variant);
+      if (idx >= 0 && kodList[idx]) return kodList[idx];
+    }
+    return '';
+  }
+  const sku = String((product && product.sku) || '').trim();
+  if (sku) return sku;
+  const filled = kodList.filter(Boolean);
+  return filled.length === 1 ? filled[0] : '';
+}
+
 async function buildOrderFromRequest(env, request, body) {
   const customer = body.customer || {};
   const name = sanitizeText(customer.name, 120);
@@ -217,7 +246,7 @@ async function buildOrderFromRequest(env, request, body) {
       qty,
       lineTotal,
       variant: variantLabel,
-      variantKod: sanitizeText(line.variantKod, 40),
+      variantKod: sanitizeText(line.variantKod, 40) || catalogProductKod(product, variantKey),
     });
     total += lineTotal;
   });
@@ -504,7 +533,7 @@ export async function handleApiRequest(context) {
       order.items = body.items
         .map((patch, index) => {
           if (!patch || patch.remove) return null;
-          const base = previous[index] || previous.find((item) => String(item.id) === String(patch.id)) || {};
+          const base = previous[index] || {};
           const qty = Math.max(1, Math.min(999, Number(patch.qty != null ? patch.qty : base.qty) || 1));
           const price = Math.max(0, Number(patch.price != null ? patch.price : base.price) || 0);
           const lineTotal = Math.round(price * qty * 100) / 100;
